@@ -4,16 +4,12 @@
     <TargetFramework>netcoreapp2.1</TargetFramework>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>key.snk</AssemblyOriginatorKeyFile>
+    <TypeScriptToolsVersion>3.0</TypeScriptToolsVersion>
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="_\sqlparser\lexter.js" />
-    <None Remove="_\sqlparser\parsers\delete.js" />
-    <None Remove="_\sqlparser\parsers\insert.js" />
-    <None Remove="_\sqlparser\parsers\select.js" />
-    <None Remove="_\sqlparser\parsers\update.js" />
-    <None Remove="_\sqlparser\sqlParser.js" />
-    <None Remove="_\sqlparser\sqlParseTool.js" />
+    <None Remove="_\sqlparser\sqlCommon.js" />
+    <None Remove="_\sqlparser\sqlCommon.ts" />
   </ItemGroup>
 
   <ItemGroup>
@@ -72,13 +68,7 @@
     <EmbeddedResource Include="_\login\cloud.jpg" />
     <EmbeddedResource Include="_\login\rsapost.js" />
     <EmbeddedResource Include="_\login\style.css" />
-    <EmbeddedResource Include="_\sqlparser\lexter.js" />
-    <EmbeddedResource Include="_\sqlparser\parsers\delete.js" />
-    <EmbeddedResource Include="_\sqlparser\parsers\insert.js" />
-    <EmbeddedResource Include="_\sqlparser\parsers\select.js" />
-    <EmbeddedResource Include="_\sqlparser\parsers\update.js" />
-    <EmbeddedResource Include="_\sqlparser\sqlParser.js" />
-    <EmbeddedResource Include="_\sqlparser\sqlParseTool.js" />
+    <EmbeddedResource Include="_\sqlparser\sqlCommon.js" />
     <EmbeddedResource Include="_\vs\base\worker\workerMain.js" />
     <EmbeddedResource Include="_\vs\basic-languages\sql\sql.js" />
     <EmbeddedResource Include="_\vs\editor\editor.main.css" />
@@ -122,6 +112,10 @@
 
   <ItemGroup>
     <Folder Include="logs\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <TypeScriptCompile Include="_\sqlparser\sqlCommon.ts" />
   </ItemGroup>
 
 </Project>
