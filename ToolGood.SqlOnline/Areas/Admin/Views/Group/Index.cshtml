@@ -1,0 +1,61 @@
+﻿
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout_List_Async.cshtml";
+    List<DbAdminGroup> groups = (List<DbAdminGroup>)ViewData["groups"];
+
+}
+
+@section js{
+    <script>
+        function deleteItem(id, name) {
+            layer.confirm('删除角色【' + name + "】吗？", function (index) {
+                layer.close(index);
+                PostUrl("/admin/group/delete", { id: id }, function (data) {
+                    if (data.code == @SuccessCode) {
+                        location.reload();
+                    } else {
+                        layer.alert(data.msg);
+                    }
+                });
+            })
+        }
+    </script>
+}
+<a href="/admin/group/add" class="layui-btn layui-btn-default layui-btn-sm openwin" title="添加新角色"> 添加</a>
+<hr />
+
+<div class="layui-form">
+    <form>
+        <table class="layui-table">
+            <thead style="text-align:center;font-weight:700;">
+                <tr>
+                    <th style="text-align:center">序号</th>
+                    <th style="text-align:center">角色名</th>
+                    <th style="text-align:center">描述</th>
+                    <th style="text-align:center">排序</th>
+                    <th style="text-align:center">操作</th>
+                </tr>
+            </thead>
+            <tbody style="text-align:center;">
+                @for (int i = 0; i < groups.Count; i++) {
+                    var item = groups[i];
+                    <tr>
+                        <td>@(i + 1)</td>
+                        <td>@item.Name</td>
+                        <td>@item.Description</td>
+                        <td>@item.Sort</td>
+                        <td>
+                            <a href="/admin/group/Edit?id=@item.Id" title="编辑角色" class="layui-btn layui-btn-default  layui-btn-sm openwin"> 编辑</a>
+                            &nbsp;&nbsp;&nbsp;
+                            <a href="javascript:deleteItem(@item.Id,'@item.Name')" class="layui-btn layui-btn-default  layui-btn-sm "> 删除</a>
+                        </td>
+                    </tr>
+                }
+
+            </tbody>
+        </table>
+    </form>
+</div>
+
+

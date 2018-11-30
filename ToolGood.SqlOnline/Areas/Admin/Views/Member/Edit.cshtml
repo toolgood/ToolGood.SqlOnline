@@ -1,0 +1,69 @@
+﻿
+@{
+    ViewData["Title"] = "Edit";
+    Layout = "~/Views/Shared/_Layout_Detail.cshtml";
+    List<DbAdminGroup> groups = (List<DbAdminGroup>)ViewData["groups"];
+    var admin = (DbAdmin)ViewData["admin"];
+}
+@section js{
+    <script>
+        $(function () {
+            $("#edit-form").validate({
+                rules: {
+                    trueName: "required",
+                    phone: "phone",
+                    email: "email"
+                },
+            });
+        });
+
+        function save(obj) {
+            //if ($("#edit-form").valid() == false) return;
+
+            $(obj).prop("disabled", true);
+            PostUrl("", $("#edit-form").serialize(), function (data) {
+                if (data.code == @SuccessCode) {
+                    ReloadAndClose();
+                } else {
+                    layer.alert(data.msg);
+                }
+                $(obj).prop("disabled", false);
+            });
+        }
+    </script>
+}
+
+<form class="layui-form" id="edit-form" action="" style="margin:15px;">
+    <input type="hidden" name="id" value="@admin.Id" />
+    <div class="layui-form-item">
+        <label class="layui-form-label">角色</label>
+        <div class="layui-input-block">
+            <select name="adminGroupID" lay-filter="aihao">
+                @groups.ToOption(q => q.Name, q => q.Id.ToString(), admin.GroupId.ToString())
+            </select>
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">用户名</label>
+        <div class="layui-input-block">
+            <input name="name" id="txt_name" value="@admin.Name" lay-verify="title" autocomplete="off" placeholder="请输入用户名" disabled class="layui-input" type="text">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">真实姓名</label>
+        <div class="layui-input-block">
+            <input name="trueName" id="txt_trueName" value="@admin.TrueName" lay-verify="title" autocomplete="off" placeholder="请输入真实姓名" class="layui-input" type="text">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button type="button" class="layui-btn" onclick="save(this);">提交</button>
+            <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+        </div>
+    </div>
+</form>
+
+

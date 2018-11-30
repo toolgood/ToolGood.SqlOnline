@@ -1,0 +1,121 @@
+﻿
+@{
+    ViewData["Title"] = "Edit";
+    Layout = "~/Views/Shared/_Layout_Edit_New.cshtml";
+}
+@section css{
+    <style>
+        .layui-form-label { width: 130px; }
+        /*.layui-input-inline2 { margin-left: 160px; }*/
+        .auto-width, .layui-inline.auto-width, .auto-width.layui-input-inline, .auto-width .layui-input-inline, .auto-width .layui-form-label { width: auto; }
+        .layui-form-item .layui-input-inline { margin-right: 0; }
+        .layui-form-item .layui-inline { margin-right: 0; }
+        .layui-form-mid.layui-word-aux { margin-left: 5px; }
+
+        .layui-input-inline2 { float: left; display: inline; width: 450px; }
+        .layui-form-label2 { line-height: 20px; float: left; display: inline; margin-left: 5px; padding: 9px 15px; }
+        .layui-input-inline3 { float: left; display: inline; width: 120px; }
+    </style>
+}
+<div style="overflow:hidden">
+    <form class="layui-form" action="" lay-filter="example" style="margin-top: 20px;">
+        <input type="hidden" name="id" id="id" value="0" />
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">名称</label>
+            <div class="layui-input-inline2">
+                <input type="text" name="Name" autocomplete="off" placeholder="请输入名称" class="layui-input" lay-verify="required">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">数据库类型</label>
+            <div class="layui-input-inline2">
+                <select name="SqlServerType">
+                    <option value="SqlServer">SQL Server</option>
+                    <option value="MySQL">MySQL</option>
+                    <option value="Oracle">Oracle</option>
+                    <option value="PostgreSQL">PostgreSQL</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">读表连接字符串</label>
+            <div class="layui-input-inline2">
+                <input type="text" name="ReadConnectionString" autocomplete="off" placeholder="请输入读表连接字符串" class="layui-input" lay-verify="required">
+            </div>
+            <div class="layui-form-mid layui-word-aux"></div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">操作角色名</label>
+            <div class="layui-input-inline2">
+                <input type="text" name="RoleName" autocomplete="off" placeholder="请输入角色名" class="layui-input" lay-verify="required">
+            </div>
+            <div class="layui-form-mid layui-word-aux"></div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">操作连接字符串</label>
+            <div class="layui-input-inline2">
+                <input type="text" name="ConnectionString" autocomplete="off" placeholder="请输入连接字符串" class="layui-input" lay-verify="required">
+            </div>
+            <div class="layui-form-mid layui-word-aux"></div>
+        </div>
+
+
+
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">排序</label>
+            <div class="layui-input-inline2">
+                <input type="text" name="Sort" value="999" autocomplete="off" placeholder="请输入排序" class="layui-input" lay-verify="required|int">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label"></label>
+            <div class="layui-input-inline2">
+                <button class="layui-btn" lay-submit="" lay-filter="form">立即提交</button>
+                <button type="reset" id="reset" class="layui-btn layui-btn-primary">重置</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<script>
+    Init();
+    layui.use(['form','layer', 'layedit', 'laydate'], function () {
+        var $ = layui.$
+            , form = layui.form
+            , layer = layui.layer
+            , layedit = layui.layedit
+            , laydate = layui.laydate;
+
+        //自定义验证规则
+        form.verify({
+             // required phone email url int number num date time identity
+             content: function (value) {
+                layedit.sync(editIndex);
+            }
+        });
+
+
+        //监听提交
+        form.on('submit(form)', function (data) {
+            var url = "/Admin/Database/AddInfo";
+            PostUrl(url, data.field, function (r) {
+                if (r.code ==@(SuccessCode)) {
+                    CloseWindowAndReload();
+                } else {
+                    ShowAlert(r.msg);
+                }
+            });
+            return false;
+        });
+
+        //$("#reset").click(function () {
+        //    form.reset();
+        //});
+    });
+</script>

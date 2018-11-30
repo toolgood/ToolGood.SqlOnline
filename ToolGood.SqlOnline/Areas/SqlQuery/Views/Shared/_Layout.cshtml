@@ -1,0 +1,22 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>管理系统后台</title>
+    <link rel="stylesheet" href="/_/css/SelectMultiple.css" media="all">
+    <link rel="stylesheet" href="/_/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="/_/css/global.css" media="all">
+    <link rel="stylesheet" href="/_/css/font-awesome.min.css" />
+</head>
+<body>
+    @RenderBody()
+    <script src="/_/js/jquery.min.js"></script>
+    <script src="/_/layui/layui.js"></script>
+    <script src="/_/js/doT.min.js"></script>
+    <script src="/_/js/global.js"></script>
+    <script src="/_/js/formhelper.js"></script>
+    <script src="/_/js/index.js"></script>
+    @RenderSection("js", false)
+    <div style="display:none">@(ViewData["_test_monitor"]?.ToString().ToHtml())</div>
+</body>
+</html>

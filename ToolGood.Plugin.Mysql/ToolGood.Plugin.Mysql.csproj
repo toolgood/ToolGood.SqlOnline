@@ -1,0 +1,22 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>key.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <OutputPath>..\ToolGood.SqlOnline\bin\Debug\</OutputPath>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="MySql.Data" Version="8.0.13" />
+    <PackageReference Include="ToolGood.ReadyGo3" Version="3.1.0.51" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ToolGood.PluginBase\ToolGood.PluginBase.csproj" />
+  </ItemGroup>
+
+</Project>

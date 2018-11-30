@@ -1,0 +1,159 @@
+﻿
+@{
+    ViewData["Title"] = "Edit";
+    Layout = "~/Views/Shared/_Layout_Detail.cshtml";
+    List<DbAdminMenu> menus = (List<DbAdminMenu>)ViewData["AdminMenu"];
+    var pMenu = menus.Where(q => q.ParentId == 0).ToList();
+    DbAdminGroup group = (DbAdminGroup)ViewData["AdminGroup"];
+    var auth = (ActionPermissionDictionary)ViewData["ActionAuth"];
+
+    List<DbDatabaseInfo> databaseInfos = ViewData["Database"] as List<DbDatabaseInfo>;
+    List<DbAdminDatabasePass> databasePass = ViewData["DatabasePass"] as List<DbAdminDatabasePass>;
+    List<int> passList = databasePass.Select(q => q.DatabaseInfoId).ToList();
+}
+@section js{
+    <script>
+        $(function () {
+            $("#edit-form").validate({
+                rules: {
+                    name: "required",
+                    sort: "required number",
+                },
+            });
+        });
+
+        function save(obj) {
+            //if ($("#edit-form").valid() == false) return;
+
+            $(obj).prop("disabled", true);
+            PostUrl("", $("#edit-form").serialize(), function (data) {
+                if (data.code == @SuccessCode) {
+                    CloseWindowAndReload();
+                } else {
+                    layer.alert(data.msg);
+                }
+                $(obj).prop("disabled", false);
+            });
+        }
+
+        layui.use(['form'], function () {
+            var form = layui.form;
+            //监听提交
+            form.on('checkbox', function (data) {
+                var checked = $(data.elem).prop("checked");
+                var type = $(data.elem).attr("data-type");
+                if (type == undefined) {
+                } else if (type == "all") {
+                    $("input[type=checkbox]").prop("checked", checked);
+                } else {
+                    var value = $(data.elem).attr(type);
+                    $("input[" + type + "=" + value + "]").prop("checked", checked);
+                }
+                form.render();
+            });
+        })
+    </script>
+}
+
+    <form class="layui-form" id="edit-form" action="" style="margin:15px;">
+        <input type="hidden" name="id" value="@group.Id" />
+        <div class="layui-form-item">
+            <label class="layui-form-label">角色名</label>
+            <div class="layui-input-block">
+                <input name="name" id="txt_name" value="@group.Name" lay-verify="title" autocomplete="off" placeholder="请输入角色名" class="layui-input" type="text">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">描述</label>
+            <div class="layui-input-block">
+                <input name="describe" id="txt_describe" value="@group.Description" lay-verify="title" autocomplete="off" placeholder="请输入描述" class="layui-input" type="text">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">排序</label>
+            <div class="layui-input-block">
+                <input name="sort" id="txt_sort" value="@group.Sort" lay-verify="title" autocomplete="off" placeholder="请输入排序" class="layui-input" type="text">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">数据库权限</label>
+            <div class="layui-input-block">
+                @foreach (var item in databaseInfos) {
+                    if (passList.Contains(item.Id)) {
+                        <input name="databases" value="@item.Id" lay-skin="primary" title="@item.Name" type="checkbox" checked>
+                    } else {
+                        <input name="databases" value="@item.Id" lay-skin="primary" title="@item.Name" type="checkbox">
+                    }
+                }
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">菜单权限</label>
+            <div class="layui-input-block">
+                <table class="layui-table">
+                    <thead style="text-align:center;font-weight:700;">
+                        <tr>
+                            <td width="160">菜单名称</td>
+                            <td>操作</td>
+                            <td width="80">
+                                <input title="全选" lay-skin="primary" data-type="all" onclick="checkAll(this)" type="checkbox">
+                            </td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var pitem in pMenu) {
+                            <tr style="background-color:#77CAF0">
+                                <td style="font-weight:700;">@pitem.Name</td>
+                                <td>
+                                    @foreach (var action in pitem.Actions.Split('|')) {
+                                        <input name="ans[]" value="@(pitem.Id).@(pitem.Code).@action" title="@ActionPermission.GetActionName(action)" lay-skin="primary"
+                                               data-id1="@(pitem.Id)" type="checkbox" @(auth.IsAllow(pitem.Code, action) ? "checked" : "")>
+                                    }
+                                </td>
+                                <td style="text-align:center">
+                                    <input title="全选" lay-skin="primary" data-type="data-id1" data-id1="@(pitem.Id)" onclick="checkAll(this)" type="checkbox">
+                                </td>
+                            </tr>
+                            foreach (var item in menus.Where(q => q.ParentId == pitem.Id)) {
+                                <tr>
+                                    <td style="font-weight:700;">&nbsp;&nbsp;@item.Name</td>
+                                    <td>
+                                        @foreach (var action in item.Actions.Split('|')) {
+                                            <input name="ans[]" value="@(item.Id).@(item.Code).@action" title="@ActionPermission.GetActionName(action)" lay-skin="primary"
+                                                   data-id2="@(item.Id)" data-id1="@(pitem.Id)" type="checkbox" @(auth.IsAllow(item.Code, action) ? "checked" : "")>
+                                        }
+                                    </td>
+                                    <td style="text-align:center">
+                                        <input title="全选" lay-skin="primary" data-type="data-id2" data-id2="@(item.Id)" data-id1="@(pitem.Id)" onclick="checkAll(this)" type="checkbox">
+                                    </td>
+                                </tr>
+                                foreach (var item2 in menus.Where(q => q.ParentId == item.Id)) {
+                                    <tr>
+                                        <td>&nbsp;&nbsp;┣ @item2.Name</td>
+                                        <td>
+                                            @foreach (var action in item2.Actions.Split('|')) {
+                                                <input name="ans[]" value="@(item2.Id).@(item2.Code).@action" title="@ActionPermission.GetActionName(action)" lay-skin="primary"
+                                                       data-id3="@(item2.Id)" data-id2="@(item.Id)" data-id1="@(pitem.Id)" type="checkbox" @(auth.IsAllow(item2.Code, action) ? "checked" : "")>
+                                            }
+                                        </td>
+                                        <td style="text-align:center">
+                                            <input title="全选" lay-skin="primary" data-type="data-id3" data-id3="@(item2.Id)" data-id2="@(item.Id)" data-id1="@(pitem.Id)" onclick="checkAll(this)" type="checkbox">
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button type="button" class="layui-btn" onclick="save(this);">提交</button>
+                <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+            </div>
+        </div>
+    </form>
+

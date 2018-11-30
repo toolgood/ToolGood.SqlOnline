@@ -1,0 +1,68 @@
+﻿@using ToolGood.TransDto.Admins;
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var topMenus = ViewData["topMenu"] as List<TopAdminMenu>;
+    var treeMenus = ViewData["treeMenu"] as List<TreeAdminMenu>;
+}
+<style>
+    .logo { color: #EEE; -webkit-transition: none; -o-transition: none; transition: none; -webkit-transition: width 0.3s ease-in-out; -o-transition: width 0.3s ease-in-out; transition: width 0.3s ease-in-out; display: block; float: left; height: 50px; font-size: 28px; line-height: 50px; width: 230px; font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; font-weight: 300; overflow: hidden; }
+</style>
+<form id="formIndex">
+    <div class="layui-layout layui-layout-admin">
+        <div class="layui-header header ">
+            <div class="layui-main">
+                <div class="logo">
+                    <span class="logo-lg"><b>SQL</b> Online</span>
+                </div>
+                <ul class="layui-nav" pc="" id="top_Menu">
+                    @foreach (var item in topMenus) {
+                        if (string.IsNullOrEmpty(item.Url)) {
+                            if (item.Activity) {
+                                <li class="layui-nav-item"><a href="/admin/?mid=@item.Id" data-id="@item.Id" class="layui-this">@item.Name</a></li>
+                            } else {
+                                <li class="layui-nav-item"><a href="/admin/?mid=@item.Id" data-id="@item.Id">@item.Name</a></li>
+                            }
+                        } else {
+                            if (item.Activity) {
+                                <li class="layui-nav-item"><a href="@item.Url" data-id="@item.Id" class="layui-this">@item.Name</a></li>
+                            } else {
+                                <li class="layui-nav-item"><a href="@item.Url" data-id="@item.Id">@item.Name</a></li>
+                            }
+                        }
+                    }
+                </ul>
+
+                <div class="useroption">
+                    你好！@Admin.TrueName |
+                    <a href="/admin/Home/ChangePassword?w=500&h=350" class="openwin" title="修改密码">修改登录密码</a> |
+                    <a href="/" title="退出登录">退出</a>
+                </div>
+            </div>
+        </div>
+        <div class="layui-side layui-bg-black">
+            <div class="layui-side-scroll">
+                <ul class="layui-nav layui-nav-tree" lay-filter="demo">
+                    @for (int i = 0; i < treeMenus.Count; i++) {
+                        var treeMenu = treeMenus[i];
+                        <li class="layui-nav-item @(i==0?"layui-nav-itemed":"") ">
+                            <a class="javascript:;" href="javascript:;">@treeMenu.Name<span class="layui-nav-more"></span></a>
+                            <dl class="layui-nav-child">
+                                @foreach (var item in treeMenu.Items) {
+                                    <dd><a href="@item.Url" data-index="@item.Id">@item.Name</a></dd>
+                                }
+                            </dl>
+                        </li>
+                    }
+                </ul>
+            </div>
+        </div>
+        <div class="layui-body" style="bottom:0; ">
+            <div class="layui-tab" lay-allowclose="true" lay-filter="docDemoTabBrief">
+                <ul class="layui-tab-title"></ul>
+                <div class="layui-tab-content index">
+                </div>
+            </div>
+        </div>
+    </div>
+</form>

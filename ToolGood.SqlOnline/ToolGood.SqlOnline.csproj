@@ -1,0 +1,127 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>key.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="_\sqlparser\lexter.js" />
+    <None Remove="_\sqlparser\parsers\delete.js" />
+    <None Remove="_\sqlparser\parsers\insert.js" />
+    <None Remove="_\sqlparser\parsers\select.js" />
+    <None Remove="_\sqlparser\parsers\update.js" />
+    <None Remove="_\sqlparser\sqlParser.js" />
+    <None Remove="_\sqlparser\sqlParseTool.js" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="_\css\font-awesome.min.css" />
+    <EmbeddedResource Include="_\css\global.css" />
+    <EmbeddedResource Include="_\css\SelectMultiple.css" />
+    <EmbeddedResource Include="_\fonts\fontawesome-webfont.eot" />
+    <EmbeddedResource Include="_\fonts\fontawesome-webfont.svg" />
+    <EmbeddedResource Include="_\fonts\fontawesome-webfont.ttf" />
+    <EmbeddedResource Include="_\fonts\fontawesome-webfont.woff" />
+    <EmbeddedResource Include="_\fonts\fontawesome-webfont.woff2" />
+    <EmbeddedResource Include="_\fonts\FontAwesome.otf" />
+    <EmbeddedResource Include="_\css\basicContext.min.css" />
+    <EmbeddedResource Include="_\js\basicContext.min.js" />
+    <EmbeddedResource Include="_\js\doT.min.js" />
+    <EmbeddedResource Include="_\js\formhelper.js" />
+    <EmbeddedResource Include="_\js\global.js" />
+    <EmbeddedResource Include="_\js\index.js" />
+    <EmbeddedResource Include="_\js\jquery.min.js" />
+    <EmbeddedResource Include="_\js\list.js" />
+    <EmbeddedResource Include="_\layui\css\layui.css" />
+    <EmbeddedResource Include="_\layui\css\modules\code.css" />
+    <EmbeddedResource Include="_\layui\css\modules\laydate\default\laydate.css" />
+    <EmbeddedResource Include="_\layui\css\modules\layer\default\icon-ext.png" />
+    <EmbeddedResource Include="_\layui\css\modules\layer\default\icon.png" />
+    <EmbeddedResource Include="_\layui\css\modules\layer\default\layer.css" />
+    <EmbeddedResource Include="_\layui\css\modules\layer\default\loading-0.gif" />
+    <EmbeddedResource Include="_\layui\css\modules\layer\default\loading-1.gif" />
+    <EmbeddedResource Include="_\layui\css\modules\layer\default\loading-2.gif" />
+    <EmbeddedResource Include="_\layui\font\iconfont.eot" />
+    <EmbeddedResource Include="_\layui\font\iconfont.svg" />
+    <EmbeddedResource Include="_\layui\font\iconfont.ttf" />
+    <EmbeddedResource Include="_\layui\font\iconfont.woff" />
+    <EmbeddedResource Include="_\layui\layui.js" />
+    <EmbeddedResource Include="_\layui\lay\modules\carousel.js" />
+    <EmbeddedResource Include="_\layui\lay\modules\code.js" />
+    <EmbeddedResource Include="_\layui\lay\modules\colorpicker.js" />
+    <EmbeddedResource Include="_\layui\lay\modules\element.js" />
+    <EmbeddedResource Include="_\layui\lay\modules\flow.js" />
+    <EmbeddedResource Include="_\layui\lay\modules\form.js" />
+    <EmbeddedResource Include="_\layui\lay\modules\jquery.js" />
+    <EmbeddedResource Include="_\layui\lay\modules\laydate.js" />
+    <EmbeddedResource Include="_\layui\lay\modules\layedit.js" />
+    <EmbeddedResource Include="_\layui\lay\modules\layer.js" />
+    <EmbeddedResource Include="_\layui\lay\modules\laypage.js" />
+    <EmbeddedResource Include="_\layui\lay\modules\laytpl.js" />
+    <EmbeddedResource Include="_\layui\lay\modules\mobile.js" />
+    <EmbeddedResource Include="_\layui\lay\modules\rate.js" />
+    <EmbeddedResource Include="_\layui\lay\modules\slider.js" />
+    <EmbeddedResource Include="_\layui\lay\modules\table.js" />
+    <EmbeddedResource Include="_\layui\lay\modules\tree.js" />
+    <EmbeddedResource Include="_\layui\lay\modules\upload.js" />
+    <EmbeddedResource Include="_\layui\lay\modules\util.js" />
+    <EmbeddedResource Include="_\login\8bcLQqF.png" />
+    <EmbeddedResource Include="_\login\body.css" />
+    <EmbeddedResource Include="_\login\cloud.jpg" />
+    <EmbeddedResource Include="_\login\rsapost.js" />
+    <EmbeddedResource Include="_\login\style.css" />
+    <EmbeddedResource Include="_\sqlparser\lexter.js" />
+    <EmbeddedResource Include="_\sqlparser\parsers\delete.js" />
+    <EmbeddedResource Include="_\sqlparser\parsers\insert.js" />
+    <EmbeddedResource Include="_\sqlparser\parsers\select.js" />
+    <EmbeddedResource Include="_\sqlparser\parsers\update.js" />
+    <EmbeddedResource Include="_\sqlparser\sqlParser.js" />
+    <EmbeddedResource Include="_\sqlparser\sqlParseTool.js" />
+    <EmbeddedResource Include="_\vs\base\worker\workerMain.js" />
+    <EmbeddedResource Include="_\vs\basic-languages\sql\sql.js" />
+    <EmbeddedResource Include="_\vs\editor\editor.main.css" />
+    <EmbeddedResource Include="_\vs\editor\editor.main.js" />
+    <EmbeddedResource Include="_\vs\editor\editor.main.nls.js" />
+    <EmbeddedResource Include="_\vs\loader.js" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Autofac.Extensions.DependencyInjection" Version="4.3.1" />
+    <PackageReference Include="Microsoft.AspNetCore.App" />
+    <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.1.2" PrivateAssets="All" />
+    <PackageReference Include="Microsoft.Data.Sqlite" Version="2.1.0" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.1.1" />
+    <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
+    <PackageReference Include="ToolGood.ReadyGo3" Version="3.1.0.51" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ToolGood.ApplicationCommon\ToolGood.ApplicationCommon.csproj" />
+    <ProjectReference Include="..\ToolGood.Application\ToolGood.Application.csproj" />
+    <ProjectReference Include="..\ToolGood.Constant\ToolGood.Constant.csproj" />
+    <ProjectReference Include="..\ToolGood.Datas\ToolGood.Datas.csproj" />
+    <ProjectReference Include="..\ToolGood.DomainService\ToolGood.DomainService.csproj" />
+    <ProjectReference Include="..\ToolGood.Infrastructure\ToolGood.Infrastructure.csproj" />
+    <ProjectReference Include="..\ToolGood.Plugin.Mssql\ToolGood.Plugin.Mssql.csproj" />
+    <ProjectReference Include="..\ToolGood.Plugin.Mysql\ToolGood.Plugin.Mysql.csproj" />
+    <ProjectReference Include="..\ToolGood.PluginBase\ToolGood.PluginBase.csproj" />
+    <ProjectReference Include="..\ToolGood.Repository\ToolGood.Repository.csproj" />
+    <ProjectReference Include="..\ToolGood.TransDto\ToolGood.TransDto.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="Areas\SqlQuery\Views\Shared\_Layout.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
+    <Content Update="Areas\SqlQuery\Views\_ViewImports.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="logs\" />
+  </ItemGroup>
+
+</Project>
