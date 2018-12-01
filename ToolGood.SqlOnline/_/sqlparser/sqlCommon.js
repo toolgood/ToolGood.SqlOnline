@@ -69,9 +69,9 @@ var SqlNode = /** @class */ (function () {
         this.Nodes = new Array();
     }
     SqlNode.prototype.SetValue1 = function (c, start, token) {
-        this.Sql = c;
         this.Index = start;
         this.Length = 1;
+        this.Sql = c;
         this.Token = token;
         this.Keyword = this.Sql.toUpperCase();
         return this;
@@ -153,7 +153,7 @@ var SqlSplitBase = /** @class */ (function () {
                 sqlNodes.push(node);
             }
             else if (this.IsFirstKeyword(node.Keyword)) {
-                jumpNextSelect_Insert = true;
+                jumpNextSelect_Insert = false;
                 jumpNextSelect = false;
                 sqlNodes = new Array();
                 sqlNodes.push(node);
@@ -164,6 +164,40 @@ var SqlSplitBase = /** @class */ (function () {
             }
         }
         return list;
+    };
+    SqlSplitBase.prototype.GetIndexByPosition = function (position, sql) {
+        sql = sql.replace(/\r\n/g, "\n").replace(/\r/g, "\n").replace(/[\t\f\v]/g, " ").trim() + "\n";
+        var col = position.column - 1;
+        var line = position.lineNumber - 1;
+        if (line == 0) {
+            return col;
+        }
+        var index = 0, c = 0, l = 0;
+        while (index < sql.length) {
+            var ch = sql[index];
+            if (col == c && l == line) {
+                return index;
+            }
+            if (ch == "\n") {
+                l++, c = 0;
+            }
+            else {
+                c++;
+            }
+            index++;
+        }
+    };
+    SqlSplitBase.prototype.GetCurrentSql = function (position, sql) {
+        var index = this.GetIndexByPosition(position, sql);
+        var nodes = this.SplitSql(sql);
+        var lines = this.MergeSql(nodes);
+        for (var i = lines.length - 1; i >= 0; i--) {
+            var item = lines[i];
+            if (item[0].Index < index) {
+                return item;
+            }
+        }
+        return lines[0];
     };
     SqlSplitBase.prototype.IsFirstKeyword = function (key) {
         var keys = ["SELECT", "INSERT", "UPDATE", "DELETE", "CREATE", "ALERT", "DROP", "USE", "TRUNCATE"];
@@ -270,7 +304,7 @@ var SqlSplitBase = /** @class */ (function () {
     SqlSplitBase.prototype.ReadBlankSpace = function (sql, start) {
         for (var i = start; i < sql.length; i++) {
             var ch = sql[i];
-            if (" " == ch || "\n" == ch) {
+            if (" " != ch && "\n" != ch) {
                 return i;
             }
         }

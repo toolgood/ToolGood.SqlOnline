@@ -76,7 +76,7 @@
 </div>
 
 @section js{
-
+    <script src="/_/sqlparser/sqlCommon.js"></script>
     <script src="/_/vs/loader.js"></script>
 
     <script>
@@ -136,8 +136,17 @@
                 monaco.languages.registerCompletionItemProvider('sql', {
                     provideCompletionItems: function (model, position) {
                         var text = model.getValue();
-                        var sql = getCurrentSql(position, text);
-                        console.log(sql);
+                        var split = new SqlServerSplit();
+                        var sp = split.SplitSql(text);
+                        console.log(sp);
+                        var msql= split.MergeSql(sp);
+                        console.log(msql);
+                        var s = split.GetCurrentSql(position, text);
+                        console.log(s);
+
+
+                        //var sql = getCurrentSql(position, text);
+                        //console.log(sql);
                         //console.log(text);
                         return createCompleters();
                     }

@@ -1,9 +1,9 @@
 ﻿enum EnumSqlType {
-    SqlServer=1,
+    SqlServer = 1,
     MySql
 }
 enum EnumSqlToken {
-    Unknow=0,
+    Unknow = 0,
     Keyword,
     Number,
     String,
@@ -21,7 +21,7 @@ enum EnumSqlToken {
     Dot,
 }
 enum EnumSqlPosition {
-    Root=0,
+    Root = 0,
     Comment,
     SelectFirstColumn,
     SelectColumn,
@@ -65,9 +65,9 @@ class SqlNode {
     }
 
     SetValue1(c: string, start: number, token: EnumSqlToken) {
-        this.Sql = c;
         this.Index = start;
         this.Length = 1;
+        this.Sql = c;
         this.Token = token;
         this.Keyword = this.Sql.toUpperCase();
         return this;
@@ -97,7 +97,6 @@ class SqlSplitBase {
         this.Split(root, root.Nodes, sql, 0, 0);
         return root.Nodes;
     }
-
     public MergeSql(nodes: Array<SqlNode>) {
         var list = new Array<Array<SqlNode>>();
         var sqlNodes = new Array<SqlNode>();
@@ -138,7 +137,7 @@ class SqlSplitBase {
                 jumpNextSelect = false;
                 sqlNodes.push(node);
             } else if (this.IsFirstKeyword(node.Keyword)) {
-                jumpNextSelect_Insert = true
+                jumpNextSelect_Insert = false;
                 jumpNextSelect = false;
                 sqlNodes = new Array<SqlNode>();
                 sqlNodes.push(node);
@@ -149,6 +148,36 @@ class SqlSplitBase {
         }
         return list;
     }
+    public GetIndexByPosition(position, sql) {
+        sql = sql.replace(/\r\n/g, "\n").replace(/\r/g, "\n").replace(/[\t\f\v]/g, " ").trim() + "\n";
+        var col = position.column - 1;
+        var line = position.lineNumber - 1;
+        if (line == 0) { return col; }
+
+        var index = 0, c = 0, l = 0;
+        while (index < sql.length) {
+            var ch = sql[index];
+            if (col == c && l == line) { return index; }
+            if (ch == "\n") { l++ , c = 0; } else { c++; }
+            index++;
+        }
+    }
+    public GetCurrentSql(position, sql) {
+        var index = this.GetIndexByPosition(position, sql);
+        var nodes = this.SplitSql(sql);
+        var lines = this.MergeSql(nodes);
+
+        for (var i = lines.length - 1; i >= 0; i--) {
+            var item = lines[i];
+            if (item[0].Index < index) {
+                return item;
+            }
+        }
+        return lines[0];
+    }
+
+
+
     protected IsFirstKeyword(key: string) {
         let keys = ["SELECT", "INSERT", "UPDATE", "DELETE", "CREATE", "ALERT", "DROP", "USE", "TRUNCATE"];
         for (var i = 0; i < keys.length; i++) {
@@ -158,8 +187,7 @@ class SqlSplitBase {
         }
         return false;
     }
-
-    private Split(root: SqlNode, nodes: Array<SqlNode>, sql: string, layer: number, index: number) {
+    protected Split(root: SqlNode, nodes: Array<SqlNode>, sql: string, layer: number, index: number) {
         while (index < sql.length) {
             var start = index;
             var ch = sql[index++];
@@ -228,7 +256,6 @@ class SqlSplitBase {
             }
         }
     }
-
     protected customSplit(root: SqlNode, nodes: Array<SqlNode>, ch: string, sql: string, layer: number, index: number) {
         let outInfo: [boolean, number];
         outInfo = [false, index];
@@ -238,7 +265,7 @@ class SqlSplitBase {
     protected ReadBlankSpace(sql: string, start: number) {
         for (var i = start; i < sql.length; i++) {
             var ch = sql[i];
-            if (" " == ch || "\n" == ch) {
+            if (" " != ch && "\n" != ch) {
                 return i;
             }
         }
@@ -309,7 +336,7 @@ class CommentStatement extends BaseStatement {
 
 }
 class SelectStatement extends BaseStatement {
-    
+
 }
 class UpdateStatement extends BaseStatement {
 
