@@ -1,0 +1,241 @@
+﻿@page
+@model ToolGood.SqlOnline.Pages.Sqls.Editors.MainModel
+@{
+    Layout = "~/Pages/Shared/_Layout_Edit.cshtml";
+}
+@section css{
+    <style>
+        html, body { height: 100%; width: 100%; overflow: hidden; margin: 0; padding: 0; border: 0; }
+        #topWin div { float: left; }
+        .gutter-horizontal { background-color: lightgray; cursor: e-resize; height: 100% }
+        .gutter-vertical { background-color: lightgray; cursor: n-resize; width: 100% }
+    </style>
+}
+<div id="topWin" style="height: 100%;">
+    <div id="mainWin" style="height: 100%;">
+        <iframe src="./SqlEditor?sqlConnId=@(Model.ConnId)&databaseName=@(Model.DatabaseName)" frameborder="0" style="margin: 0; padding: 0;height: 100%; width: 100%;min-width:100px;"></iframe>
+    </div>
+    <div id="assistWin" style="height: 100%;">
+        <iframe id="assistWin-iframe" src="" frameborder="0" style="margin: 0; padding: 0; border: 0; height: 100%; width: 100%;"></iframe>
+    </div>
+</div>
+<div id="resultWin">
+    <iframe id="resultWin-iframe" src="" frameborder="0" style="margin: 0; padding: 0; border: 0; height: 100%; width: 100%;"></iframe>
+</div>
+<div style="display:none">
+    <form id="edit-form">
+        @Html.AntiForgeryToken()
+        <input type="hidden" id="sqlConnId" name="sqlConnId" value="@(Model.ConnId)" />
+        <input type="hidden" id="databaseName" name="DatabaseName" value="@(Model.DatabaseName)" />
+        <input type="hidden" id="content" name="content" />
+        <input type="hidden" id="title" name="title" value="@(Model.Title)" />
+    </form>
+    <input type="hidden" id="jsMode" name="JsMode" value="@(Model.JsMode)" />
+    <input type="hidden" id="docId" name="docId" value="@(Model.DocId)" />
+    <input type="hidden" id="tempId" name="tempId" value="@(Model.TempId)" />
+    <pre><code id="sqlString">@(Model.SqlString)</code></pre>
+</div>
+@section js{
+    <script src="/_/js/split.min.js" type="text/javascript"></script>
+    <script src="/_/js/download.js" type="text/javascript"></script>
+    <script>
+    var editorId ="w"+ new Date().valueOf();
+    var assistWinUrl = '/Sqls/TableInfo?editorId=' + editorId+'&sqlConnId=@(Model.ConnId)&database=';
+	var resultWinUrl = './SqlResult';
+	$(function () {
+		assist = Split(['#mainWin', '#assistWin'], { sizes: [100, 0], minSize: [650, 0], gutterSize: 5,snapOffset: 0,  });
+		result = Split(['#topWin', '#resultWin'], { sizes: [100, 0], minSize: [200, 0], gutterSize: 5,snapOffset: 0,  direction: 'vertical', onDragEnd: function () { resizeResultWin(); } });
+		$(".gutter-vertical").css("display", "none");
+		$(".gutter-horizontal").css("display", "none");
+		$("#resultWin-iframe").attr('src',resultWinUrl);
+	})
+	function switchResultWin() { if ($(".gutter-vertical").css("display") == 'none') { showResultWin(); } else { hideResultWin(); } }
+	function hideResultWin() { result.setSizes([100, 0]);  $(".gutter-vertical").css("display", "none");  }
+	function showResultWin() {
+		if ($(".gutter-vertical").css("display")=="none") {
+			result.setSizes([60, 40]);
+			$(".gutter-vertical").css("display", "");
+		}
+	}
+	function switchAssistWin() { if ($(".gutter-horizontal").css("display") == 'none') { showAssistWin(); } else { hideAssistWin(); } }
+	function hideAssistWin() { assist.setSizes([100, 0]);  $(".gutter-horizontal").css("display", "none"); }
+	function showAssistWin() {
+		if ($(".gutter-horizontal").css("display") == "none") {
+			if ($("#assistWin-iframe").attr('src') == '') {  $("#assistWin-iframe").attr('src', assistWinUrl + encodeURI($("#databaseName").val())); }
+			assist.setSizes([70, 30]);
+			$(".gutter-horizontal").css("display", "");
+		}
+	}
+    </script>
+    <script>
+        var tempSql = "";
+        function InitEditor() {
+            tempSql = $("#sqlString").text();
+            setEditorSql($("#sqlString").text(), $("#jsMode").val());
+            setInterval(function () {
+                var sql = getFullSql();
+                if (sql == tempSql) { return; }
+                tempSql = sql;
+                $("#content").val(sql);
+                $("#databaseName").val(getDatabase());
+                var data = $("#edit-form").serializeJson();
+                data.id = $("#tempId").val();
+                data.sqlDocId = $("#docId").val();
+                var url = "/Sqls/Docs/Ajax/EditSqlDocTemp";
+                $.rsaPost(url, data, function (data) {
+                    if ($("#tempId").val() == "0") {
+                        $("#tempId").val(data.data);
+                    }
+                }, function (data) {
+                });
+            }, 5000);
+            if (top.window.editors == undefined) {
+                top.window.editors = {};
+            }
+            top.window.editors[editorId] = window;
+        }
+
+        function saveDoc(database, sql) {
+            top.$currEditorWindow = window;
+            $("#databaseName").val(database);
+            $("#content").val(sql);
+
+            if ($("#docId").val() == "0") {
+                openTopWindow("保存", "/Sqls/Docs/Save?w=550&h=250");
+            } else {
+                var data = $("#edit-form").serializeJson();
+                data.id = $("#docId").val();
+                var url = "/Sqls/Docs/Ajax/EditSqlDoc";
+                $.rsaPost(url, data, function (data) {
+                    if ($("#docId").val() == "0") { $("#docId").val(data.data); }
+                    layui.layer.msg("保存成功！");
+                }, function (data) {
+                    $(obj).prop("disabled", false);
+                    if (data.message) {
+                        layer.msg(data.message);
+                    } else {
+                        layer.msg("出错了");
+                    }
+                });
+            }
+        }
+        function saveDocAs(database, sql) {
+            top.$currEditorWindow = window;
+            $("#databaseName").val(database);
+            $("#content").val(sql);
+            openTopWindow("另存为", "/Sqls/Docs/Save?w=550&h=250");
+        }
+        function callbackSaveDoc(title, isShare) {
+            $("#title").val(title);
+            top.window.setTabName(title);
+            var data = $("#edit-form").serializeJson();
+            data.isShare = isShare;
+            var url = "/Sqls/Docs/Ajax/EditSqlDoc";
+            $.rsaPost(url, data, function (data) {
+                $("#docId").val(data.data);
+                layui.layer.msg("保存成功！");
+            }, function (data) {
+                $(obj).prop("disabled", false);
+                if (data.message) {
+                    layer.msg(data.message);
+                } else {
+                    layer.msg("出错了");
+                }
+            });
+        }
+
+
+        var sqlKey = "";
+        function runSql(database, sql) {
+            if (sql.length < 10) {
+                layui.layer.msg("请输入正确的sql");
+                return;
+            }
+            var url = "./Ajax/CreateExecute";
+            var $data = $("#edit-form").serializeJson();
+            $data.database = database;
+            $.rsaPost(url, $data, function (data) {
+                if (data.state != "SUCCESS") {
+                    $(".ReturnContent").html('');
+                    openTopMsg(data.message);
+                    return;
+                }
+                hideRunBtn();
+                clearTab();
+                sqlKey = data.data;
+                $data.key = sqlKey;
+                $data.sql = sql;
+                url = "./Ajax/DoExecuteSelectSql";
+                $.rsaPost(url, $data, function (data) {
+                    showRunBtn();
+                    showResultWin();
+                    setTabData(data);
+                }, function () {
+                    showRunBtn();
+                    $(".ReturnContent").html('');
+                    openTopMsg("服务器连接失败...");
+                })
+            }, function () {
+                showRunBtn();
+                $(".ReturnContent").html('');
+                openTopMsg("服务器连接失败...");
+            })
+        }
+        function stopSql() {
+            var url = "./Ajax/StopExecute";
+            var $data = $("#edit-form").serializeJson();
+            $data.key = sqlKey;
+            $.rsaPost(url, $data, function () {
+                showRunBtn();
+                layui.layer.msg('暂停成功');
+            })
+        }
+
+        function runSqlAndDownload(database, sql) {
+
+        }
+        function runSqlAndAuthority(database, sql) {
+            top.$currEditorWindow = window;
+            openTopWindow("高级", "/Sqls/Editors/Authority?w=650&h=300");
+        }
+        function runSqlAndAuthority2(authority,password) {
+            var database = getDatabase();
+            sql = getSql();
+            if (sql.length==0) {
+                sql = getFullSql();
+            }
+            var $data = $("#edit-form").serializeJson();
+            $data.database = database;
+            $data.authority = authority;
+            $data.password = password;
+            var url = "./Ajax/CreateExecute";
+            $.rsaPost(url, $data, function (data) {
+                if (data.state!="SUCCESS") {
+                    $(".ReturnContent").html('');
+                    openTopMsg(data.message);
+                    return;
+                }
+                hideRunBtn();
+                clearTab();
+                sqlKey = data.data;
+                $data.key = sqlKey;
+                $data.sql = sql;
+                url = "./Ajax/DoExecuteSql";
+                $.rsaPost(url, $data, function (data) {
+                    showRunBtn();
+                    showResultWin();
+                    setTabData(data);
+                }, function () {
+                    showRunBtn();
+                    $(".ReturnContent").html('');
+                    openTopMsg("服务器连接失败...");
+                })
+            }, function () {
+                showRunBtn();
+                $(".ReturnContent").html('');
+                openTopMsg("服务器连接失败...");
+            })
+
+        }
+    </script>
+}

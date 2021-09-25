@@ -1,0 +1,82 @@
+﻿@page
+@model ToolGood.SqlOnline.Pages.Admins.Emails.SendEmailModel
+@{
+    Layout = "~/Pages/Shared/_Layout_Detail.cshtml";
+}
+<div style="background-color: #fff; width: 600px;">
+    <form id="edit-form">
+        @Html.AntiForgeryToken()
+        <fieldset class="layui-elem-field layui-field-title site-title">
+            <legend><a name="compatibility">发件邮箱</a></legend>
+        </fieldset>
+
+        <div class="layui-form" lay-filter="form" style="padding: 20px 30px 0 0;">
+            <div class="layui-form-item">
+                <label class="layui-form-label">SMTP域名</label>
+                <div class="layui-input-block">
+                    <input type="text" class="layui-input" id="txt_EmailSendHost" name="EmailSendHost" value="@Model.EmailSendDto.EmailSendHost" autocomplete="off">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">端口号</label>
+                <div class="layui-input-block">
+                    <input type="text" class="layui-input" id="txt_EmailSendPort" name="EmailSendPort" oninput="this.value=standardInt(this.value,0,65535)" value="@Model.EmailSendDto.EmailSendPort" autocomplete="off">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">SSL<span class="red"> *</span></label>
+                <div class="layui-input-block">
+                    <input type="checkbox" name="EmailSendSSL" lay-skin="primary" value="1" @(Model.EmailSendDto.EmailSendSSL.ToCheckedWhenIs(1)) title="启用SSL" />
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">账号</label>
+                <div class="layui-input-block">
+                    <input type="text" class="layui-input" id="txt_EmailSendUser" name="EmailSendUser" value="@Model.EmailSendDto.EmailSendUser" autocomplete="off">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">密码</label>
+                <div class="layui-input-block">
+                    <input type="text" class="layui-input" id="txt_EmailSendPassword" name="EmailSendPassword" value="@Model.EmailSendDto.EmailSendPassword" autocomplete="off">
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">尝试次数<span class="red"> *</span></label>
+                <div class="layui-input-block">
+                    <input type="text" class="layui-input" id="txt_EmailSendCount" name="EmailSendCount" oninput="this.value=standardInt(this.value,0,50)" value="@Model.EmailSendDto.EmailSendCount" autocomplete="off">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">间隔秒数<span class="red"> *</span></label>
+                <div class="layui-input-block">
+                    <input type="text" class="layui-input" id="txt_EmailSendInterval" name="EmailSendInterval" oninput="this.value=standardInt(this.value,0,999999)" value="@Model.EmailSendDto.EmailSendInterval" autocomplete="off">
+                </div>
+            </div>
+
+            <div class="layui-form-item" style="text-align:center;padding-left: 30px;">
+                <button type="button" class="layui-btn layui-btn-normal" onclick="save(this);"> &nbsp;&nbsp; 提 交 &nbsp;&nbsp; </button>
+                <button type="button" class="layui-btn layui-btn-primary" onclick="closeTabContent();"> &nbsp;&nbsp; 关 闭 &nbsp;&nbsp; </button>
+            </div>
+        </div>
+    </form>
+</div>
+@section js{
+    <script>
+        layui.use(["layer", "form", 'util', "element"], function () {            });
+        function save(obj) {
+            $(obj).prop("disabled", true);
+            var url = "./Ajax/EditEmailSend";
+            var data = $("#edit-form").serializeJson();
+            $.adminModePost(url, data, function () {
+                $(obj).prop("disabled", false);
+                layer.msg("保存成功！")
+            }, function (data) {
+                $(obj).prop("disabled", false);
+                data.message && layer.msg(data.message);
+            });
+        }
+    </script>
+}

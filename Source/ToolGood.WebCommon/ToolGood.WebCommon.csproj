@@ -1,0 +1,21 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+  </PropertyGroup>
+
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="5.0.10" />
+    <PackageReference Include="ToolGood.ReadyGo3" Version="4.0.0.5" />
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <ProjectReference Include="..\ToolGood.Common\ToolGood.Common.csproj" />
+    <ProjectReference Include="..\ToolGood.SqlOnline.Configs\ToolGood.SqlOnline.Configs.csproj" />
+  </ItemGroup>
+
+  
+</Project>

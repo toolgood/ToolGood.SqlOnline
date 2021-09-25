@@ -1,0 +1,82 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style type="text/css" media="screen">
+        #editor { position: absolute; top: 0; right: 0; bottom: 0; left: 0; }
+    </style>
+</head>
+<body>
+    <div id="editor">
+        -- SQL Mode for CodeMirror
+        SELECT SQL_NO_CACHE DISTINCT
+        @var1 AS `val1`, @'val2', @global.'sql_mode' 'aaa',
+        1.1 AS `float_val`, .14 AS `another_float`, 0.09e3 AS `int_with_esp`,
+        0xFA5 AS `hex`, x'fa5' AS `hex2`, 0b101 AS `bin`, b'101' AS `bin2`,
+        DATE '1994-01-01' AS `sql_date`, { T "1994-01-01" } AS `odbc_date`,
+        'my string', _utf8'your string', N'her string',
+        TRUE, FALSE, UNKNOWN
+        FROM DUAL
+        -- space needed after '--'
+        # 1 line comment
+        /* multiline
+        comment! */
+        LIMIT 1 OFFSET 0;
+    </div>
+    <script src="ace/ace.js" type="text/javascript" charset="utf-8"></script>
+    <script src="ace/ext-language_tools.js" type="text/javascript" charset="utf-8"></script>
+    <script src="ace-ext/token_tooltip.js" type="text/javascript" charset="utf-8"></script>
+    <script src="require.js" type="text/javascript" charset="utf-8"></script>
+
+    <script>
+        var editor = ace.edit("editor");
+        editor.setOptions({
+            theme: 'ace/theme/sqlserver',
+            mode: 'ace/mode/sql',
+            fontSize: '13',
+            enableBasicAutocompletion: false,
+            enableSnippets: true,
+            enableLiveAutocompletion: true,
+            showTokenInfo: true,
+        });
+        editor.commands.removeCommand("showSettingsMenu");
+        editor.commands.removeCommand("openCommandPallete");
+
+        var antlr4 = require("antlr4/index");
+        var SQLiteLexer = require("antlr4-sqlite/SQLiteLexer").SQLiteLexer;
+        var SQLiteParser = require("antlr4-sqlite/SQLiteParser").SQLiteParser;
+
+        var input2 = "select * from tt"
+        var chars2 = new antlr4.InputStream(input2);
+        var lexer2 = new SQLiteLexer(chars2);
+        var tokens2 = new antlr4.CommonTokenStream(lexer2);
+        var parser2 = new SQLiteParser(tokens2);
+        parser2.removeErrorListeners();
+         parser2.buildParseTrees = true;
+        var tree2 = parser2.parse();
+        console.log(tree2);
+
+        // editor.completers=[];
+        editor.completers.push({
+            getCompletions: function (editor, session, pos, prefix, callback) {
+                var completions = [];
+                // we can use session and pos here to decide what we are going to show
+                ["word1", "word2"].forEach(function (w) {
+
+                    completions.push({
+                        value: w,
+                        meta: "my completion",
+                        score: 999
+                    });
+                });
+                callback(null, completions);
+            }
+        })
+    </script>
+
+
+
+</body>
+</html>

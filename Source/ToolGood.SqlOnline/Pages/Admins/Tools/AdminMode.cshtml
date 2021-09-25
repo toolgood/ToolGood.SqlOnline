@@ -1,0 +1,85 @@
+﻿@page
+@model ToolGood.SqlOnline.Pages.Admins.Tools.AdminModeModel
+@{
+    Layout = "~/Pages/Shared/_Layout_Edit.cshtml";
+}
+<div style="overflow-x:hidden">
+    <form id="edit-form">
+        <input style="display:none" type="text" name="username" id="username" />
+        <input style="display:none" type="password" name="password" id="password" />
+        @Html.AntiForgeryToken()
+        <fieldset class="layui-elem-field layui-field-title" style="margin-top: 30px;">
+            <legend>警告，此页面需要进入管理模式</legend>
+        </fieldset>
+
+        <div class="layui-form" style="padding: 20px 30px 0 0;">
+            <div class="layui-form-item">
+                <label class="layui-form-label">密码：</label>
+                <div class="layui-input-block">
+                    <input style="display:none" type="password" name="OperatorPassword" />
+                    <input type="text" maxlength="20" class="layui-input" onfocus="this.type='password';" id="OperatorPassword" placeholder="请输入密码" autocomplete="off" />
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">有效时间：</label>
+                <div class="layui-input-block">
+                    <select name="AdminModeTime" id="AdminModeTime" class="layui-select">
+                        <option value="5">5分钟</option>
+                        <option value="10">10分钟</option>
+                        <option value="20">20分钟</option>
+                        <option value="30">30分钟</option>
+                        <option value="40">40分钟</option>
+                        <option value="50">50分钟</option>
+                        <option value="60">1小时</option>
+                    </select>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">提示：</label>
+                <div class="layui-input-block">
+                    <div class="layui-form-mid layui-word-aux">
+                        此功能防止非本人修改。 进入管理模式后，在有效时间内不需要再输入密码。界面右上角可退出管理模式。<br />
+                        注：【管理密码】不是【登录密码】，登录密码可被浏览记录，并不安全。
+                    </div>
+                </div>
+            </div>
+
+            <div class="layui-form-item" style="text-align:center;padding-left: 30px;">
+                <button type="button" class="layui-btn layui-btn-normal" onclick="save(this);"> &nbsp;&nbsp; 确 认 &nbsp;&nbsp; </button>
+            </div>
+        </div>
+
+    </form>
+    <div style="height:200px;"></div>
+</div>
+
+@section js{
+    <script>
+        function save(obj) {
+            $(obj).prop("disabled", true);
+
+            $("input[name=OperatorPassword]").val($("#OperatorPassword").val());
+            var str = "";
+            for (var i = 0; i < $("#OperatorPassword").val().length; i++) { str += "*"; }
+            $("#OperatorPassword").val(str);
+
+            var url = "./Ajax/Login";
+            var data = $("form").serializeJson();
+            var tarUrl = '@Model.RequestUrl.ToHtml()';
+            $.adminModePost(url, data, function () {
+                $(obj).prop("disabled", false);
+                top.$("#AdminMode").css("display", "");
+                location.href = tarUrl;
+            }, function (data) {
+                $(obj).prop("disabled", false);
+                $("#tpwd").val($("input[name=tpwd]").val());
+                if (data.message) {
+                    layer.msg(data.message);
+                } else {
+                    layer.msg("出错了");
+                }
+            });
+        }
+    </script>
+}

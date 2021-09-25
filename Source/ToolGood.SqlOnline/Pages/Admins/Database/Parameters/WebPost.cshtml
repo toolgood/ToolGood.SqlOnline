@@ -1,0 +1,44 @@
+﻿@page
+@model ToolGood.SqlOnline.Pages.Admins.Database.Parameters.WebPostModel
+@{
+    Layout = "~/Pages/Shared/_Layout_Edit.cshtml";
+}
+<div style="overflow-x:hidden">
+    <form id="edit-form">
+        <div class="layui-form" style="padding: 20px 30px 0 0;">
+            <div class="layui-form-item">
+                <label class="layui-form-label">Post参数</label>
+                <div class="layui-input-block">
+                    <textarea class="layui-textarea" id="connectionString" style="height:370px" readonly>
+{
+    "AdminId":1,
+    "AdminName":"admin",
+    "AdminTrueName":"管理员",
+    "AdminJobNo":"NO001",
+    "AdminPhone":"13900000000",
+    "SqlConnectionId":1,
+    "SqlConnectionName":"测试",
+    "DatabaseName":"AD",
+    "Sql":"UPDATE `Software` SET `Name` = '222' WHERE id=2",
+    "Exception":null,
+    "RunReadResult":0,
+    "RunTime":1,
+    "AddingTime":"2021-09-24T10:56",
+    "Items":[
+        {
+            "Sql":"UPDATE `Software` SET `Name` = '222' WHERE id=2",
+            "OldData":"[{\"Id\":2,\"Name\":\"222\",\"CreateTime\":\"2020-08-30T16:33:41\"}]"
+        }
+    ]
+}
+</textarea>
+                </div>
+            </div>
+
+            <div class="layui-form-item" style="text-align:center;padding-left: 30px;">
+                <button type="button" class="layui-btn layui-btn-primary" onclick="closeWindow();"> &nbsp;&nbsp; 关 闭 &nbsp;&nbsp; </button>
+            </div>
+        </div>
+
+    </form>
+</div>

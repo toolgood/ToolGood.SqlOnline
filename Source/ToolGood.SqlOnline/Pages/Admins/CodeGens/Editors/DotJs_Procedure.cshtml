@@ -1,0 +1,32 @@
+﻿@page
+@{
+    Layout = "/Pages/Admins/CodeGens/Editors/_DotJs_Base.cshtml";
+}
+<script>
+    var data = [
+        { id: "100", pid: "root", name: "adminName 管理员姓名", type: "string", comment: "" },
+        { id: "200", pid: "root", name: "operationTime 操作时间", type: "string", comment: "格式：yyyy-MM-dd HH:mm:ss" },
+        { id: "300", pid: "root", name: "namespace 命名空间/包名", type: "string", comment: "" },
+        { id: "301", pid: "root", name: "package 命名空间/包名 ", type: "string", comment: "别名" },
+        { id: "700", pid: "root", name: "serverName 服务器名称", type: "string", comment: "" },
+        { id: "800", pid: "root", name: "serverType 数据库类型", type: "string", comment: "" },
+
+        { id: "910", pid: "root", name: "dataBaseName 库名", type: "string", comment: "" },
+        { id: "930", pid: "root", name: "schemaName Schema名", type: "string", comment: "" },
+        { id: "950", pid: "root", name: "procedureName 表名", type: "string", comment: "" },
+        { id: "960", pid: "root", name: "comment 备注", type: "string", comment: "" },
+
+
+        { id: "970", pid: "900", name: "params 参数集合", type: "list", comment: "" },
+
+        { id: "971", pid: "970", name: "index 序号", type: "int", comment: "" },
+        { id: "971", pid: "970", name: "paramName 参数名", type: "string", comment: "" },
+        { id: "971", pid: "970", name: "type 参数类型", type: "string", comment: "" },
+        { id: "971", pid: "970", name: "length 长度", type: "string", comment: "" },
+        { id: "971", pid: "970", name: "precision 精度", type: "string", comment: "" },
+        { id: "971", pid: "970", name: "scale 小数位数", type: "string", comment: "" },
+        { id: "971", pid: "970", name: "isOutput 是否输出", type: "bool", comment: "" },
+ 
+    ];
+    var cols = [];
+</script>

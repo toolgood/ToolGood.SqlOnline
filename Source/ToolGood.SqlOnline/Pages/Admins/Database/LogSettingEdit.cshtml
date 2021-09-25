@@ -1,0 +1,92 @@
+﻿@page
+@model ToolGood.SqlOnline.Pages.Admins.Database.LogSettingEditModel
+@{
+    Layout = "~/Pages/Shared/_Layout_Edit.cshtml";
+}
+@section css{
+    <style>
+        label.layui-form-label { width: 130px; }
+        div.layui-input-block { margin-left: 160px; }
+    </style>
+}
+<div style="overflow-x:hidden">
+    <form id="edit-form">
+        <input type="hidden" name="id" value="@Model.LogSetting.Id" />
+        @Html.AntiForgeryToken()
+        <div class="layui-form" style="padding: 20px 30px 0 0;">
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">数据库类型<span class="red"> *</span></label>
+                <div class="layui-input-block">
+                    <select class="selected" name="logType" id="sel_sqlType">
+                        @Model.Types.ToOption(Model.LogSetting.LogType);
+                    </select>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">名称<span class="red"> *</span></label>
+                <div class="layui-input-block">
+                    <input type="text" class="layui-input" id="txt_name" name="name" maxlength="50" value="@Model.LogSetting.Name" autocomplete="off">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">数据</label>
+                <div class="layui-input-block">
+                    <input type="text" class="layui-input" id="txt_ConnectionString" name="Data" maxlength="500" value="@Model.LogSetting.Data" autocomplete="off">
+                    <div class="layui-form-mid layui-word-aux" style="float:none;padding:0 !important;">
+                        Sqlite 不用填。
+                    </div>
+                    <div class="layui-form-mid layui-word-aux" style="float:none;padding:0 !important;">
+                        Web post 填网址，<a href="./Parameters/WebPost?w=480&h=520" class="openwin">Post参数在这里</a>。
+                    </div>
+                    <div class="layui-form-mid layui-word-aux" style="float:none;padding:0 !important;">
+                        Sql Server 填<a href="./Conns/SqlServer?w=480&h=520" class="openwin">连接字符串</a>，<a href="./Parameters/SqlServer?w=600&h=520" class="openwin">建表SQL在这里</a>。
+                    </div>
+                    <div class="layui-form-mid layui-word-aux" style="float:none;padding:0 !important;">
+                        MySql 填<a href="./Conns/Mysql?w=480&h=520" class="openwin">连接字符串</a>，<a href="./Parameters/Mysql?w=600&h=520" class="openwin">建表SQL在这里</a>。
+                    </div>
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">状态</label>
+                <div class="layui-input-block">
+                    <input type="checkbox" name="IsFrozen" lay-skin="primary" value="1" title="冻结不使用" @(Model.LogSetting.IsFrozen.ToChecked()) />
+                </div>
+            </div>
+
+            <div class="layui-form-item" style="text-align:center;padding-left: 30px;">
+                <button type="button" class="layui-btn layui-btn-normal" onclick="save(this);"> &nbsp;&nbsp; 提 交 &nbsp;&nbsp; </button>
+                <button type="button" class="layui-btn layui-btn-primary" onclick="closeWindow();"> &nbsp;&nbsp; 关 闭 &nbsp;&nbsp; </button>
+            </div>
+        </div>
+
+    </form>
+</div>
+@section js{
+    <script>
+
+        function save(obj) {
+            var data = $("#edit-form").serializeJson();
+            if (data.name == "") {
+                layer.alert("请输入【名称】"); $("#txt_name").focus(); return;
+            }
+            if (data.logType != "1" && data.Data == "") {
+                layer.alert("请输入【数据】"); $("#txt_ConnectionString").focus(); return;
+            }
+
+            $(obj).prop("disabled", true);
+            var url = "./ajax/EditLogSetting";
+            $.adminModePost(url, data, function () {
+                closeWindowAndReload();
+            }, function (data) {
+                $(obj).prop("disabled", false);
+                if (data.message) {
+                    layer.msg(data.message);
+                } else {
+                    layer.msg("出错了");
+                }
+            });
+        }
+    </script>
+}

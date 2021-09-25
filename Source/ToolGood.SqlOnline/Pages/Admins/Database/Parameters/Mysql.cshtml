@@ -1,0 +1,61 @@
+﻿@page
+@model ToolGood.SqlOnline.Pages.Admins.Database.Parameters.MysqlModel
+@{
+    Layout = "~/Pages/Shared/_Layout_Edit.cshtml";
+}
+<div style="overflow-x:hidden">
+    <form id="edit-form">
+        <div class="layui-form" style="padding: 20px 30px 0 0;">
+            <div class="layui-form-item">
+                <label class="layui-form-label">建表SQL</label>
+                <div class="layui-input-block">
+                    <textarea class="layui-textarea" id="connectionString" style="height:380px" readonly>
+CREATE TABLE IF NOT EXISTS `SqlQueryLog`(
+    `Id` int NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `AdminId`  int(11) NOT NULL ,
+    `AdminName`  varchar(20)  NULL DEFAULT NULL ,
+    `AdminTrueName`  varchar(20)  NULL DEFAULT NULL ,
+    `AdminJobNo`  varchar(20)  NULL DEFAULT NULL ,
+    `AdminPhone`  varchar(20)  NULL DEFAULT NULL ,
+    `SqlConnectionId`  int(11) NOT NULL ,
+    `SqlConnectionName`  varchar(20)  NULL DEFAULT NULL ,
+    `DatabaseName`  varchar(50)  NULL DEFAULT NULL ,
+    `Sql`  text  NULL ,
+    `Exception`  varchar(2000)  NULL DEFAULT NULL ,
+    `RunReadResult`  int(11) NOT NULL ,
+    `RunTime`  int(11) NOT NULL ,
+    `AddingTime`  datetime NOT NULL 
+);
+CREATE TABLE IF NOT EXISTS `SqlExecuteLog`(
+    `Id` int NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `AdminId` int NOT NULL,
+    `AdminName` varchar(20) NULL,
+    `AdminTrueName` varchar(20) NULL,
+    `AdminJobNo` varchar(20) NULL,
+    `AdminPhone` varchar(20) NULL,
+    `SqlConnectionId` int NOT NULL,
+    `SqlConnectionName` varchar(20) NULL,
+    `DatabaseName` varchar(50) NULL,
+    `Sql`  text  NULL ,
+    `Exception`  varchar(2000)  NULL DEFAULT NULL ,
+    `RunReadResult` int NOT NULL,
+    `RunTime` int NOT NULL,
+    `AddingTime` dateTime NOT NULL
+);
+CREATE TABLE IF NOT EXISTS `SqlExecuteLogItem`(
+    `Id` int NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `SqlExecuteLogId` int NOT NULL,
+    `Sql` varchar(4000) NULL,
+    `OldData` Text NULL
+);
+</textarea>
+                </div>
+            </div>
+
+            <div class="layui-form-item" style="text-align:center;padding-left: 30px;">
+                <button type="button" class="layui-btn layui-btn-primary" onclick="closeWindow();"> &nbsp;&nbsp; 关 闭 &nbsp;&nbsp; </button>
+            </div>
+        </div>
+
+    </form>
+</div>

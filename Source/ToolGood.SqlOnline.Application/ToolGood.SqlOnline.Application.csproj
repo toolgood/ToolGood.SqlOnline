@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ToolGood.Common\ToolGood.Common.csproj" />
+    <ProjectReference Include="..\ToolGood.SqlOnline.Configs\ToolGood.SqlOnline.Configs.csproj" />
+    <ProjectReference Include="..\ToolGood.SqlOnline.Datas.Databases\ToolGood.SqlOnline.Datas.Databases.csproj" />
+    <ProjectReference Include="..\ToolGood.SqlOnline.Datas\ToolGood.SqlOnline.Datas.csproj" />
+    <ProjectReference Include="..\ToolGood.SqlOnline.Dtos\ToolGood.SqlOnline.Dtos.csproj" />
+    <ProjectReference Include="..\ToolGood.SqlOnline.IPlugin\ToolGood.SqlOnline.IPlugin.csproj" />
+    <ProjectReference Include="..\ToolGood.WebCommon\ToolGood.WebCommon.csproj" />
+  </ItemGroup>
+
+</Project>

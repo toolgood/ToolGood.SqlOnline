@@ -1,0 +1,136 @@
+﻿@page
+@model ToolGood.SqlOnline.Pages.Admins.CodeGens.ProcedureTplListModel
+@{
+    Layout = "~/Pages/Shared/_Layout_List.cshtml";
+    var languageTypeDict = ToolGood.Common.Utils.EnumUtil.GetDescriptions(typeof(ToolGood.SqlOnline.Datas.Enums.EnumTplLanguageType));
+
+    var languageTypeDict2 = new Dictionary<string, string>();
+    foreach (var item in languageTypeDict) {
+        languageTypeDict2[((ToolGood.SqlOnline.Datas.Enums.EnumTplLanguageType)item.Key).ToString()] = item.Value;
+    }
+}
+<div style="overflow: hidden;">
+    <div class="data-header">
+        <div class="search-v2">
+            <form onsubmit="javascript:return false;">
+                <div class="filter">
+                    <label class="label">编程语言：</label>
+                    <select class="selected" name="LanguageType" id="sel_LanguageType">
+                        <option value="">---- 请选择 ----</option>
+                        @languageTypeDict2.ToOption()
+                    </select>
+                </div>
+                <div class="filter">
+                    <label class="label">名称：</label>
+                    <input type="text" class="text" name="title" id="txt_title" autocomplete="off">
+                </div>
+                <div class="filter">
+                    <button type="button" class="layui-btn layui-btn-xs layui-btn-normal search-btn">&nbsp; 搜索 &nbsp; </button>
+                    <button type="button" class="layui-btn layui-btn-xs layui-btn-primary" onclick="pageReload()">&nbsp; 重置 &nbsp; </button>
+                </div>
+                @if (Model.ButtonPass.CanEdit) {
+                    <div class="filter"> | </div>
+                    <div class="filter">
+                        <a href="./ProcedureTplEdit" class="layui-btn layui-btn-xs layui-btn-normal openwin" title="新增模板"> &nbsp; 新增模板 &nbsp; </a>
+                    </div>
+                }
+            </form>
+
+        </div>
+    </div>
+    <div class="data-content">
+        <table class="layui-hide" id="dataList" lay-filter="dataList"></table>
+    </div>
+</div>
+
+<form id="delete-form" class="hidden">
+    @Html.AntiForgeryToken()
+    <input type="hidden" name="id" value="" />
+</form>
+
+<script type="text/template" id="bar">
+    @if (Model.ButtonPass.CanEdit) {
+        <a href="./ProcedureTplEdit?id={{ d.id }}" edit class="openwin" title="编辑模板"> 编辑</a>
+        <span>&nbsp; &nbsp;</span>
+        <a href="./ProcedureTplEdit?id={{ d.id }}&copy=1" class="openwin" title="复制模板"> 复制</a>
+        <span>&nbsp; &nbsp;</span>
+    }
+    @if (Model.ButtonPass.CanDelete) {
+        <a href="javascript:deleteItem({{ d.id }},'{{ d.title }}');">删除</a>
+    }
+</script>
+
+@section js{
+    <script>
+        var showBar = '@(Model.ButtonPass.CanEditOrDelete?"1":"0")';
+        function deleteItem(id, name) {
+            $("#delete-form input[name=id]").val(id);
+            layer.confirm('删除模板【' + name + "】吗？", function (index) {
+                var url = "./Ajax/DeleteProcedureTpl";
+                $.adminModePost(url, $("#delete-form").serializeJson(), function () {
+                    location.reload();
+                });
+                layer.close(index);
+            })
+        }
+        layui.use(["layer", "form", "table"], function () {
+            var getListUrl = './Ajax/GetProcedureTplList';
+            var cols = [];
+            //cols.push({ checkbox: true, fixed: true });
+            cols.push({ field: 'id', title: '序号', });
+            cols.push({ field: 'title', title: '名称', width: "450", });
+            cols.push({ field: 'language', title: '编程语言', width: "90", });
+            cols.push({ field: 'namespace', title: '默认包名/命名空间', width: "150", });
+            cols.push({ field: 'comment', title: '描述', width: "350", });
+            if (showBar == '1') {
+                cols.push({ field: 'right', title: '操作', width: "160", fixed: 'right', toolbar: '#bar' });
+            }
+
+            var tableOptions = {
+                useRsa: true,
+                url: getListUrl,
+                size: 'sm',
+                even: true,
+                method: 'POST',
+                cols: [cols],
+                page: true,
+                limit: 30,
+                limits: [10, 20, 30, 50, 100],
+                response: {statusCode:1,msgName: 'message'},
+                height: 'full-' + ($('.data-header').outerHeight(true) + 5),
+                done: function () { layer.closeAll('loading'); },
+                request: { pageName: 'pageIndex', limitName: 'pageSize' },
+                text: { none: '<span style="color:red;">暂无记录</span>' }
+            };
+
+            var layer = layui.layer, table = layui.table;
+
+            layer.load(2);
+            table.init('dataList', tableOptions);
+
+            //监听排序
+            table.on('sort(dataList)', function (obj) {
+                table.reload("dataList", { initSort: obj, where: { field: obj.field, order: obj.type }, page: { curr: 1 } });
+            });
+            table.on('rowDouble(dataList)', function (obj) {
+                var tr = obj.tr[0];
+                $(tr).find("a[edit]").trigger("click");
+            });
+
+            //搜索事件
+            $('.search-btn').click(function (event) {
+                layer.load(2);
+                event && event.stopPropagation();
+                table.reload("dataList", {
+                    where: {
+                        Language: $("#sel_LanguageType").val(),
+                        Search: $("#txt_title").val(),
+                    }
+                    , page: { curr: 1 }
+                });
+                return false;
+            });
+
+        });
+    </script>
+}

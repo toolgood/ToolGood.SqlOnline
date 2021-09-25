@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ToolGood.Attributes\ToolGood.Attributes.csproj" />
+    <ProjectReference Include="..\ToolGood.SqlOnline.Datas.Databases\ToolGood.SqlOnline.Datas.Databases.csproj" />
+    <ProjectReference Include="..\ToolGood.SqlOnline.Datas\ToolGood.SqlOnline.Datas.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,61 @@
+﻿@page
+@model ToolGood.SqlOnline.Pages.Admins.Database.Parameters.SqlServerModel
+@{
+    Layout = "~/Pages/Shared/_Layout_Edit.cshtml";
+}
+<div style="overflow-x:hidden">
+    <form id="edit-form">
+        <div class="layui-form" style="padding: 20px 30px 0 0;">
+            <div class="layui-form-item">
+                <label class="layui-form-label">建表SQL</label>
+                <div class="layui-input-block">
+                    <textarea class="layui-textarea" id="connectionString" style="height:380px" readonly>
+CREATE TABLE [SqlQueryLog](
+    [Id] int NOT NULL PRIMARY KEY identity(1,1) ,
+    [AdminId] int NOT NULL,
+    [AdminName] nvarchar(20) NULL,
+    [AdminTrueName] nvarchar(20) NULL,
+    [AdminJobNo] nvarchar(20) NULL,
+    [AdminPhone] nvarchar(20) NULL,
+    [SqlConnectionId] int NOT NULL,
+    [SqlConnectionName] nvarchar(20) NULL,
+    [DatabaseName] nvarchar(50) NULL,
+    [Sql] text NULL,
+    [Exception] nvarchar(2000) NULL,
+    [RunReadResult] int NOT NULL,
+    [RunTime] int NOT NULL,
+    [AddingTime] dateTime NOT NULL
+);
+CREATE TABLE [SqlExecuteLog](
+    [Id] int NOT NULL PRIMARY KEY identity(1,1) ,
+    [AdminId] int NOT NULL,
+    [AdminName] nvarchar(20) NULL,
+    [AdminTrueName] nvarchar(20) NULL,
+    [AdminJobNo] nvarchar(20) NULL,
+    [AdminPhone] nvarchar(20) NULL,
+    [SqlConnectionId] int NOT NULL,
+    [SqlConnectionName] nvarchar(20) NULL,
+    [DatabaseName] nvarchar(50) NULL,
+    [Sql] text NULL,
+    [Exception] nvarchar(2000) NULL,
+    [RunReadResult] int NOT NULL,
+    [RunTime] int NOT NULL,
+    [AddingTime] dateTime NOT NULL
+);
+CREATE TABLE [SqlExecuteLogItem](
+    [Id] int NOT NULL PRIMARY KEY identity(1,1) ,
+    [SqlExecuteLogId] int NOT NULL,
+    [Sql] nvarchar(4000) NULL,
+    [OldData] Text NULL
+);
+</textarea>
+                </div>
+            </div>
+
+            <div class="layui-form-item" style="text-align:center;padding-left: 30px;">
+                <button type="button" class="layui-btn layui-btn-primary" onclick="closeWindow();"> &nbsp;&nbsp; 关 闭 &nbsp;&nbsp; </button>
+            </div>
+        </div>
+
+    </form>
+</div>

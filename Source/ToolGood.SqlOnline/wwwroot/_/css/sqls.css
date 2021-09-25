@@ -1,0 +1,16 @@
+﻿.layui-side-scroll { width: 200px; }
+div.layui-side-scroll { overflow: hidden; }
+#txt_search { background-color: transparent; margin: 3px; padding: 3px; height: 24px; width: calc(100% - 6px); border-color: #777; color: rgba(255, 255, 255, 0.5); font-size: 13px; }
+.ztree * { background-color: inherit !important; color: rgba(255, 255, 255, 0.85); font-size: 13px !important; padding: 0; margin: 0; }
+.ztree li a { text-decoration: none; }
+.ztree li a.curSelectedNode { color: #9CDCFE !important; border: 0; }
+.ztree li a.curSelectedNode * { color: #9CDCFE !important; border: 0; }
+#layui-side, #layui-body { float: left; height: 100% }
+.gutter-horizontal { background-color: white; cursor: e-resize; height: 100%; position: static; z-index: 999; float: left; }
+body.indexLayout .layui-layout-admin .layui-side { top: auto }
+.layui-layout-admin .layui-side { top: auto }
+.layui-side { position: static; top: auto; left: auto; bottom: inherit }
+.layui-body { position: static; top: 0; left: auto }
+.layui-layout-admin .layui-body { position: absolute; }
+body.indexLayout .layui-layout-admin .layui-body { top: auto; }
+body.indexLayout { overflow: hidden; }

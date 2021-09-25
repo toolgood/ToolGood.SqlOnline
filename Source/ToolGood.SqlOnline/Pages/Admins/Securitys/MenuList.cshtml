@@ -1,0 +1,64 @@
+﻿@page
+@model ToolGood.SqlOnline.Pages.Admins.Securitys.MenuListModel
+@{
+    Layout = "~/Pages/Shared/_Layout_List.cshtml";
+}
+@section css{
+    <link href="/_/layui/css/treetable.css" v rel="stylesheet" />
+}
+<div style="overflow: hidden;">
+    <div class="data-header">
+        <div class="search-v2">
+            <form onsubmit="javascript:return false;" >
+                @if (Model.ButtonPass.CanEdit) {
+                    <div class="filter">
+                        <a href="/admins/Securitys/ModeEdit?w=1000" class="layui-btn layui-btn-xs layui-btn-normal openwin" title="配置管理员模式"> &nbsp; 配置管理员模式 &nbsp; </a>
+                    </div>
+                }
+            </form>
+        </div>
+    </div>
+    <div class="data-content">
+        <table class="layui-hide" id="dataList" lay-filter="dataList"></table>
+    </div>
+</div>
+
+@section js{
+    <script>
+
+        layui.use(["layer", "form", "table","treetable"], function () {
+            var getListUrl = './Ajax/GetAdminMenuList';
+            var cols = [];
+            cols.push({ field: 'LAY_TABLE_INDEX', title: '序号',width:"60", templet: function (d) { return d.LAY_TABLE_INDEX + 1; } });
+            cols.push({ field: 'menuName', title: '名称', width: "300", });
+            cols.push({ field: 'url', title: 'URL', width: "450", });
+            cols.push({ field: 'buttons', title: '按钮', width: "250", });
+
+            var tableOptions = {
+                useRsa:true,
+                url: getListUrl,
+                treeColIndex: 1,
+                treeSpid: 0,
+                treeIdName: 'id',
+                treePidName: 'parentId',
+                elem: '#dataList',
+                size: 'sm',
+                even: true,
+                method: 'POST',
+                page: false,
+                cols: [cols],
+                response: {statusCode:1,msgName: 'message'},
+                done: function () { layer.closeAll('loading'); },
+                text: { none: '<span style="color:red;">暂无记录</span>' }
+            };
+
+            var layer = layui.layer, table = layui.treetable;
+            layer.load(2);
+            table.render(tableOptions);
+
+         });
+        function pageReload() {
+            location.reload();
+        }
+    </script>
+}

@@ -1,0 +1,56 @@
+﻿@page
+@model ToolGood.SqlOnline.Pages.Admins.Tools.AdminModeWindowModel
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <link href="/_/layui/css/layui.css" rel="stylesheet" />
+    <title>进入管理模式</title>
+</head>
+<body style="overflow:hidden">
+    <div style="overflow-x:hidden">
+        <form id="edit-form">
+            <input style="display:none" type="text" name="username" id="username" />
+            <input style="display:none" type="password" name="password" id="password" />
+            @Html.AntiForgeryToken()
+            <div class="layui-form" style="padding: 20px 30px 0 0;">
+                <div class="layui-form-item">
+                    <label class="layui-form-label">密码：</label>
+                    <div class="layui-input-block">
+                        <input style="display:none" type="password" name="OperatorPassword" />
+                        <input type="text" maxlength="20" class="layui-input" onfocus="this.type='password';" id="OperatorPassword" placeholder="请输入密码" autocomplete="off" />
+                    </div>
+                </div>
+
+                <div class="layui-form-item">
+                    <label class="layui-form-label">有效时间：</label>
+                    <div class="layui-input-block">
+                        <select name="AdminModeTime" id="AdminModeTime" class="layui-select">
+                            <option value="0">仅限本次</option>
+                            <option value="5">5分钟</option>
+                            <option value="10">10分钟</option>
+                            <option value="20">20分钟</option>
+                            <option value="30">30分钟</option>
+                            <option value="40">40分钟</option>
+                            <option value="50">50分钟</option>
+                            <option value="60">1小时</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">提示：</label>
+                    <div class="layui-input-block">
+                        <div class="layui-form-mid layui-word-aux">
+                            此功能防止非本人修改。 进入管理模式后，在有效时间内不需要再输入密码。界面右上角可退出管理模式。<br />
+                            注：【管理密码】不是【登录密码】，登录密码可被浏览记录，并不安全。
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</body>
+</html>

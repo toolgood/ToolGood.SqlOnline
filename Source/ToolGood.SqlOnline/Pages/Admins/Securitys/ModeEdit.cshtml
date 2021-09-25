@@ -1,0 +1,117 @@
+﻿@page
+@model ToolGood.SqlOnline.Pages.Admins.Securitys.ModeEditModel
+@{
+    Layout = "~/Pages/Shared/_Layout_Edit.cshtml";
+}
+@section css{
+    <style>
+        .layui-table td, .layui-table th { padding: 3px; }
+        .layui-form-item .layui-form-checkbox[lay-skin=primary] { margin-top: 5px; margin-bottom: 5px; }
+    </style>
+}
+<div style="overflow-x:hidden">
+    <form id="edit-form">
+        @Html.AntiForgeryToken()
+        <div class="layui-form" style="padding:10px;" lay-filter="form">
+            <div class="layui-form-item">
+                <table class="layui-table" lay-skin="line" id="rightTable">
+                    <thead style="text-align:center;font-weight:700;">
+                        <tr>
+                            <td width="160">菜单名称</td>
+                            <td>按钮</td>
+                            <td width="80">
+                                <input type="checkbox" lay-skin="primary" data-type="all" lay-filter="all" data-id="0" title="全选" />
+                            </td>
+                        </tr>
+                    </thead>
+                    @foreach (var item in Model.SysAdminMenus) {
+                        var length = item.ParentIds.Length - item.ParentIds.Replace("-", "").Length - 2;
+                        <tr style="@(length.ToHtmlWhenIs(0," background-color:#77CAF0",""))">
+                            <td style="font-weight:700;">
+                                @for (int i = 0; i < length; i++) {
+                                    <span>&nbsp;&nbsp;&nbsp;</span>
+                                }
+                                @item.MenuName
+                            </td>
+                            <td>
+                                @foreach (var action in item.Buttons.Split('|')) {
+                                    if (action == "navbar") { continue; }
+                                    <input type="hidden" name="Menus[@(item.Id)-@action].MenuId" value="@item.Id" />
+                                    <input type="hidden" name="Menus[@(item.Id)-@action].MenuCode" value="@item.MenuCode" />
+                                    <input type="hidden" name="Menus[@(item.Id)-@action].ButtonCode" value="@action" />
+                                    <input type="checkbox" lay-skin="primary" title="@Model.GetButtonName(action)" name="Menus[@(item.Id)-@action].Pass" value="true" data-id="@(item.Id)" data-pid="@(item.ParentIds)" @Model.IsChecked(item.Id, action) />
+                                }
+                            </td>
+                            <td style="text-align:center">
+                                <input type="checkbox" lay-skin="primary" data-id="@(item.Id)" data-pid="@(item.ParentIds)" data-type="items" lay-filter="items" title="全选" />
+                            </td>
+                        </tr>
+                    }
+                </table>
+            </div>
+            <div class="layui-form-item" style="text-align:center;padding-left: 30px;">
+                <button type="button" class="layui-btn layui-btn-normal" onclick="save(this);"> &nbsp;&nbsp; 提 交 &nbsp;&nbsp; </button>
+                <button type="button" class="layui-btn layui-btn-primary" onclick="closeWindow();"> &nbsp;&nbsp; 关 闭 &nbsp;&nbsp; </button>
+            </div>
+        </div>
+    </form>
+</div>
+
+
+
+@section js{
+    <script>
+        $(function () {
+            var form = layui.form;
+
+            form.on('checkbox(items)', function (data) {
+                var $val = data.elem.checked;
+                var $this = data.elem;
+                var id = $($this).attr("data-id");
+                var pid = $($this).attr("data-pid");
+
+                var data = {};
+                $('input:checkbox[data-id="' + id + '"]').each(function () {
+                    var name = $(this).attr("name");
+                    if (name != "") { data[name] = $val; }
+                });
+                $('input:checkbox').each(function () {
+                    var inputPid = $(this).attr("data-pid");
+                    if (inputPid != undefined && inputPid.startsWith(pid + id + "-")) {
+                        var name = $(this).attr("name");
+                        if (name != "") { data[name] = $val; }
+                    }
+                })
+                form.val("form", data);
+            });
+
+            form.on('checkbox(all)', function (data) {
+                var $val = data.elem.checked;
+                var data = {};
+                $('input:checkbox').each(function () {
+                    var name = $(this).attr("name");
+                    if (name != "") { data[name] = $val; }
+                });
+                form.val("form", data);
+            });
+        });
+    </script>
+    <script>
+        function save(obj) {
+            $(obj).prop("disabled", true);
+            var url = "./Ajax/AdminModeEditPost";
+            var data = $("#edit-form").serializeJson();
+            $.adminModePost(url, data, function () {
+                closeWindowAndReload();
+          }, function (data) {
+                $(obj).prop("disabled", false);
+                if (data.message) {
+                    layer.msg(data.message);
+                } else {
+                    layer.msg("出错了");
+                }
+            });
+        }
+    </script>
+
+}

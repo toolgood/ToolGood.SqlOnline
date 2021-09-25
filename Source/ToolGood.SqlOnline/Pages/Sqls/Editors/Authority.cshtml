@@ -1,0 +1,48 @@
+﻿@page
+@model ToolGood.SqlOnline.Pages.Sqls.Editors.AuthorityModel
+@using ToolGood.SqlOnline.Configs
+@{
+    Layout = "~/Pages/Shared/_Layout_Edit.cshtml";
+}
+<div style="overflow-x:hidden;background-color:#f3f3f4;height: 100%;">
+    <form id="edit-form" style="height: 100%;">
+        <div class="layui-form" lay-filter="form" style="padding: 20px 30px 0 0;">
+            <div class="layui-form-item">
+                <label class="layui-form-label">权限</label>
+                <div class="layui-input-block">
+                    <input type="radio" name="authority" lay-skin="primary" value="1" title="Insert/Update" checked />
+                    <input type="radio" name="authority" lay-skin="primary" value="2" title="Insert/Update/Delete" />
+                    <input type="radio" name="authority" lay-skin="primary" value="3" title="所有权限" />
+                    <div class="layui-form-mid layui-word-aux">
+                        所有权限<span class="color:red;">慎用</span>，Select查询个数无上限，数据修改无上限（不会记录修改日志），以及角色赋以的所有权限。
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">管理密码<span class="red"> *</span></label>
+                <div class="layui-input-block">
+                    @if (SystemSetting.EnvironmentType.HasFlag(EnvironmentType.Debug)) {
+                        <input type="password" value="a123456789" class="layui-input" id="pwd" name="password" autocomplete="off">
+                    } else {
+                        <input type="password" value="" class="layui-input" id="pwd" name="password" autocomplete="off">
+                    }
+                </div>
+            </div>
+
+            <div class="layui-form-item" style="text-align:center;padding-left: 30px;">
+                <button type="button" class="layui-btn layui-btn-normal" onclick="save(this);"> &nbsp;&nbsp; 执 行 &nbsp;&nbsp; </button>
+                <button type="button" class="layui-btn layui-btn-primary" onclick="closeWindow();"> &nbsp;&nbsp; 关 闭 &nbsp;&nbsp; </button>
+            </div>
+        </div>
+    </form>
+</div>
+@section js{
+    <script>
+        function save(obj) {
+            if ($("#pwd").val().length < 2) { layer.alert("请输入管理密码"); $("#pwd").focus(); return; }
+            var data = $("#edit-form").serializeJson();
+            top.$currEditorWindow.runSqlAndAuthority2(data.authority, data.password)
+            closeWindow();
+        }
+    </script>
+}

@@ -1,0 +1,62 @@
+﻿@page
+@model ToolGood.SqlOnline.Pages.Admins.MachineCode.BindingModel
+@{
+	Layout = "~/Pages/Shared/_Layout_Edit.cshtml";
+}
+<div style="overflow-x:hidden;height: 100%;">
+    <form id="edit-form">
+        @Html.AntiForgeryToken()
+        <div class="layui-form" style="padding: 20px 30px 0 0;">
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">账号</label>
+                <div class="layui-input-block">
+                    <select class="layui-select" name="AdminId"  >
+                        @foreach (var item in Model.AdminInfos) {
+                            <option value="@item.Key" >@(item.Value)</option>
+                        }
+                    </select>
+                </div>
+            </div>
+ 
+            <div class="layui-form-item">
+                <label class="layui-form-label">机器码<span class="red"> *</span></label>
+                <div class="layui-input-block">
+                    <input type="text" class="layui-input" id="txt_MachineCode" maxlength="32" name="MachineCode" autocomplete="off">
+                    <div class="layui-form-mid layui-word-aux">
+                        机器码可以通过登录日志获取。
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="layui-form-item" style="text-align:center;padding-left: 30px;">
+                <button type="button" class="layui-btn layui-btn-normal" onclick="save(this);"> &nbsp;&nbsp; 提 交 &nbsp;&nbsp; </button>
+                <button type="button" class="layui-btn layui-btn-primary" onclick="closeWindow();"> &nbsp;&nbsp; 关 闭 &nbsp;&nbsp; </button>
+            </div>
+        </div>
+
+    </form>
+
+</div>
+@section js{
+    <script>
+        function save(obj) {
+            if ($("#txt_MachineCode").val().length < 32) { layer.alert("请输入机器码"); $("#txt_MachineCode").focus(); return; }
+
+            $(obj).prop("disabled", true);
+            var url = "./Ajax/AddAdminMachineCode";
+            var data = $("#edit-form").serializeJson();
+            $.adminModePost(url, data, function () {
+                closeWindowAndReload();
+          }, function (data) {
+                $(obj).prop("disabled", false);
+                if (data.message) {
+                    layer.msg(data.message);
+                } else {
+                    layer.msg("出错了");
+                }
+            });
+        }
+    </script>
+}

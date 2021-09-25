@@ -1,0 +1,46 @@
+﻿@page
+@model ToolGood.SqlOnline.Pages.Sqls.Docs.SaveModel
+@{
+    Layout = "~/Pages/Shared/_Layout_Edit.cshtml";
+}
+<div style="overflow-x:hidden;background-color:#f3f3f4;height: 100%;">
+    <form id="edit-form" style="height: 100%;">
+        <input type="hidden" name="connid" id="connid" />
+        <input type="hidden" name="databaseName" id="databaseName" />
+        <input type="hidden" name="content" id="content" />
+        @Html.AntiForgeryToken()
+        <div class="layui-form" lay-filter="form" style="padding: 20px 30px 0 0;">
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">文档名称<span class="red"> *</span></label>
+                <div class="layui-input-block">
+                    <input type="text" class="layui-input" id="txt_name" name="title" autocomplete="off">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label"></label>
+                <div class="layui-input-block">
+                    <input type="checkbox" lay-skin="primary" name="isShare" value="true" title="共享文档" />
+                </div>
+            </div>
+
+            <div class="layui-form-item" style="text-align:center;padding-left: 30px;">
+                <button type="button" class="layui-btn layui-btn-normal" onclick="save(this);"> &nbsp;&nbsp; 保 存 &nbsp;&nbsp; </button>
+                <button type="button" class="layui-btn layui-btn-primary" onclick="closeWindow();"> &nbsp;&nbsp; 关 闭 &nbsp;&nbsp; </button>
+            </div>
+        </div>
+    </form>
+</div>
+@section js{
+    <script>
+        function save(obj) {
+            if ($("#txt_name").val().length < 2) { layer.alert("请输入文档名称"); $("#txt_name").focus(); return; }
+            var data = $("#edit-form").serializeJson();
+            if (data.isShare == undefined) {
+                data.isShare = "false";
+            }
+            top.$currEditorWindow.callbackSaveDoc(data.title, data.isShare)
+            closeWindow();
+        }
+    </script>
+}

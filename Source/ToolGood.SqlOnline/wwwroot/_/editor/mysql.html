@@ -1,0 +1,55 @@
+﻿<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Cymbol editor created with ANTLR4 and ACE</title>
+    <style>
+        #editor { position: absolute; top: 0; bottom: 0; left: 0; width: 100%; }
+    </style>
+</head>
+
+<body>
+    <div id="editor">
+        // http://media.pragprog.com/titles/tpantlr2/code/examples/t.cymbol
+        // Cymbol test
+        int g = 9; // a global variable
+        int fact(int x) { // factorial function
+        if x==0 then return 1;
+        return x * fact(x-1);
+        }
+    </div>
+
+    <script src="require.js" type="text/javascript" charset="utf-8"></script>
+    <script>
+        var antlr4 = require('antlr4/index');
+        var antlr4_require = require;
+    </script>
+    <script src="ace/ace.js" type="text/javascript" charset="utf-8"></script>
+    <script>
+        ace.define('antlr4/index', function (require, exports, module) {
+            module.exports = antlr4;
+        });
+        ace.config.setModuleUrl('ace/mode/my-mode', './antlr4-mysql/my-mode.js');
+        ace.config.setModuleUrl('ace/worker/my-worker', './antlr4-mysql/my-worker.js');
+    </script>
+    <script src="ace-ext/mirror.js" type="text/javascript" charset="utf-8"></script>
+    <script src="ace-ext/worker.js" type="text/javascript" charset="utf-8"></script>
+
+    <script src="ace/ext-language_tools.js" type="text/javascript" charset="utf-8"></script>
+    <script src="ace-ext/token-type-map.js" type="text/javascript" charset="utf-8"></script>
+    <script src="ace-ext/tokenizer.js" type="text/javascript" charset="utf-8"></script>
+
+    <script>
+
+
+
+        var editor = ace.edit('editor');
+        editor.setTheme("ace/theme/twilight");
+        editor.getSession().setMode('ace/mode/my-mode');
+    </script>
+
+
+</body>
+
+</html>

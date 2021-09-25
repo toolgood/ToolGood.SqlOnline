@@ -1,0 +1,88 @@
+﻿@page
+@model ToolGood.SqlOnline.Pages.Admins.Database.ConnEditModel
+@{
+    Layout = "~/Pages/Shared/_Layout_Edit.cshtml";
+}
+@section css{
+    <style>
+        label.layui-form-label { width: 130px; }
+        div.layui-input-block { margin-left: 160px; }
+    </style>
+}
+<div style="overflow-x:hidden">
+    <form id="edit-form">
+        <input type="hidden" name="id" value="@Model.SqlConnection.Id" />
+        @Html.AntiForgeryToken()
+    <div class="layui-form" style="padding: 20px 30px 0 0;">
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">数据库类型<span class="red"> *</span></label>
+            <div class="layui-input-block">
+                <select class="selected" name="sqlType" id="sel_sqlType">
+                    @Model.SqlTypes.ToOption(Model.SqlConnection.SqlType);
+                </select>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">名称<span class="red"> *</span></label>
+            <div class="layui-input-block">
+                <input type="text" class="layui-input" id="txt_name" name="name" maxlength="50" value="@Model.SqlConnection.Name" autocomplete="off">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">连接字符串<span class="red"> *</span></label>
+            <div class="layui-input-block">
+                <input type="text" class="layui-input" id="txt_ConnectionString" name="ConnectionString" maxlength="2000" value="@Model.SqlConnection.ConnectionString" autocomplete="off">
+
+                <div class="layui-form-mid layui-word-aux">
+                    连接字符串参考：<a href="./Conns/Mysql?w=480&h=520" class="openwin">MySql</a>、
+                    <a href="./Conns/SqlServer?w=480&h=520" class="openwin">SqlServer</a>、
+                    <a href="./Conns/Sqlite?w=480&h=300" class="openwin">Sqlite</a>、
+                </div>
+            </div>
+
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">备注</label>
+            <div class="layui-input-block">
+                <input type="text" class="layui-input" id="txt_Comment" name="Comment" maxlength="500" value="@Model.SqlConnection.Comment" autocomplete="off">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">状态</label>
+            <div class="layui-input-block">
+                <input type="checkbox" name="UseDevelopment" lay-skin="primary" value="true" title="开发环境使用" @(Model.SqlConnection.UseDevelopment.ToChecked()) />
+            </div>
+        </div>
+
+        <div class="layui-form-item" style="text-align:center;padding-left: 30px;">
+            <button type="button" class="layui-btn layui-btn-normal" onclick="save(this);"> &nbsp;&nbsp; 提 交 &nbsp;&nbsp; </button>
+            <button type="button" class="layui-btn layui-btn-primary" onclick="closeWindow();"> &nbsp;&nbsp; 关 闭 &nbsp;&nbsp; </button>
+        </div>
+    </div>
+
+    </form>
+</div>
+@section js{
+    <script>
+        function save(obj) {
+            if ($("#txt_name").val().length < 1) { layer.alert("请输入【名称】"); $("#txt_name").focus(); return; }
+            if ($("#txt_ConnectionString").val().length < 1) { layer.alert("请输入【连接字符串】"); $("#txt_ReadConnectionString").focus(); return; }
+            var data = $("#edit-form").serializeJson();
+
+            $(obj).prop("disabled", true);
+            var url = "./ajax/EditConn";
+            $.adminModePost(url, data, function () {
+                closeWindowAndReload();
+            }, function (data) {
+                $(obj).prop("disabled", false);
+                if (data.message) {
+                    layer.msg(data.message);
+                } else {
+                    layer.msg("出错了");
+                }
+            });
+        }
+    </script>
+}

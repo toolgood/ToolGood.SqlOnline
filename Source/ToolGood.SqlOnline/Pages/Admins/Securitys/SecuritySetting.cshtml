@@ -1,0 +1,128 @@
+﻿@page
+@model ToolGood.SqlOnline.Pages.Admins.Securitys.SecuritySettingModel
+@{
+    Layout = "~/Pages/Shared/_Layout_Detail.cshtml";
+}
+@section css{
+    <style>
+        .layui-form-label { width: 180px; }
+        .layui-input-block { margin-left: 210px; }
+        .layui-form-item .layui-form-checkbox { margin-top: auto; }
+        .layui-form-item .layui-form-checkbox[lay-skin="primary"] { margin-top: auto; }
+    </style>
+}
+<div style="background-color: #fff; width:850px;">
+    <form id="edit-form">
+        @Html.AntiForgeryToken()
+        <fieldset class="layui-elem-field layui-field-title site-title">
+            <legend><a name="compatibility">安全配置</a></legend>
+        </fieldset>
+        <div class="layui-form" lay-filter="form" style="padding: 20px 30px 0 0;">
+            <div class="layui-form-item">
+                <label class="layui-form-label">开发环境：</label>
+                <div class="layui-input-block">
+                    <input type="radio" name="UseDevelopment" lay-skin="primary" value="0" title="不使用" @Model.Dto.UseDevelopment.ToCheckedWhenIs(0) />
+                    <input type="radio" name="UseDevelopment" lay-skin="primary" value="1" title="使用开发环境" @Model.Dto.UseDevelopment.ToCheckedWhenIs(1) />
+                    <div class="layui-form-mid layui-word-aux">
+                        在开发环境的页面内，无须登录就可以查看数据结构，使用代码生成等功能。
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">Ip地址过滤：</label>
+                <div class="layui-input-block">
+                    <input type="radio" name="IpFilterType" lay-skin="primary" value="0" title="不使用" @Model.Dto.IpFilterType.ToCheckedWhenIs(0) />
+                    <input type="radio" name="IpFilterType" lay-skin="primary" value="1" title="使用白名单" @Model.Dto.IpFilterType.ToCheckedWhenIs(1) />
+                    <input type="radio" name="IpFilterType" lay-skin="primary" value="2" title="使用黑名单" @Model.Dto.IpFilterType.ToCheckedWhenIs(2) />
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">正上角LOGO文字：</label>
+                <div class="layui-input-block">
+                    <input type="text" class="text layui-input" name="Logo" id="txt_Logo" value="@Model.Dto.Logo" autocomplete="off">
+                    <div class="layui-form-mid layui-word-aux">
+                        设置正上角LOGO文字，可以快速分别当前环境，是否为测试环境、预发环境、正式环境。
+                    </div>
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">水印：</label>
+                <div class="layui-input-block">
+                    <div class="layui-input-block" style="margin:0;padding:0">
+                        <div class="layui-inline" style="width:10%">
+                            <input type="checkbox" name="UseWatermark" lay-skin="primary" value="1" title="使用" @Model.Dto.UseWatermark.ToCheckedWhenIs(1) />
+                        </div>
+                        <div class="layui-inline" style="width:86%">
+                            <input type="text" class="text layui-input" name="WatermarkText" id="txt_WatermarkText" value="@Model.Dto.WatermarkText" autocomplete="off">
+                        </div>
+                    </div>
+                    <div class="layui-form-mid layui-word-aux">
+                        {trueName}真实名称，{hideName}真实名称隐藏，{jobNo}工号，{yyyy}年，{MM}月，{dd}日，{HH}时,{mm}分，{ss}秒
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">Cookie保存时间(秒)：</label>
+                <div class="layui-input-block">
+                    <input type="text" class="layui-input" id="txt_CookieTimes" name="CookieTimes" oninput="this.value=standardInt(this.value,10,43200)" value="@Model.Dto.CookieTimes" autocomplete="off">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">提升安全：</label>
+                <div class="layui-input-block">
+                    <input type="checkbox" name="UseMachineCode" lay-skin="primary" value="1" title="启用机器码验证" @Model.Dto.UseMachineCode.ToCheckedWhenIs(1) />
+                    <input type="checkbox" name="FirstLoginUseMachineCode" lay-skin="primary" value="1" title="第一次登录绑定机器码" @Model.Dto.FirstLoginUseMachineCode.ToCheckedWhenIs(1) />
+                </div>
+                <div class="layui-form-mid layui-word-aux">
+                    请使用SQL online 专用浏览器。登录日志会记录机器码。
+                </div>
+            </div>
+
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">默认登录密码：</label>
+                <div class="layui-input-block">
+                    <input type="text" class="text layui-input" name="loginPassword" id="txt_loginPassword" maxlength="20" value="@Model.Dto.LoginPassword" autocomplete="off">
+                    <div class="layui-form-mid layui-word-aux">
+                        默认登录密码长度最小6位
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">默认管理密码：</label>
+                <div class="layui-input-block">
+                    <input type="text" class="text layui-input" name="ManagerPassword" id="txt_ManagePassword" maxlength="20" value="@Model.Dto.ManagerPassword" autocomplete="off">
+                    <div class="layui-form-mid layui-word-aux">
+                        默认管理密码长度最小6位
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="layui-form-item" style="text-align:center;padding-left: 30px;">
+                <button type="button" class="layui-btn layui-btn-normal" onclick="save(this);"> &nbsp;&nbsp; 提 交 &nbsp;&nbsp; </button>
+            </div>
+        </div>
+    </form>
+    <div style="height:20px;"></div>
+</div>
+@section js{
+    <script>
+        layui.use(["layer", "form", 'util', "element"], function () {            });
+        function save(obj) {
+            $(obj).prop("disabled", true);
+            var url = "./Ajax/EditSecuritySetting";
+            var data = $("#edit-form").serializeJson();
+            $.adminModePost(url, data, function () {
+                $(obj).prop("disabled", false);
+                layer.msg("保存成功！")
+            }, function (data) {
+                $(obj).prop("disabled", false);
+                data.message && layer.msg(data.message);
+            });
+        }
+    </script>
+}

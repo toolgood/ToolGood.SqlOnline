@@ -1,0 +1,136 @@
+﻿@page
+@model ToolGood.SqlOnline.Pages.Admins.CodeGens.Editors.DotJsResultModel
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>DotJs_API</title>
+    <link href="/_/prism/prism.css" rel="stylesheet" />
+    <style>
+        body { margin: 0; }
+    </style>
+</head>
+<body>
+    <pre><code id="code" class="line-numbers"></code></pre>
+    <script src="/_/js/jquery.min.js"></script>
+    <script src="/_/js/doT.min.js"></script>
+    <script src="/_/prism/prism.js"></script>
+    <script>
+        function pascalCaseName(str) {
+            return str.charAt(0).toUpperCase() + str.slice(1);
+        }
+        function camelCaseName(str) {
+            return str.charAt(0).toLowerCase() + str.slice(1);
+        }
+        function doubleQuotationString(str) {
+            return str.replace(/\\/ig, '\\\\').replace(/\r/ig, '\\r')
+                .replace(/\n/ig, '\\n')
+                .replace(/\t/ig, '\\t')
+                .replace(/"/ig, '\\"');
+        }
+        function standardName(oldStr, upper) {
+            if (upper == undefined) { upper = false; }
+            var str = '';
+            var b = upper;
+
+            for (var i = 0; i < oldStr.length; i++) {
+                var c = oldStr[i];
+                if (b) {
+                    b = false;
+                    str += c.toUpperCase();
+                } else if (i == 0 && /\d/.test(c)) {
+                    str = 'X' + c;
+                } else if (c == '_') {
+                    b = true;
+                } else {
+                    str += c;
+                }
+            }
+            return str;
+        }
+
+        function getParentWindow(index) {
+            var index = parent.layer.getFrameIndex(window.name);
+            return top.getParentWindow(index);
+        }
+
+        function getParameter(val) {
+            var re = new RegExp("[?&]" + val + "=([^&?]*)", "ig");
+            var url = location.search;
+            return ((url.match(re)) ? (decodeURI(url.match(re)[0].substr(val.length + 2))) : '');
+        }
+
+        function getUrl(type) {
+            if (type === "table") {
+                return "./Ajax/GetTestTableData";
+            } else if (type === "procedure") {
+                return "./Ajax/GetTestProcedureData";
+            }
+        }
+        function getSrcText(value) {
+            var s = "";
+            var xx = false;
+            for (var i = 0; i < value.length; i++) {
+                var c = value[i];
+                if (xx) {
+                    xx = false;
+                    if (c == 'r') {
+                        s += "\r";
+                    } else if (c == 'n') {
+                        s += "\n";
+                    } else if (c == 't') {
+                        s += "\t";
+                    } else if (c == "\\") {
+                        s += "\\";
+                    } else {
+                        s +=c;
+                    }
+                } else if (c == '>') {
+                    s += "&gt;";
+                } else if (c == '<') {
+                    s += "&lt;";
+                } else if (c == '\\') {
+                    xx = true;
+                } else {
+                    s += c;
+                }
+            }
+            return s;
+        }
+
+        $(function () {
+            tpl = top.window.jstpl;
+            languageName = top.window.getLanguageName;
+            var type = getParameter("type");
+            var url = getUrl(type);
+            $.get(url, function (data) {
+                func =null
+                try {
+                    tpl = tpl.replace(/\r\n/ig, "\n");
+                    tpl = tpl.replace(/\n[ \t]*\{\{ /ig, " {"+"{ "); // 防vs出错提示
+
+                    tpl = tpl.replace(/\\/ig, "\\\\").replace(/\r/ig, "\\r").replace(/\n/ig, "\\n").replace(/\t/ig, "\\t");
+
+                    func = doT.template(tpl)
+
+                    txt = func(data.data);
+                    txt = getSrcText(txt);
+
+                    $("#code").addClass("language-" + languageName);
+                    $("#code").html(txt);
+                    Prism.highlightAll();
+                } catch (e) {
+                    $("#code").addClass("language-js");
+                    $("#code").html(e +func);
+                    Prism.highlightAll();
+                }
+
+            }, "JSON");
+        });
+
+    </script>
+</body>
+</html>

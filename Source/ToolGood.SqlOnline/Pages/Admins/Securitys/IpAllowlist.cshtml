@@ -1,0 +1,123 @@
+﻿@page
+@model ToolGood.SqlOnline.Pages.Admins.Securitys.IpAllowListModel
+@{
+    Layout = "~/Pages/Shared/_Layout_List.cshtml";
+}
+<div style="overflow: hidden;">
+    <div class="data-header">
+        <div class="search-v2">
+            <form onsubmit="javascript:return false;" >
+                <div class="filter">
+                    <label class="label">名称：</label>
+                    <input type="text" class="text" name="Name" id="txt_Name" autocomplete="off">
+                </div>
+                <div class="filter">
+                    <label class="label">IP地址：</label>
+                    <input type="text" class="text" name="IP" id="txt_IP" autocomplete="off">
+                </div>
+                <div class="filter">
+                    <button type="button" class="layui-btn layui-btn-xs layui-btn-normal search-btn">&nbsp; 搜索 &nbsp; </button>
+                    <button type="button" class="layui-btn layui-btn-xs layui-btn-primary" onclick="pageReload()">&nbsp; 重置 &nbsp; </button>
+                </div>
+                @if (Model.ButtonPass.CanEdit) {
+                    <div class="filter">
+                        <a href="/Admins/Securitys/IpAllowEdit?h=430&w=500" class="layui-btn layui-btn-xs layui-btn-primary openwin" title="新增IP白名单"> &nbsp; 新增IP白名单 &nbsp; </a>
+                    </div>
+                }
+            </form>
+
+        </div>
+    </div>
+    <div class="data-content">
+        <table class="layui-hide" id="dataList" lay-filter="dataList"></table>
+    </div>
+</div>
+<form id="delete-form" class="hidden">
+    @Html.AntiForgeryToken()
+    <input type="hidden" name="id" value="" />
+</form>
+<script type="text/template" id="bar">
+    @if (Model.ButtonPass.CanEdit) {
+        <a href="/Admins/Securitys/IpAllowEdit?h=430&w=500&id={{ d.id }}" edit class="openwin" title="编辑IP白名单"> 编辑</a>
+        <span>&nbsp; &nbsp;</span>
+    }
+    @if (Model.ButtonPass.CanDelete) {
+        <a href="javascript:deleteItem({{ d.id }},'{{ d.name }}');">删除</a>
+    }
+</script>
+@section js{
+    <script>
+        var showBar = '@(Model.ButtonPass.CanEditOrDelete?"1":"0")';
+        function deleteItem(id, name) {
+            $("#delete-form input[name=id]").val(id);
+            layer.confirm('删除IP白名单【' + name + "】吗？", function (index) {
+                var url = "./Ajax/DeleteIpAllow";
+                $.adminModePost(url, $("#delete-form").serializeJson(), function () { location.reload(); });
+                layer.close(index);
+            })
+        }
+
+        layui.use(["layer", "form", "table"], function () {
+            var getListUrl = './Ajax/GetIpAllowList';
+            var cols = [];
+            cols.push({ field: 'id', title: '序号', width: '80',   });
+            cols.push({ field: 'name', title: '名称', width: "200",  });
+            cols.push({ field: 'ip', title: 'IP地址',  width: "300", });
+            cols.push({ field: 'isDisableString', title: '状态', width: "80", });
+            cols.push({ field: 'modifyAdminName', title: '修改人',  width: "160", });
+            cols.push({ field: 'modifyTime', title: '最后更新日期',  width: "160", });
+
+            if (showBar == '1') {
+                cols.push({ field: 'right', title: '操作', width: "200", align: 'center', fixed: 'right', toolbar: '#bar' });
+            }
+
+            var tableOptions = {
+                useRsa: true,
+                url: getListUrl,
+                size: 'sm',
+                even: true,
+                method: 'POST',
+                cols: [cols],
+                page: true,
+                limit: 30,
+                limits: [10, 20, 30, 50, 100],
+                response: {statusCode:1,msgName: 'message'},
+                height: 'full-' + ($('.data-header').outerHeight(true) + 5),
+                done: function () { layer.closeAll('loading'); },
+                request: { pageName: 'pageIndex', limitName: 'pageSize' },
+                text: { none: '<span style="color:red;">暂无记录</span>' }
+            };
+
+            var layer = layui.layer, table = layui.table;
+            layer.load(2);
+            table.init('dataList', tableOptions);
+            table.on('sort(dataList)', function (obj) {
+                table.reload("dataList", { initSort: obj, where: { field: obj.field, order: obj.type }, page: { curr: 1 } });
+            });
+            table.on('rowDouble(dataList)', function (obj) {
+                var tr = obj.tr[0];
+                $(tr).find("a[edit]").trigger("click");
+            });
+
+            $('.search-btn').click(function (event) {
+                layer.load(2);
+                event && event.stopPropagation();
+                table.reload("dataList", {
+                    where: {
+                        name: $("#txt_Name").val(),
+                        ip: $("#txt_IP").val(),
+                    }
+                    , page: { curr: 1 }
+                });
+                return false;
+            });
+
+        });
+        function pageReload() {
+            location.reload();
+        }
+        function reload() {
+            layui.table.reload("dataList");
+        }
+    </script>
+}

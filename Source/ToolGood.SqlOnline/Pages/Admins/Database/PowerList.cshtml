@@ -1,0 +1,194 @@
+﻿@page
+@model ToolGood.SqlOnline.Pages.Admins.Database.PowerListModel
+@{
+    Layout = "~/Pages/Shared/_Layout_Edit.cshtml";
+}
+@section css{
+    <link href="/_/zTree/css/zTreeStyle.css" rel="stylesheet" />
+    <style>
+        .com-tree { display: flex; }
+        .com-tree > .left-tree { width: 215px; }
+        .com-tree > .right-table { flex: 1; }
+        .role-list { color: #fff; line-height: 40px; background: #3aa9ff; text-indent: 15px; font-size: 16px; position: absolute; width: 215px; }
+        .com-tree .role-tree { position: absolute; padding: 5px 0; top: 40px; bottom: 0; }
+        /*        .scrollbar { overflow: hidden; }*/
+
+        ul { display: block; list-style-type: disc; margin-block-start: 1em; margin-block-end: 1em; margin-inline-start: 0px; margin-inline-end: 0px; padding-inline-start: 40px; }
+        .role-list { list-style: none outside none; margin: 0; padding: 0; }
+        .role-list li a { color: #666; display: block; padding: 5px 0; }
+
+
+        .layui-form-radio i { top: 0; width: 16px; height: 16px; line-height: 16px; border: 1px solid #d2d2d2; font-size: 12px; border-radius: 2px; background-color: #fff; color: #fff !important; }
+        .layui-form-radioed i { position: relative; width: 18px; height: 18px; border-style: solid; background-color: #5FB878; color: #5FB878 !important; }
+        /* 使用伪类画选中的对号 */
+        .layui-form-radioed i::after, .layui-form-radioed i::before { content: ""; position: absolute; top: 8px; left: 5px; display: block; width: 12px; height: 2px; border-radius: 4px; background-color: #fff; -webkit-transform: rotate(-45deg); transform: rotate(-45deg); }
+        .layui-form-radioed i::before { position: absolute; top: 10px; left: 2px; width: 7px; transform: rotate(-135deg); }
+        .layui-form-radio { margin: auto; }
+
+        .editLayout { height: 100%; overflow: hidden; }
+    </style>
+}
+
+<div class="com-tree" style="overflow: hidden; height: 100%;">
+    <div class="left-tree" style="position:static;overflow:hidden">
+        <div class="role-list"> 管理员 </div>
+        <div class="role-tree scrollbar" style="width: 215px; overflow-x:hidden;">
+            <form id="list-form">
+                @Html.AntiForgeryToken()
+                <div class="layui-form" style="border:0">
+                    @for (int i = 0; i < Model.AdminGroups.Count; i++) {
+                        var item = Model.AdminGroups[i];
+                        <div style="height: 32px; line-height: 32px; border-bottom: solid 1px #BBB; padding-left:10px;">
+                            <input type="radio" name="Id" lay-skin="primary" lay-filter="Group" value="@item.Id" title="@item.Name" @(i == 0 ? "checked" : "") />
+                        </div>
+                    }
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="right-table" style="overflow: hidden;height:100%">
+        <div class="data-header">
+            <div class="search-v2">
+                <form onsubmit="javascript:return false;">
+                    <div class="filter">
+                        <label class="label">数据库名称：</label>
+                        <input type="text" class="text" name="name" id="txt_name" onkeydown="keyup_submit(event);" autocomplete="off">
+                    </div>
+                    <div class="filter">
+                        <button type="button" onclick="searchData(this)" class="layui-btn layui-btn-xs layui-btn-primary search-btn">&nbsp; 搜索 &nbsp; </button>
+                    </div>
+                    <div class="filter"> | </div>
+                    <div class="filter">
+                        <button type="button" class="layui-btn layui-btn-xs layui-btn-normal" onclick="save(this)">&nbsp; 保存 &nbsp; </button>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+        <div class="data-content" style="height:calc(100% - 40px); overflow-y: auto;">
+            <form id="edit-form">
+                @Html.AntiForgeryToken()
+                <input type="hidden" id="adminGroupId" name="adminGroupId" value="" />
+                <div id="pass" class="layui-form" style="border:0">
+
+
+                </div>
+            </form>
+        </div>
+    </div>
+
+</div>
+<script type="text/template" id="tpl">
+    {{ for (var i=0;i<it.length;i++ ){ }}
+    {{ var item=it[i]; }}
+    <div class="layui-card" style="margin:10px;">
+        <input type="hidden" name="p[{{=item.connId}}].Id" value="{{= item.id}}" />
+        <input type="hidden" name="p[{{=item.connId}}].connId" value="{{= item.connId}}" />
+        <div class="layui-card-header">
+            <span style="font-weight:bold"> {{= item.name}} </span>
+            <span style="color:blue"> {{= item.sqlType }} </span>
+            {{ if (item.comment){ }}
+            <span>{{= item.comment}}</span>
+            {{ } }}
+        </div>
+        <div class="layui-card-body layui-text">
+            <div>
+                <input type="checkbox" lay-skin="primary" name="p[{{=item.connId}}].CanRead" lay-filter="read" value="true" {{= item.canRead?"checked":""}} title="Select" />
+                <input type="checkbox" lay-skin="primary" name="p[{{=item.connId}}].CanEdit" lay-filter="edit" value="true" {{= item.canEdit?"checked":""}} title="Insert/Update" />
+                <input type="checkbox" lay-skin="primary" name="p[{{=item.connId}}].CanDelete" lay-filter="delete" value="true" {{= item.canDelete?"checked":""}} title="Delete" />
+                <input type="checkbox" lay-skin="primary" name="p[{{=item.connId}}].AllPermissions" lay-filter="all" value="true" {{= item.allPermissions?"checked":""}} title="All Permissions" />
+                Select max rows:
+                <input type="text" style="width: 50px; display: inline-block; height: 26px;" class="layui-input" name="p[{{=item.connId}}].ReadMaxRows" value="{{=item.readMaxRows}}" maxlength="8" />
+                Update/Delete max rows:
+                <input type="text" style="width: 50px; display: inline-block; height: 26px;" class="layui-input" name="p[{{=item.connId}}].ChangeMaxRows" value="{{=item.changeMaxRows}}" maxlength="8" />
+                
+                <input type="checkbox" lay-skin="primary" name="p[{{=item.connId}}].CanDownload" lay-filter="download" value="true" {{= item.canDownload?"checked":""}} title="Download as csv file" />
+            </div>
+        </div>
+    </div>
+    {{ } }}
+</script>
+
+@section js{
+    <script src="/_/js/doT.min.js" v></script>
+    <script>
+        layui.use(["layer", "form", "table"], function () {
+            layui.form.on('radio(Group)', function (data) {
+                searchData();
+            });
+            layui.form.on("checkbox(all)", function (data) {
+                if (data.elem.checked) {
+                    $(data.elem).parent().children("input[type=checkbox]").prop("checked", true);
+                    layui.form.render("checkbox");
+                }
+            });
+            layui.form.on("checkbox(edit)", function (data) {
+                if (data.elem.checked) {
+                    $(data.elem).parent().children("input[lay-filter=read]").prop("checked", true);
+                    layui.form.render("checkbox");
+                } else {
+                    $(data.elem).parent().children("input[lay-filter=delete]").prop("checked", false);
+                    $(data.elem).parent().children("input[lay-filter=all]").prop("checked", false);
+                    layui.form.render("checkbox");
+                }
+            });
+            layui.form.on("checkbox(delete)", function (data) {
+                if (data.elem.checked) {
+                    $(data.elem).parent().children("input[lay-filter=read]").prop("checked", true);
+                    $(data.elem).parent().children("input[lay-filter=edit]").prop("checked", true);
+                    layui.form.render("checkbox");
+                } else {
+                    $(data.elem).parent().children("input[lay-filter=all]").prop("checked", false);
+                    layui.form.render("checkbox");
+                }
+            });
+            layui.form.on("checkbox(read)", function (data) {
+                if (data.elem.checked == false) {
+                    $(data.elem).parent().children("input[lay-filter=edit]").prop("checked", false);
+                    $(data.elem).parent().children("input[lay-filter=delete]").prop("checked", false);
+                    $(data.elem).parent().children("input[lay-filter=all]").prop("checked", false);
+                    layui.form.render("checkbox");
+                }
+            });
+            searchData();
+        });
+        $("#txt_name").keyup(function (key) { if (key.keyCode == 13) { searchData(); return false; } });
+
+        function searchData() {
+            var json = $("#list-form").serializeJson();
+            json.search = $("#txt_name").val();
+            $("#adminGroupId").val(json.Id);
+            $.adminModePost('./ajax/GetConnPowerList', json, function (data) {
+                var html = tpl("#tpl", data.data);
+                $("#pass").html(html);
+                layui.form.render('checkbox');
+            }, function (data) {
+                if (data.message) {
+                    layer.msg(data.message);
+                } else {
+                    layer.msg("网络连接失败");
+                }
+            });
+        }
+
+        function save(obj) {
+            $(obj).prop("disabled", true);
+            var url = "./ajax/EditConnPass";
+            var data = $("#edit-form").serializeJson();
+            $.adminModePost(url, data, function () {
+                $(obj).prop("disabled", false);
+                layer.msg("保存成功！");
+                updateData();
+            }, function (data) {
+                $(obj).prop("disabled", false);
+                if (data.message) {
+                    layer.msg(data.message);
+                } else {
+                    layer.msg("出错了！");
+                }
+            });
+        }
+    </script>
+}
+
+

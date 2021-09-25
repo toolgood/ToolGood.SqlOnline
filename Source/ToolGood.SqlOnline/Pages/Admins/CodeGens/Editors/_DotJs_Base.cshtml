@@ -1,0 +1,72 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>DotJs_Sql</title>
+    <link href="/_/layui/css/layui.css" rel="stylesheet" />
+    <link href="/_/layui/css/treetable.css" rel="stylesheet" />
+    <style>
+        .site-title { margin: 30px 0 5px; }
+    </style>
+</head>
+<body>
+    <fieldset class="layui-elem-field layui-field-title site-title">
+        <legend> 模板使用说明</legend>
+    </fieldset>
+    <p style="text-indent:2em">1、 插入值：&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b> {{= 变量名 }}</b> </p>
+    <p style="text-indent:2em">2、 代码段：&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b> {{ 代码段 }}</b></p>
+    <p style="text-indent:2em">3、 定义模板：&nbsp;&nbsp;<b>{{## def.模板名:参数名:  [换行]  [模板]  [换行]  #}}</b></p>
+    <p style="text-indent:2em">4、 使用模板：&nbsp;&nbsp;<b>{{# def.模板名:参数 }}</b></p>
+    <p style="text-indent:2em">5、 插入转义值：&nbsp;&nbsp;<b>{{! 变量名 }}</b>&nbsp;&nbsp;适合XML注释</p>
+    <p style="text-indent:2em">6、 <a href="http://olado.github.io/doT/index.html" target="_blank" style="color:blue" title="更多使用方法">更多使用方法</a>  &nbsp;&nbsp; </p>
+
+    <fieldset class="layui-elem-field layui-field-title site-title">
+        <legend> 内置方法</legend>
+    </fieldset>
+    <p style="text-indent:2em">1、 大驼峰命名法：&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b> pascalCaseName(变量)</b> </p>
+    <p style="text-indent:2em">2、 小驼峰命名法：&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b> camelCaseName(变量)</b> </p>
+    <p style="text-indent:2em">3、 双引号内字符串转义：&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b> doubleQuotationString(变量)</b> </p>
+    <p style="text-indent:2em">4、 标准化名称：&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b> standardName(变量[,是否大写])</b></p>
+    <p style="text-indent:2em">5、 自定义函数：在【项目管理】=》【权限管理】=》【配置管理】修改【自定义函数】 </p>
+
+
+    <fieldset class="layui-elem-field layui-field-title site-title">
+        <legend> 数据格式 </legend>
+    </fieldset>
+    <p style="text-indent:2em">简单使用：{{= it.adminName }}</p>
+    <div style="padding: 5px;">
+        <div class="data-content">
+            <table class="layui-hide" id="dataList" lay-filter="dataList"></table>
+        </div>
+    </div>
+
+    <script src="/_/js/jquery.min.js"></script>
+    <script src="/_/layui/layui.all.js"></script>
+    @RenderBody()
+    <script>
+        var cols = [];
+        cols.push({ field: 'LAY_TABLE_INDEX', title: '序', width: "60", templet: function (d) { return d.LAY_TABLE_INDEX + 1; } });
+        cols.push({ field: 'name', title: '名称', width: "230", });
+        cols.push({ field: 'type', title: '类型', width: "80", });
+        cols.push({ field: 'comment', title: '备注', width: "250", });
+        var tableOptions = {
+            data: data,
+            treeColIndex: 1,
+            treeSpid: "root",
+            treeIdName: 'id',
+            treePidName: 'pid',
+            elem: '#dataList',
+            size: 'sm',
+            even: true,
+            method: 'POST',
+            page: false,
+            cols: [cols],
+            done: function () { layer.closeAll('loading'); },
+            text: { none: '<span style="color:red;">暂无记录</span>' }
+        };
+        var layer = layui.layer, table = layui.treetable;
+        layer.load(2);
+        table.render(tableOptions);
+    </script>
+</body>
+</html>

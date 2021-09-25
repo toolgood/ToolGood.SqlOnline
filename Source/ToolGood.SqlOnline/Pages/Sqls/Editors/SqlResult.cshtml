@@ -1,0 +1,160 @@
+﻿@page
+@model ToolGood.SqlOnline.Pages.Sqls.Editors.SqlResultModel
+@{
+    Layout = "~/Pages/Shared/_Layout_Edit.cshtml";
+}
+@section css{
+    <style>
+        html, body { height: 100%; }
+        body { overflow: hidden; }
+        #info-tab .layui-tab { margin: 3px 0; }
+        #info-tab .layui-tab-title { padding-left: 0; height: 20px; }
+        #info-tab .layui-tab-title li { font-size: 12px; line-height: 20px; padding: 0; }
+        #info-tab .layui-tab-title li::after { height: 21px; }
+        #info-tab .layui-tab-title li.layui-this { font-weight: bold; }
+        #info-tab .layui-tab-content { padding: 7px; }
+        .layui-tab-item p { font-size: 13px; }
+        table.layui-table { margin: 0; padding: 0; }
+        div.layui-table-cell { padding: 0 10px; }
+        .layui-tab { margin: 0; }
+        #hiddenTab { position: absolute; right: 5px; top: 0px; line-height: 20px; vertical-align: middle; height: 20px; font-size: 20px; }
+        p { word-break: break-word; overflow-wrap: break-word; }
+
+        ::-webkit-scrollbar { width: 10px; height: 10px; }
+        ::-webkit-scrollbar-button:vertical { display: none; }
+        ::-webkit-scrollbar-track, ::-webkit-scrollbar-corner { background-color: #e2e2e2; }
+        ::-webkit-scrollbar-thumb { border-radius: 0; background-color: rgba(0,0,0,.3); }
+        ::-webkit-scrollbar-thumb:vertical:hover { background-color: rgba(0,0,0,.35); }
+        ::-webkit-scrollbar-thumb:vertical:active { background-color: rgba(0,0,0,.38); }
+    </style>
+}
+
+<div id="info" style="width:100%;height:100%;">
+    <div id="info-tab" class="layui-tab layui-tab-brief" lay-filter="log-tab">
+        <ul id="info-tab-title" class="layui-tab-title">
+            <li class="layui-this" lay-id="0">操作日志</li>
+        </ul>
+        <div class="layui-tab-content">
+            <div class="layui-tab-item layui-show" id="layid0" lay-id="0" style="overflow: auto;"></div>
+        </div>
+        <div id="hiddenTab"><a href="javascript:;" onclick="hiddenTab()" style="color:red;">☒</a></div>
+    </div>
+</div>
+@section js{
+    <script>
+        parent.resizeResultWin = function () { $('#layid0').css("height", (window.innerHeight - 30) + "px"); }
+        function hiddenTab() { parent.window.hideResultWin(); }
+
+        function addOperateLog(log) {
+            var html = $("#info-tab .layui-tab-content div[lay-id=0]").html();
+            html += "<p>" + log + "</p>";
+            $("#info-tab .layui-tab-content div[lay-id=0]").html(html);
+        }
+        parent.clearTab = function () {
+            $("#info-tab .layui-tab-title li[lay-id!=0]").remove();
+            $("#info-tab .layui-tab-content div[lay-id!=0]").remove();
+            $("#info-tab .layui-tab-content div[lay-id=0]").html("<p>开始执行SQL ...</p>");
+        }
+
+        parent.setTabData = function (data) {
+            if (data.state != 'SUCCESS' || data.data.exception) {
+                if (data.data.exception) {
+                    addOperateLog("异常信息：" + data.data.exception);
+                } else if (data.data.message) {
+                    addOperateLog("异常信息：" + data.data.message);
+                } else {
+                    addOperateLog("出错了" );
+                }
+            } else {
+                var result = data.data.result;
+                var index = 1;
+                for (var i = 0; i < result.length; i++) {
+                    var r = result[i];
+                    addOperateLog(" &nbsp; ");
+                    addOperateLog("SQL语句：" + r.sql.replace(/(\t|\r\n|\r|\n| )/g, "&nbsp;"));
+                    addOperateLog("开始时间：" + r.startTime);
+                    if (r.runTime) { addOperateLog("执行时间：" + r.runTime + "ms"); }
+
+                    if (r.exception) {
+                        addOperateLog("异常信息：" + r.exception);
+                    } else if (r.changeCount) {
+                        addOperateLog("影响行数：" + r.changeCount);
+                    } else if (r.columns) {
+                        if (r.isOverflow) { addOperateLog("注意：返回超过限制行数"); }
+
+                        var tableHtml = buildTable3(r, index);
+                        setAddDataTab(index, "结果" + index, tableHtml);
+                        var data = buildTableData3(r);
+                        layui.table.init('dataList-' + index, { limit: 999999, data: data, height: 'full-30', size: 'sm', even: true, });
+
+                        index++;
+                    }
+                }
+            }
+        }
+        function setAddDataTab(id, name, content) {
+            var element = layui.element;
+            element.tabAdd('log-tab', { title: name, content: content, id: id });
+            element.tabChange('log-tab', "0");
+        }
+
+        function buildTable3(dataTable, index) {
+            var tableHtml = '<div class="data-content" ><table class="layui-hide" id="{dataList}" lay-filter="{dataList}"><thead><tr>{thead}</tr></thead></table></div>';
+            var cols = [];
+            for (var i = 0; i < dataTable.columns.length; i++) {
+                var col = dataTable.columns[i];
+                var width = getWidth(col);
+                cols.push({ title: col, field: col, width: width });
+            }
+            for (var i = 0; i < dataTable.values.length; i++) {
+                for (var j = 0; j < cols.length; j++) {
+                    var width = getWidth(dataTable.values[i][j])
+                    if (cols[j].width < width) {
+                        cols[j] = { title: cols[j].title, field: cols[j].field, width: width };
+                    }
+                }
+            }
+            var thead = '';
+            for (var i = 0; i < cols.length; i++) {
+                thead += "<th lay-data='{data}'>{name}</th>".replace("{data}", JSON.stringify(cols[i])).replace("{name}", cols[i].title);
+            }
+
+            tableHtml = tableHtml.replace("{thead}", thead).replace("{dataList}", 'dataList-' + index).replace("{dataList}", 'dataList-' + index);
+            return tableHtml;
+        }
+        function buildTableData3(dataTable) {
+            var list = [];
+            for (var i = 0; i < dataTable.values.length; i++) {
+                var vals = dataTable.values[i];
+                var obj = {};
+                for (var j = 0; j < dataTable.columns.length; j++) {
+                    var col = dataTable.columns[j];
+                    var val = vals[j];
+                    obj[col] = val;
+                }
+                list.push(obj);
+            }
+            return list;
+        }
+
+        function getWidth(text) {
+            if (text) {
+                var width = getBLen(text) * 8 + 24;
+                return width > 500 ? 500 : width;
+            }
+            return 0;
+        }
+        function getBLen(text) {
+            var len = 0;
+            for (var i = 0; i < text.length; i++) {
+                if (text.charCodeAt(i) > 127 || text.charCodeAt(i) == 94) {
+                    len += 2;
+                } else {
+                    len++;
+                }
+            }
+            return len;
+        }
+    </script>
+}
+

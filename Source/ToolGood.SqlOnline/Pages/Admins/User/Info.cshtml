@@ -1,0 +1,41 @@
+﻿@page
+@model ToolGood.SqlOnline.Pages.Admins.User.InfoModel
+@{
+    Layout = "~/Pages/Shared/_Layout_Detail.cshtml";
+}
+<div style="overflow-x:hidden">
+    <div class="layui-form" style="padding: 20px 30px 0 0;">
+        <div class="layui-form-item">
+            <label class="layui-form-label">登录名</label>
+            <div class="layui-input-block">
+                <input type="text" class="layui-input" value="@Model.Admin.Name" readonly>
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">姓名</label>
+            <div class="layui-input-block">
+                <input type="text" class="layui-input" value="@Model.Admin.TrueName" readonly>
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">手机</label>
+            <div class="layui-input-block">
+                <input type="text" class="layui-input" value="@Model.Admin.Phone" readonly>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">邮箱</label>
+            <div class="layui-input-block">
+                <input type="text" class="layui-input" value="@Model.Admin.Email" readonly>
+            </div>
+        </div>
+
+        <div class="layui-form-item" style="text-align:center;padding-left: 30px;">
+            <a href="/admins/User/Edit?h=290&w=500" class="layui-btn layui-btn-normal openwin" title="修改信息"> &nbsp; 修改信息 &nbsp; </a>
+            <a href="/admins/User/ChangePassword?h=290&w=500" class="layui-btn layui-btn-normal openwin" title="修改登录密码"> &nbsp; 修改登录密码 &nbsp; </a>
+            <a href="/admins/User/ChangeManagerPassword?h=290&w=500" class="layui-btn layui-btn-normal openwin" title="修改管理密码"> &nbsp; 修改管理密码 &nbsp; </a>
+        </div>
+    </div>
+</div>

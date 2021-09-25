@@ -1,0 +1,63 @@
+﻿@page
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <style type="text/css">
+        #editor { position: absolute; top: 0; right: 0; bottom: 0; left: 0; }
+    </style>
+</head>
+<body>
+    <div id="editor"></div>
+    <script src="/_/js/jquery.min.js" type="text/javascript"></script>
+    <script src="/_/editor/ace/ace.js" type="text/javascript"></script>
+    <script src="/_/editor/ace/ext-language_tools.js" type="text/javascript"></script>
+    <script src="/_/editor/ace-ext/token_tooltip.js" type="text/javascript"></script>
+    <script src="/_/editor/ace/mode-javascript.js" type="text/javascript"></script>
+    <script src="/_/editor/ace/mode-doTjs.js" type="text/javascript"></script>
+    <script>
+        var $window = window;
+        if (parent != null) { $window = parent.window; }
+        var editor = ace.edit("editor");
+
+        function setEditor(sql, mode) {
+            editor.setOptions({
+                theme: 'ace/theme/eclipse',
+                mode: 'ace/mode/dotjs',
+                fontSize: '13',
+                enableBasicAutocompletion: false,
+                enableSnippets: true,
+                enableLiveAutocompletion: true,
+                showTokenInfo: true,
+            });
+            editor.commands.removeCommand("showSettingsMenu");
+            editor.commands.removeCommand("openCommandPallete");
+            editor.setValue(sql);
+            editor.gotoLine(0);
+        }
+        $window.setEditor = setEditor;
+        $window.insertColumn = function (txt) {
+            editor.insert(txt);
+            window.focus()
+            editor.focus()
+        }
+
+        function getValue() { return editor.getValue(); }
+        function setValue(txt) { return editor.setValue(txt); }
+
+        $window.getValue = getValue;
+        $window.setValue = setValue;
+
+        $(function () {
+            $window.InitEditor();
+            $(window).resize(function () {
+                editor.resize();
+            });
+        })
+    </script>
+
+</body>
+</html>

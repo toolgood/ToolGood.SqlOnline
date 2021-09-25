@@ -1,0 +1,126 @@
+﻿@page
+@model ToolGood.SqlOnline.Pages.Admins.Database.LogSettingModel
+@{
+    Layout = "~/Pages/Shared/_Layout_List.cshtml";
+}
+<div style="overflow: hidden;">
+    <div class="data-header">
+        <div class="search-v2">
+            <form onsubmit="javascript:return false;">
+                <div class="filter">
+                    <label class="label">名称：</label>
+                    <input type="text" class="text" name="search" id="txt_search" autocomplete="off">
+                </div>
+                <div class="filter">
+                    <button type="button" class="layui-btn layui-btn-xs layui-btn-normal search-btn">&nbsp; 搜索 &nbsp; </button>
+                    <button type="button" class="layui-btn layui-btn-xs layui-btn-primary" onclick="pageReload()">&nbsp; 重置 &nbsp; </button>
+                </div>
+                @if (Model.ButtonPass.CanEdit) {
+                    <div class="filter"> | </div>
+                    <div class="filter">
+                        <a href="./LogSettingEdit?h=500&w=900" class="layui-btn layui-btn-xs layui-btn-normal openwin" title="新增日志输出方案"> &nbsp; 新增日志输出方案 &nbsp; </a>
+                    </div>
+                }
+                <div class="filter"> | </div>
+                <div class="filter"> 请不要加太多，会拖慢查询速度。 </div>
+            </form>
+
+        </div>
+    </div>
+    <div class="data-content">
+        <table class="layui-hide" id="dataList" lay-filter="dataList"></table>
+    </div>
+</div>
+
+<form id="delete-form" class="hidden">
+    @Html.AntiForgeryToken()
+    <input type="hidden" name="id" value="" />
+</form>
+
+<script type="text/template" id="bar">
+    @if (Model.ButtonPass.CanEdit) {
+        <a href="./LogSettingEdit?h=500&w=900&id={{ d.id }}" edit class="openwin" title="编辑日志输出方案"> 编辑</a>
+        <span>&nbsp; &nbsp;</span>
+    }
+    @if (Model.ButtonPass.CanDelete) {
+        <a href="javascript:deleteItem({{ d.id }},'{{ d.text }}');">删除</a>
+    }
+</script>
+
+@section js{
+    <script>
+        var showBar = '@(Model.ButtonPass.CanEditOrDelete?"1":"0")';
+        function deleteItem(id, name) {
+            $("#delete-form input[name=id]").val(id);
+            layer.confirm('删除日志输出方案【' + name + "】吗？", function (index) {
+                var url = "./Ajax/DeleteLogSetting";
+                $.adminModePost(url, $("#delete-form").serializeJson(), function () { location.reload(); });
+                layer.close(index);
+            })
+        }
+        layui.use(["layer", "form", "table"], function () {
+            var getListUrl = './Ajax/GetLogSettingList';
+            var cols = [];
+            cols.push({ field: 'id', title: '序号', width: "60", });
+            cols.push({ field: 'logType', title: '分类', width: "100",templet: function (d) {
+                    if (d.logType == 1) { return "Sqlite"; }
+                    if (d.logType == 2) { return "Web Post"; }
+                    if (d.logType == 3) { return "SqlServer"; }
+                    if (d.logType == 4) { return "MySql"; }
+                    return "";
+                } });
+            cols.push({ field: 'name', title: '文本',  width: "200", });
+            cols.push({ field: 'name', title: '状态',  width: "80",templet: function (d) {
+                    if (d.isFrozen == 0) { return "启用"; }
+                    if (d.isFrozen == 1) { return "冻结"; }
+                    return "";
+                } });
+
+            if (showBar == '1') {
+                cols.push({ field: 'right', title: '操作', width: "150", align: 'center', fixed: 'right', toolbar: '#bar' });
+            }
+
+            var tableOptions = {
+                useRsa: true,
+                url: getListUrl,
+                size: 'sm',
+                even: true,
+                method: 'POST',
+                cols: [cols],
+                page: true,
+                limit: 30,
+                limits: [10, 20, 30, 50, 100],
+                response: {statusCode:1,msgName: 'message'},
+                where: { projectId: $("#projectId").val() },
+                height: 'full-' + ($('.data-header').outerHeight(true) + 5),
+                done: function () { layer.closeAll('loading'); },
+                request: { pageName: 'pageIndex', limitName: 'pageSize' },
+                text: { none: '<span style="color:red;">暂无记录</span>' }
+            };
+
+            var layer = layui.layer, table = layui.table;
+            layer.load(2);
+            table.init('dataList', tableOptions);
+            table.on('rowDouble(dataList)', function (obj) { $(obj.tr[0]).find("a[edit]").trigger("click"); });
+
+            $('.search-btn').click(function (event) {
+                layer.load(2);
+                event && event.stopPropagation();
+                table.reload("dataList", {
+                    where: {
+                        search: $("#txt_search").val()
+                    }
+                    , page: { curr: 1 }
+                });
+                return false;
+            });
+
+        });
+        function pageReload() {
+            location.reload();
+        }
+        function reload() {
+            layui.table.reload("dataList");
+        }
+    </script>
+}

@@ -1,0 +1,323 @@
+﻿@page
+@model ToolGood.SqlOnline.Pages.Developments.CodeGenInfoModel
+@{
+    Layout = "~/Pages/Shared/_Layout_List.cshtml";
+}
+@section css{
+    <style>
+        html, body { height: 100%; width: 100%; overflow: hidden; margin: 0; padding: 0; border: 0; }
+        .gutter-horizontal { background-color: lightgray; cursor: e-resize; height: 100%; float: left }
+        .gutter-vertical { background-color: lightgray; cursor: n-resize; width: 100%; float: left }
+    </style>
+    <link href="/_/prism/prism.css" rel="stylesheet" />
+}
+<div style="overflow:hidden;height:100%">
+    <div id="left-div" style="float: left; height: 100%;overflow-y:auto">
+        <div class="data-header">
+            <form onsubmit="javascript:return false;">
+                <input type="hidden" id="txt_sqlConnId" value="@Model.SqlConnId" />
+                <input type="hidden" id="txt_database" value="@Model.Database" />
+                <div class="search-v2" style="padding-bottom: 0;">
+                    <div class="filter">
+                        <label class="label">类型：</label>
+                        <select id="sel_tplType" onchange="tplType_change()"></select>
+                    </div>
+                    <div class="filter">
+                        <label class="label">语言：</label>
+                        <select id="sel_language" onchange="language_change()"></select>
+                    </div>
+                    <div class="filter">
+                        <label class="label">模板：</label>
+                        <select id="sel_tplName" onchange="tplName_change()"></select>
+                    </div>
+                </div>
+                <br />
+                <div class="search-v2" style="padding-top: 0">
+                    <div class="filter">
+                        <label class="label">命名空间/包名：</label>
+                        <input type="text" style="width:300px" class="text" id="txt_Namespace" placeholder="" autocomplete="off">
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div id="data-content" class="data-content">
+            <pre><code id="code" class="line-numbers"></code></pre>
+        </div>
+    </div>
+    <div id="right-div" style="float:left">
+        <div class="data-header">
+            <div class="search-v2">
+                <form onsubmit="javascript:return false;">
+                    <div class="filter">
+                        <label class="label">表名/备注：</label>
+                        <input type="text" class="text" id="txt_search" autocomplete="off" oninput="search()">
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="data-content">
+            <table class="layui-hide" id="dataList" lay-filter="dataList"></table>
+        </div>
+    </div>
+</div>
+<pre><code id="tpls">@(Model.Json)</code></pre>
+@section js{
+    <script src="/_/js/split.min.js" type="text/javascript"></script>
+    <script src="/_/js/doT.min.js" type="text/javascript"></script>
+    <script src="/_/prism/prism.js" type="text/javascript"></script>
+    <script>
+        assist = Split(['#left-div', '#right-div'], { sizes: [60, 40], minSize: [600, 0], gutterSize: 5, snapOffset: 0, });
+
+        layui.use(["layer", "form", "table"], function () {
+            var getListUrl = './Ajax/GetTableViewProcedure';
+            var cols = [];
+            cols.push({ field: 'type', title: '类型', width: "60" });
+            cols.push({
+                field: 'name', title: '表名', width: "150", templet: function (d) {
+                    var html = '<a href="javascript:;" onclick="openCodeGenResult(' + d.tplTypeId + ",'" + d.type + "','" + d.schema + "','" + d.name + "')" + '">'
+                    if (d.schema) {
+                        if (d.schema != "dbo") {
+                            html += d.schema + "." + d.name;
+                        } else {
+                            html += d.name;
+                        }
+                    } else {
+                        html += d.name;
+                    }
+                    html += "</a>";
+                    return html;
+                }
+            });
+            cols.push({ field: 'comment', title: '备注', width: "350", });
+
+            var tableOptions = {
+                url: getListUrl,
+                size: 'sm',
+                even: true,
+                method: 'POST',
+                cols: [cols],
+                page: false,
+                limit: 999999,
+                response: { statusCode: 1, msgName: 'message' },
+                where: { sqlConnId: $("#txt_sqlConnId").val(), database: $("#txt_database").val() },
+                height: 'full-' + ($('.data-header').outerHeight(true) - 30),
+                done: function () { layer.closeAll('loading'); },
+                request: { pageName: 'pageIndex', limitName: 'pageSize' },
+                text: { none: '<span style="color:red;">暂无记录</span>' }
+            };
+
+            var layer = layui.layer, table = layui.table;
+            layer.load(2);
+            table.init('dataList', tableOptions);
+            table.on('rowDouble(dataList)', function (obj) {
+                var tr = obj.tr[0];
+                $(tr).find("a[edit]").trigger("click");
+            });
+
+        });
+        var tplsJson = [];
+        function tplType_change() {
+            var tplType = $("#sel_tplType").val();
+            var html = "";
+            for (var i = 0; i < tplsJson.length; i++) {
+                var tpl = tplsJson[i];
+                if (tpl.tplTypeId != tplType) { continue; }
+                for (var j = 0; j < tpl.items.length; j++) {
+                    var language = tpl.items[j];
+                    html += '<option value="' + language.language + '">' + language.languageName + '</option>'
+                }
+            }
+            $("#sel_language").html(html);
+            language_change();
+        }
+        function language_change() {
+            var tplType = $("#sel_tplType").val();
+            var tplLang = $("#sel_language").val();
+            var html = "";
+            for (var i = 0; i < tplsJson.length; i++) {
+                var tpl = tplsJson[i];
+                if (tpl.tplTypeId != tplType) { continue; }
+                for (var j = 0; j < tpl.items.length; j++) {
+                    var language = tpl.items[j];
+                    if (tplLang != language.language) { continue; }
+                    for (var k = 0; k < language.items.length; k++) {
+                        var tplName = language.items[k];
+                        html += '<option value="' + tplName.id;
+                        if (tplName.namespace) {
+                            html += '" placeholder="' + tplName.namespace;
+                        }
+                        html += '" >' + tplName.name + '</option>'
+                    }
+                }
+            }
+            $("#sel_tplName").html(html);
+            tplName_change();
+        }
+        function tplName_change() {
+            var tplName = $("#sel_tplName").val();
+            var $option = $("#sel_tplName option[value=" + tplName + "]");
+            if ($option.attr("placeholder")) {
+                $("#txt_Namespace").attr("placeholder", $option.attr("placeholder"));
+            } else {
+                $("#txt_Namespace").attr("placeholder", "");
+            }
+        }
+        $(function () {
+            tplsJson = JSON.parse($("#tpls").text());
+            var html = "";
+            for (var i = 0; i < tplsJson.length; i++) {
+                var tpl = tplsJson[i];
+                html += '<option value="' + tpl.tplTypeId + '">' + tpl.tplTypeName + '</option>'
+            }
+            $("#sel_tplType").html(html);
+            tplType_change();
+        })
+        function openCodeGenResult(tplTypeId, type, schema, name) {
+            var tplType = $("#sel_tplType").val();
+            var tplLang = $("#sel_language").val();
+            var tplName = $("#sel_tplName").val();
+            var tplNamespace = $("#txt_Namespace").val();
+            var sqlConnId = $("#txt_sqlConnId").val();
+            var database = $("#txt_database").val();
+            if (tplNamespace.length == 0) {
+                var $option = $("#sel_tplName option[value=" + tplName + "]");
+                tplNamespace = $option.attr("placeholder");
+            }
+            if (tplType != tplTypeId) {
+                layui.layer.msg("当前模板不支持该类型！");
+                return;
+            }
+            var url = "./ajax/GetTableViewProcedureData";
+            var url2 = "./ajax/GetCodeGenTpl";
+            $.post(url, { sqlConnId: sqlConnId, database: database, schema: schema, searchType: type, search: name }, function (data) {
+                if (data.code == 1) {
+                    data.data.namespace = tplNamespace;
+                    data.data.package = tplNamespace;
+                    $.post(url2, { id: tplName }, function (tplData) {
+                        $("#data-content").html('<pre><code id="code" class="line-numbers"></code></pre>');
+                        showPrismCode(tplData.data, data.data, tplLang);
+                    });
+                }
+            })
+        }
+        function search() {
+            var txt = $("#txt_search").val().toLocaleLowerCase();
+            var trs = $("table.layui-table tr[data-index]");
+            trs.each(function () {
+                var a=  $(this).find("a");
+                var name= a.text()
+                var comment = $(this).find("[data-field=comment]").text();
+
+                var find = name.toLocaleLowerCase().indexOf(txt) > -1;
+                if (find==false) {
+                    find = comment.toLocaleLowerCase().indexOf(txt) > -1;
+                }
+ 
+                if (find) {
+                    $(this).css("display", "");
+                } else {
+                    $(this).css("display", "none");
+                }
+            })
+
+        }
+    </script>
+    <script>
+        function pascalCaseName(str) {
+            return str.charAt(0).toUpperCase() + str.slice(1);
+        }
+        function camelCaseName(str) {
+            return str.charAt(0).toLowerCase() + str.slice(1);
+        }
+        function doubleQuotationString(str) {
+            return str.replace(/\\/ig, '\\\\').replace(/\r/ig, '\\r')
+                .replace(/\n/ig, '\\n')
+                .replace(/\t/ig, '\\t')
+                .replace(/"/ig, '\\"');
+        }
+        function standardName(oldStr, upper) {
+            if (upper == undefined) { upper = false; }
+            var str = '';
+            var b = upper;
+
+            for (var i = 0; i < oldStr.length; i++) {
+                var c = oldStr[i];
+                if (b) {
+                    b = false;
+                    str += c.toUpperCase();
+                } else if (i == 0 && /\d/.test(c)) {
+                    str = 'X' + c;
+                } else if (c == '_') {
+                    b = true;
+                } else {
+                    str += c;
+                }
+            }
+            return str;
+        }
+        function getParentWindow(index) {
+            var index = parent.layer.getFrameIndex(window.name);
+            return top.getParentWindow(index);
+        }
+        function getParameter(val) {
+            var re = new RegExp("[?&]" + val + "=([^&?]*)", "ig");
+            var url = location.search;
+            return ((url.match(re)) ? (decodeURI(url.match(re)[0].substr(val.length + 2))) : '');
+        }
+
+        function getSrcText(value) {
+            var s = "";
+            var xx = false;
+            for (var i = 0; i < value.length; i++) {
+                var c = value[i];
+                if (xx) {
+                    xx = false;
+                    if (c == 'r') {
+                        s += "\r";
+                    } else if (c == 'n') {
+                        s += "\n";
+                    } else if (c == 't') {
+                        s += "\t";
+                    } else if (c == "\\") {
+                        s += "\\";
+                    } else {
+                        s += c;
+                    }
+                } else if (c == '>') {
+                    s += "&gt;";
+                } else if (c == '<') {
+                    s += "&lt;";
+                } else if (c == '\\') {
+                    xx = true;
+                } else {
+                    s += c;
+                }
+            }
+            return s;
+        }
+
+        function showPrismCode(tpl, data, languageName) {
+            try {
+                tpl = tpl.replace(/\r\n/ig, "\n");
+                tpl = tpl.replace(/\n[ \t]*\{\{ /ig, " {" + "{ "); // 防vs出错提示
+                tpl = tpl.replace(/\\/ig, "\\\\").replace(/\r/ig, "\\r").replace(/\n/ig, "\\n").replace(/\t/ig, "\\t");
+
+                var func = doT.template(tpl)
+                txt = func(data);
+                txt = getSrcText(txt);
+
+                $("#code").addClass("language-" + languageName);
+                $("#code").html(txt);
+                Prism.highlightAll();
+            } catch (e) {
+                $("#code").addClass("language-text");
+                $("#code").html(e);
+                Prism.highlightAll();
+            }
+        }
+        $(function () {
+            showPrismCode('在右侧选择表名、视图名！\r\n', {}, "js");
+        })
+    </script>
+}
+

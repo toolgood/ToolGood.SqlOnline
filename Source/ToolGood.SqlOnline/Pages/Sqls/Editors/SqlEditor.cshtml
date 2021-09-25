@@ -1,0 +1,157 @@
+﻿@page
+@model ToolGood.SqlOnline.Pages.Sqls.Editors.SqlEditorModel
+@{
+    Layout = "~/Pages/Shared/_Layout_Edit.cshtml";
+}
+@section css{
+    <link href="/_/font-awesome/css/font-awesome.min.css" rel="stylesheet" />
+    <style>
+        body { overflow: hidden; }
+        div.search-v2 { padding: 0 5px; }
+        .data-header { margin-bottom: 0; line-height: 30px; padding: 2px; height: 30px; }
+        .search-v2 .filter { padding-bottom: 0; }
+        .data-content { height: calc(100% - 37px ); min-height: 200px; }
+        .layui-btn-xs { height: 26px; }
+        #editor { position: absolute; top: 37px; right: 0; bottom: 0; left: 0; }
+    </style>
+}
+<div style="overflow: hidden;padding:2px;background-color:white;width: 100%;">
+    <div class="data-header">
+        <div class="search-v2" style="width:100%;">
+            <form style="width:100%;">
+                <div class="filter">
+                    <div class="layui-btn-group">
+                        <button type="button" onclick="saveDoc(this)" style="line-height: 26px;" class="layui-btn layui-btn-xs layui-btn-primary" title="保存文档"> <i class="fa fa-save"></i> 保存 </button>
+                        <button type="button" onclick="saveDocAs(this)" style="line-height: 26px;" class="layui-btn layui-btn-xs layui-btn-primary" title="另存为"> <i class="fa fa-clipboard"></i> 另存为 </button>
+                    </div>
+                </div>
+                <div class="filter">
+                    <label class="label">数据库：</label>
+                    <select class="selected" name="databaseName" id="sel_databaseName">
+                        @Model.DatabaseEntities.ToOption(q => q.DatabaseName, Model.DatabaseName)
+                    </select>
+                </div>
+                <div class="filter">
+                    <button type="button" id="runBtn" class="layui-btn layui-btn-xs layui-btn-normal" onclick="runSql()"> &nbsp; 执 行 &nbsp; </button>
+                    <button type="button" id="stopBtn" class="layui-btn layui-btn-xs layui-btn-danger" style="display:none" onclick="stopSql()"> &nbsp; 暂 停 &nbsp; </button>
+                    <button type="button" onclick="runSqlAndAuthority(this)" style="line-height: 26px;" title="高级" class="layui-btn layui-btn-xs layui-btn-primary openwin"> &nbsp; 高 级 &nbsp; </button>
+                </div>
+                <div class="filter" style="float:right">
+                    <button type="button" class="layui-btn layui-btn-xs layui-btn-normal" onclick="parent.switchAssistWin()"> &nbsp; 数据结构 &nbsp; </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <hr style="padding:0;margin:auto;height:2px;" />
+    <div class="data-content">
+        <div id="editor"></div>
+    </div>
+</div>
+
+@section js{
+    <script src="/_/editor/ace/ace.js" type="text/javascript"></script>
+    <script src="/_/editor/ace/ext-language_tools.js" type="text/javascript"></script>
+    <script src="/_/editor/ace-ext/token_tooltip.js" type="text/javascript"></script>
+    <script>
+        var $window = window;
+        if (parent != null) { $window = parent.window; }
+        window.oncontextmenu = function () { top.hideContextmenu(); }
+        var editor = ace.edit("editor");
+
+
+        function setEditorSql(sql, mode) {
+            editor.setOptions({
+                theme: 'ace/theme/sqlserver',
+                mode: mode,
+                fontSize: '13',
+                enableBasicAutocompletion: false,
+                enableSnippets: true,
+                enableLiveAutocompletion: true,
+                showTokenInfo: true,
+            });
+            editor.commands.removeCommand("showSettingsMenu");
+            editor.commands.removeCommand("openCommandPallete");
+            editor.setValue(sql);
+            editor.gotoLine(0);
+        }
+        $window.setEditorSql = setEditorSql;
+        $window.insertColumn = function (txt) {
+            editor.insert(txt);
+            window.focus()
+            editor.focus()
+        }
+
+        function getSql() { return editor.getSelectedText(); }
+        function getFullSql() { return editor.getValue(); }
+        function setValue(txt) { return editor.setValue(txt); }
+
+        $window.getSql = getSql;
+        $window.getFullSql = getFullSql;
+
+
+        $window.getDatabase = function () {
+            return $("#sel_databaseName").val();
+        }
+        function saveDoc(database, sql) {
+            var database = $("#sel_databaseName").val();
+            var sql = editor.getSelectedText();
+            if (sql.length == 0) {
+                sql = editor.getValue();
+            }
+            $window.saveDoc(database, sql);
+        }
+        function saveDocAs(database, sql) {
+            var database = $("#sel_databaseName").val();
+            var sql = editor.getSelectedText();
+            if (sql.length == 0) {
+                sql = editor.getValue();
+            }
+            $window.saveDocAs(database, sql);
+        }
+        function runSql() {
+            var database = $("#sel_databaseName").val();
+            var sql = editor.getSelectedText();
+            if (sql.length == 0) {
+                sql = editor.getValue();
+            }
+            $window.runSql(database, sql);
+        }
+        function stopSql() {
+            $window.stopSql();
+        }
+        $window.showRunBtn = function () {
+            $("#runBtn").show();
+            $("#stopBtn").hide();
+        }
+        $window.hideRunBtn = function () {
+            $("#runBtn").hide();
+            $("#stopBtn").show();
+        }
+
+
+        function runSqlAndDownload(database, sql) {
+            var database = $("#sel_databaseName").val();
+            var sql = editor.getSelectedText();
+            if (sql.length == 0) {
+                sql = editor.getValue();
+            }
+            $window.runSqlAndDownload(database, sql);
+        }
+        function runSqlAndAuthority() {
+            var database = $("#sel_databaseName").val();
+            var sql = editor.getSelectedText();
+            if (sql.length == 0) {
+                sql = editor.getValue();
+            }
+            $window.runSqlAndAuthority(database, sql);
+        }
+        $(function () {
+            $window.InitEditor();
+            $(window).resize(function () {
+                editor.resize();
+            });
+        })
+    </script>
+}
+
+

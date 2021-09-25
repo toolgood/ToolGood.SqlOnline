@@ -1,0 +1,142 @@
+﻿@page
+@model ToolGood.SqlOnline.Pages.Admins.SqlDoc.TempListModel
+@{
+    Layout = "~/Pages/Shared/_Layout_List.cshtml";
+}
+<div style="overflow: hidden;">
+    <div class="data-header">
+        <div class="search-v2">
+            <form onsubmit="javascript:return false;">
+                <div class="filter">
+                    <label class="label">数据库名：</label>
+                    <input type="text" class="text" name="sqlConnName" id="txt_sqlConnName" autocomplete="off">
+                </div>
+                <div class="filter">
+                    <label class="label">标题：</label>
+                    <input type="text" class="text" name="title" id="txt_title" autocomplete="off">
+                </div>
+                <div class="filter">
+                    <label class="label">登录名：</label>
+                    <input type="text" class="text" name="name" id="txt_name" autocomplete="off">
+                </div>
+                <div class="filter">
+                    <label class="label">工号：</label>
+                    <input type="text" class="text" name="jobNo" id="txt_jobNo" autocomplete="off">
+                </div>
+                <div class="filter">
+                    <label class="label">姓名：</label>
+                    <input type="text" class="text" name="trueName" id="txt_trueName" autocomplete="off">
+                </div>
+                <div class="filter">
+                    <button type="button" class="layui-btn layui-btn-xs layui-btn-normal search-btn">&nbsp; 搜索 &nbsp; </button>
+                    <button type="button" class="layui-btn layui-btn-xs layui-btn-primary" onclick="pageReload()">&nbsp; 重置 &nbsp; </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="data-content">
+        <table class="layui-hide" id="dataList" lay-filter="dataList"></table>
+    </div>
+</div>
+<form id="delete-form" class="hidden">
+    @Html.AntiForgeryToken()
+    <input type="hidden" name="id" value="" />
+</form>
+<script type="text/template" id="bar">
+    @if (Model.ButtonPass.CanEdit) {
+        <a href="./SqlDocTempLook?h=420&w=800&id={{ d.id }}" edit class="openwin" title="查看SQL"> 查看SQL</a>
+        <span>&nbsp; &nbsp;</span>
+    }
+    @if (Model.ButtonPass.CanDelete) {
+        <a href="javascript:deleteItem({{ d.id }},'{{ d.name }}');">删除</a>
+    }
+</script>
+<span style='color:blue'></span>
+@section js{
+    <script>
+        var showBar = '@(Model.ButtonPass.CanEditOrDelete?"1":"0")';
+        function deleteItem(id, name) {
+            $("#delete-form input[name=id]").val(id);
+            layer.confirm('删除数据文档【' + name + "】吗？", function (index) {
+                var url = "./ajax/DeleteSqlDocTemp";
+                $.adminModePost(url, $("#delete-form").serializeJson(), function () { location.reload(); });
+                layer.close(index);
+            })
+        }
+        layui.use(["layer", "form", "table"], function () {
+            var getListUrl = './ajax/GetSqlDocTempList';
+            var cols = [];
+            //cols.push({ checkbox: true, fixed: true });
+          cols.push({ field: 'id', title: '序号',width:"60", templet: function (d) { return d.LAY_TABLE_INDEX + 1; } });
+            cols.push({ field: 'adminName', title: '登录名', width: "80",  });
+            cols.push({ field: 'adminJobNo', title: '工号', width: "60",  });
+            cols.push({ field: 'adminTrueName', title: '姓名', width: "80",  });
+            cols.push({ field: 'adminPhone', title: '手机号', width: "120",  });
+
+            cols.push({ field: 'sqlConnName', title: '数据库名称', width: "160", templet: function (d) {
+                return "<span style='color:blue'>["+d.sqlType+"]</span> "+ d.sqlConnName ;
+            }});
+            cols.push({ field: 'databaseName', title: 'Database', width: "120", });
+            cols.push({ field: 'title', title: '标题', width: "250",  });
+            cols.push({ field: 'contentLen', title: '内容长度', width: "80",  });
+            cols.push({ field: 'modifyTime', title: '最后修改日期', width: "160", });
+
+            if (showBar == '1') {
+                cols.push({ field: 'right', title: '操作', width: "140", align: 'center', fixed: 'right', toolbar: '#bar' });
+            }
+
+            var tableOptions = {
+                useRsa: true,
+                url: getListUrl,
+                size: 'sm',
+                even: true,
+                method: 'POST',
+                cols: [cols],
+                page: true,
+                limit: 30,
+                limits: [10, 20, 30, 50, 100],
+                response: {statusCode:1,msgName: 'message'},
+                height: 'full-' + ($('.data-header').outerHeight(true) + 5),
+                done: function () { layer.closeAll('loading'); },
+                request: { pageName: 'pageIndex', limitName: 'pageSize' },
+                text: { none: '<span style="color:red;">暂无记录</span>' }
+            };
+
+            var layer = layui.layer, table = layui.table;
+            layer.load(2);
+            table.init('dataList', tableOptions);
+            table.on('sort(dataList)', function (obj) {
+                table.reload("dataList", { initSort: obj, where: { field: obj.field, order: obj.type }, page: { curr: 1 } });
+            });
+
+            table.on('rowDouble(dataList)', function (obj) {
+                var tr = obj.tr[0];
+                $(tr).find("a[edit]").trigger("click");
+            });
+
+            $('.search-btn').click(function (event) {
+                layer.load(2);
+                event && event.stopPropagation();
+                table.reload("dataList", {
+                    where: {
+                        sqlConnName: $("#txt_sqlConnName").val(),
+                        title: $("#txt_title").val(),
+                        adminname: $("#txt_name").val(),
+                        adminjobNo: $("#txt_jobNo").val(),
+                        admintrueName: $("#txt_trueName").val(),
+                    }
+                    , page: { curr: 1 }
+                });
+                return false;
+            });
+
+        });
+        function pageReload() {
+            location.reload();
+        }
+        function reload() {
+            layui.table.reload("dataList");
+        }
+
+    </script>
+}

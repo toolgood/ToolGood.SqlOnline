@@ -1,0 +1,61 @@
+﻿@page
+@model ToolGood.SqlOnline.Pages.Admins.Securitys.IpBanEditModel
+@{
+    Layout = "~/Pages/Shared/_Layout_Edit.cshtml";
+}
+<div style="background-color:#f3f3f4;height:100%;">
+    <form id="edit-form">
+        <input type="hidden" name="id" value="@Model.IPAddress.Id" />
+        @Html.AntiForgeryToken()
+        <div class="layui-form" lay-filter="form" style="padding: 20px 30px 0 0;">
+            <div class="layui-form-item">
+                <label class="layui-form-label">名称<span class="red"> *</span></label>
+                <div class="layui-input-block">
+                    <input type="text" class="layui-input" id="txt_name" name="name" value="@Model.IPAddress.Name" autocomplete="off">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">IP地址<span class="red"> *</span></label>
+                <div class="layui-input-block">
+                    <input type="text" class="layui-input" id="txt_ip" name="ip" value="@Model.IPAddress.Ip" autocomplete="off">
+                    <div class="layui-form-mid layui-word-aux">
+                        支持CIDR表示法：{ip}/{位数}
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">状态</label>
+                <div class="layui-input-block">
+                    <input type="checkbox" name="IsDisable" lay-skin="primary" value="true" @(Model.IPAddress.IsDisable.ToChecked()) title="禁用" />
+                </div>
+            </div>
+
+            <div class="layui-form-item" style="text-align:center;padding-left: 30px;">
+                <button type="button" class="layui-btn layui-btn-normal" onclick="save(this);"> &nbsp;&nbsp; 提 交 &nbsp;&nbsp; </button>
+                <button type="button" class="layui-btn layui-btn-primary" onclick="closeWindow();"> &nbsp;&nbsp; 关 闭 &nbsp;&nbsp; </button>
+            </div>
+        </div>
+    </form>
+</div>
+@section js{
+    <script>
+        function save(obj) {
+            if ($("#txt_name").val().length == 0) { layer.alert("请输入名称"); $("#txt_name").focus(); return; }
+            if ($("#txt_ip").val().length < 7) { layer.alert("请输入IP地址"); $("#txt_ip").focus(); return; }
+
+            $(obj).prop("disabled", true);
+            var url = "./Ajax/EditIpBan";
+            var data = $("#edit-form").serializeJson();
+            $.adminModePost(url, data, function () {
+                closeWindowAndReload();
+            }, function (data) {
+                $(obj).prop("disabled", false);
+                if (data.message) {
+                    layer.msg(data.message);
+                } else {
+                    layer.msg("出错了");
+                }
+            });
+        }
+    </script>
+}

@@ -1,0 +1,150 @@
+﻿@page
+@model ToolGood.SqlOnline.Pages.Sqls.Docs.OpenModel
+@{
+    Layout = "~/Pages/Shared/_Layout_Edit.cshtml";
+}
+<div style="overflow: hidden;">
+    <div class="data-header">
+        <div class="search-v2" style="padding:3px">
+            <form onsubmit="javascript:return false;">
+                <div class="filter">
+                    <label class="label">文档类型：</label>
+                    <select id="sel_docType">
+                        <option value="0">用户文档</option>
+                        <option value="1">临时SQL</option>
+                        <option value="2">共享文档</option>
+                    </select>
+                </div>
+                <div class="filter">
+                    <label class="label">数据库名：</label>
+                    <input type="text" class="text" name="name" id="txt_connName" autocomplete="off">
+                </div>
+                <div class="filter">
+                    <label class="label">文档名：</label>
+                    <input type="text" class="text" name="name" id="txt_docName" autocomplete="off">
+                </div>
+                <div class="filter">
+                    <button type="button" class="layui-btn layui-btn-xs layui-btn-normal search-btn">&nbsp; 搜索 &nbsp; </button>
+                    <button type="button" class="layui-btn layui-btn-xs layui-btn-primary" onclick="pageReload()">&nbsp; 重置 &nbsp; </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="data-content">
+        <table class="layui-hide" id="dataList" lay-filter="dataList"></table>
+    </div>
+</div>
+<script type="text/template" id="bar">
+    <a href="javascript:;" onclick="openDoc({{ d.sqlDocType }},{{ d.id }},'{{ d.title }}','{{d.modifyTime}}')" edit style="color:blue;">打开</a>
+    {{# if(d.sqlDocType==0 || d.sqlDocType==1){ }}
+    <span> &nbsp; &nbsp; </span>
+    <a href="javascript:deleteDoc({{ d.sqlDocType }},{{ d.id }},'{{ d.title }}');" style="color:blue;">删除</a>
+    {{# } }}
+</script>
+<form id="edit-form" style="display:none">
+    <input type="hidden" name="id" id="from-id" />
+    @Html.AntiForgeryToken()
+</form>
+
+@section js{
+    <script>
+        function openDoc(sqlDocType, id, title, modifyTime) {
+            var action = "openDoc";
+            if (sqlDocType == 1) { action = "openDocTemp"; }
+            if (sqlDocType == 2) { action = "openDocShare"; title = "[共享]" + title; }
+            var url = "/Sqls/Editors/Main?action=" + action + "&id=" + id;
+            if (title == "") {
+                title = "临时文档" + id;
+            }
+            top.addMenuTab(title, url)
+            closeWindow();
+        }
+        function deleteDoc(sqlDocType, id, name) {
+            var url = "./Ajax/DeleteSqlDoc";
+            if (sqlDocType == 1) { url = "./Ajax/DeleteSqlDocTemp"; }
+            if (sqlDocType == 2) { layui.layer.msg("无法删除"); return; }
+
+            $("#edit-form input[name=id]").val(id);
+            layer.confirm('删除文档【' + name + "】吗？", function (index) {
+                $.adminModePost(url, $("#edit-form").serializeJson(), function () { reload(); });
+                layer.close(index);
+            })
+        }
+        layui.use(["layer", "form", "table"], function () {
+            var getListUrl = './Ajax/GetSqlDocList';
+            var cols = [];
+            cols.push({ field: 'id', title: '序号', width: "60", });
+            cols.push({ field: 'sqlConnName', title: '数据库名称', width: "100", });
+            cols.push({ field: 'title', title: '标题', width: "150", });
+            cols.push({ field: 'lastOpenTime', title: '最后打开时间', width: "150", });
+            cols.push({ field: 'modifyTime', title: '修改时间', width: "150", });
+            cols.push({ field: 'adminTrueName', title: '姓名', width: "80", });
+            cols.push({ field: 'right', title: '操作', width: "100", align: 'center', fixed: 'right', toolbar: '#bar' });
+
+            var tableOptions = {
+                useRsa: true,
+                url: getListUrl,
+                size: 'sm',
+                even: true,
+                method: 'POST',
+                cols: [cols],
+                page: true,
+                limit: 10,
+                limits: [10, 20, 30, 50, 100],
+                response: { statusCode: 1, msgName: 'message' },
+                height: 'full-' + ($('.data-header').outerHeight(true) + 5),
+                done: function () { layer.closeAll('loading'); },
+                request: { pageName: 'pageIndex', limitName: 'pageSize' },
+                text: { none: '<span style="color:red;">暂无记录</span>' }
+            };
+
+
+            var layer = layui.layer, table = layui.table;
+            layer.load(2);
+            table.init('dataList', tableOptions);
+            table.on('sort(dataList)', function (obj) {
+                table.reload("dataList", { initSort: obj, where: { field: obj.field, order: obj.type }, page: { curr: 1 } });
+            });
+            table.on('rowDouble(dataList)', function (obj) {
+                var tr = obj.tr[0];
+                $(tr).find("a[edit]").trigger("click");
+            });
+            $("#sel_docType").change(function () {
+                layer.load(2);
+                event && event.stopPropagation();
+                table.reload("dataList", {
+                    where: {
+                        sqlDocType: $("#sel_docType").val(),
+                        sqlConnName: $("#txt_connName").val(),
+                        title: $("#txt_docName").val()
+                    }
+                    , page: { curr: 1 }
+                });
+                return false;
+            })
+
+            $('.search-btn').click(function (event) {
+                layer.load(2);
+                event && event.stopPropagation();
+                table.reload("dataList", {
+                    where: {
+                        sqlDocType: $("#sel_docType").val(),
+                        sqlConnName: $("#txt_connName").val(),
+                        title: $("#txt_docName").val()
+                    }
+                    , page: { curr: 1 }
+                });
+                return false;
+            });
+
+        });
+        function pageReload() {
+            location.reload();
+        }
+        function reload() {
+            layui.table.reload("dataList");
+        }
+    </script>
+
+
+}

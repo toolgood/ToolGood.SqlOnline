@@ -1,0 +1,118 @@
+﻿@page
+@model ToolGood.SqlOnline.Pages.Admins.Database.ConnListModel
+@{
+    Layout = "~/Pages/Shared/_Layout_List.cshtml";
+}
+<div style="overflow: hidden;">
+    <div class="data-header">
+        <div class="search-v2">
+            <form onsubmit="javascript:return false;">
+                <div class="filter">
+                    <label class="label">名称：</label>
+                    <input type="text" class="text" name="name" id="txt_name" autocomplete="off">
+                </div>
+                <div class="filter">
+                    <button type="button" class="layui-btn layui-btn-xs layui-btn-normal search-btn">&nbsp; 搜索 &nbsp; </button>
+                    <button type="button" class="layui-btn layui-btn-xs layui-btn-primary" onclick="pageReload()">&nbsp; 重置 &nbsp; </button>
+                </div>
+                @if (Model.ButtonPass.CanEdit) {
+                    <div class="filter"> | </div>
+                    <div class="filter">
+                        <a href="./ConnEdit?h=420&w=800" class="layui-btn layui-btn-xs layui-btn-primary openwin" title="新增连接字符串"> &nbsp; 新增连接字符串 &nbsp; </a>
+                    </div>
+                }
+            </form>
+        </div>
+    </div>
+    <div class="data-content">
+        <table class="layui-hide" id="dataList" lay-filter="dataList"></table>
+    </div>
+</div>
+<form id="delete-form" class="hidden">
+    @Html.AntiForgeryToken()
+    <input type="hidden" name="id" value="" />
+</form>
+<script type="text/template" id="bar">
+    @if (Model.ButtonPass.CanEdit) {
+        <a href="./ConnEdit?h=420&w=800&id={{ d.id }}" edit class="openwin" title="编辑连接字符串"> 编辑</a>
+        <span>&nbsp; &nbsp;</span>
+    }
+    @if (Model.ButtonPass.CanDelete) {
+        <a href="javascript:deleteItem({{ d.id }},'{{ d.name }}');">删除</a>
+    }
+</script>
+@section js{
+    <script>
+        var showBar = '@(Model.ButtonPass.CanEditOrDelete?"1":"0")';
+        function deleteItem(id, name) {
+            $("#delete-form input[name=id]").val(id);
+            layer.confirm('删除数据库连接字符串【' + name + "】吗？", function (index) {
+                var url = "./ajax/DeleteConn";
+                $.adminModePost(url, $("#delete-form").serializeJson(), function () { location.reload(); });
+                layer.close(index);
+            })
+        }
+        layui.use(["layer", "form", "table"], function () {
+            var getListUrl = './ajax/GetConnList';
+            var cols = [];
+            //cols.push({ checkbox: true, fixed: true });
+            cols.push({ field: 'LAY_TABLE_INDEX', title: '序号',width:"60", templet: function (d) { return d.LAY_TABLE_INDEX + 1; } });
+            cols.push({ field: 'name', title: '名称', width: "300",  });
+            cols.push({ field: 'sqlType', title: '数据库类型', width: "120", });
+            cols.push({ field: 'comment', title: '备注', width: "300", });
+
+            if (showBar == '1') {
+                cols.push({ field: 'right', title: '操作', width: "140", align: 'center', fixed: 'right', toolbar: '#bar' });
+            }
+
+            var tableOptions = {
+                useRsa: true,
+                url: getListUrl,
+                size: 'sm',
+                even: true,
+                method: 'POST',
+                cols: [cols],
+                page: true,
+                limit: 30,
+                limits: [10, 20, 30, 50, 100],
+                response: {statusCode:1,msgName: 'message'},
+                height: 'full-' + ($('.data-header').outerHeight(true) + 5),
+                done: function () { layer.closeAll('loading'); },
+                request: { pageName: 'pageIndex', limitName: 'pageSize' },
+                text: { none: '<span style="color:red;">暂无记录</span>' }
+            };
+
+            var layer = layui.layer, table = layui.table;
+            layer.load(2);
+            table.init('dataList', tableOptions);
+            table.on('sort(dataList)', function (obj) {
+                table.reload("dataList", { initSort: obj, where: { field: obj.field, order: obj.type }, page: { curr: 1 } });
+            });
+
+            table.on('rowDouble(dataList)', function (obj) {
+                var tr = obj.tr[0];
+                $(tr).find("a[edit]").trigger("click");
+            });
+
+            $('.search-btn').click(function (event) {
+                layer.load(2);
+                event && event.stopPropagation();
+                table.reload("dataList", {
+                    where: {
+                        search: $("#txt_name").val(),
+                    }
+                    , page: { curr: 1 }
+                });
+                return false;
+            });
+
+        });
+        function pageReload() {
+            location.reload();
+        }
+        function reload() {
+            layui.table.reload("dataList");
+        }
+
+    </script>
+}

@@ -1,0 +1,202 @@
+﻿@page
+@model ToolGood.SqlOnline.Pages.Developments.TableInfoModel
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>数据结构</title>
+    <link href="/_/css/global.css" rel="stylesheet" />
+    <link href="/_/css/dbs.css" rel="stylesheet" />
+    <link href="/_/layui/css/layui.css" rel="stylesheet" />
+</head>
+<body>
+    <div class="Filter" style="font-size:13px;overflow:hidden">
+        <form id="edit-form">
+            <input type="hidden" id="SqlConnId" name="SqlConnId" value="@Model.ConnId" />
+            库：
+            <select name="DatabaseName" id="DatabaseName" style="height: 20px;">
+                @Model.DatabaseEntities.ToOption(q => q.DatabaseName.ToString(), Model.DatabaseName)
+            </select>
+            <button type="button" class="selectDb" onclick="loadTable()" title="">切换</button>
+            | 筛选：<input id="inputSearch" type="text" class="inputSearch" style="width:60px;" title="请输入关键字">
+        </form>
+    </div>
+    <div class="main" style="padding: 5px;">
+        <div class="ReturnLeft" style="width: 100%;">
+            <div class="ReturnContent" style="width: 100%;">
+            </div>
+        </div>
+    </div>
+
+    <script type="text/template" id="tpl">
+        <ul class="tree">
+            {{ for (var i=0;i<it.length;i++){ }}
+            {{ var t=it[i]; }}
+            <li class="i {{= t.t }} " id="{{= t.n }}" data-commont="{{= (t.c!=undefined?t.c:"") }}" data-tname="{{= t.n }}">
+                <span style="width:100%" class="table">
+                    <i class="layui-icon orange table hidden">&#xe658;</i> {{= t.n }}
+                    <i class="i">【{{= (t.c!=undefined?t.c:"") }}】</i>
+                </span>
+                <ul>
+                    {{ for (var j=0;j<t.items.length;j++){ }}
+                    {{ var c=t.items[j]; }}
+                    <li class="i field {{= c.k }}" data-commont="{{= (c.c!=undefined?c.c:"") }}" data-name="{{= c.n }}">
+                        <span style="width:100%">
+                            <i class="layui-icon orange hidden">&#xe658;</i><a href="javascript:;" class="copy" tabindex="-1" data-clipboard-text="{{= c.n}}">{{= c.n}}</a>
+                            <i>{{= c.t}}{{= (c.nu!=undefined?c.nu:"")}}</i>
+                            <i class="i">{{= (c.c!=undefined?c.c:"") }}</i>{{ if(c.v!=undefined){ }}<i class="ii">{{= c.v }}</i>{{  } }}
+                        </span>
+                    </li>
+                    {{  } }}
+                </ul>
+            </li>
+            {{  } }}
+        </ul>
+    </script>
+    <script type="text/template" id="menu-tpl">
+        <li><a class="expandAll">展开全部</a></li>
+        <li><a class="contractAll">折叠全部</a></li>
+        <li class="separator"></li>
+        <li><a class="showLock">只显示锁定</a></li>
+        <li><a class="showAll">显示全部</a></li>
+    </script>
+    <script src="/_/js/jquery.min.js"></script>
+    <script src="/_/layui/layui.all.js"></script>
+    <script src="/_/frame/AjaxData.js"></script>
+    <script src="/_/js/doT.min.js"></script>
+    <script src="/_/js/clipboard.js"></script>
+
+    <script>
+        function getParameter(val) {
+            var re = new RegExp("[?&]" + val + "=([^&?]*)", "ig");
+            var url = location.search;
+            return ((url.match(re)) ? (decodeURI(url.match(re)[0].substr(val.length + 2))) : '');
+        }
+        function openLoading() { layer.load(2); }
+        function closeLoading() { layer.closeAll("loading"); }
+        function loadTable() {
+            openLoading();
+            var url = "/Developments/Ajax/GetDatabaseInfos";
+            var data = {};
+            data["SqlConnId"] = $("#SqlConnId").val();
+            data["Database"] = $("#DatabaseName").val();
+
+            $.post(url, data, function (data) {
+                closeLoading();
+                if (data.state == "SUCCESS") {
+                    var html = $("#tpl").html();
+                    var tmpText = doT.template(html);
+                    var h = tmpText(data.data);
+                    $(".ReturnContent").html(h);
+                } else {
+                    layer.msg(data.message);
+                }
+            })
+        }
+
+        function lockThis(obj) {
+            $(obj).parent().parent().addClass("lock");
+            $(obj).parent().parent().find("li").addClass("lock");
+            $(obj).parent().parent().find("i.orange").removeClass("hidden");
+            $(obj).hide();
+        }
+        function unlockThis(obj) {
+            $(obj).parent().parent().removeClass("lock");
+            $(obj).parent().parent().find("li").removeClass("lock");
+            $(obj).parent().parent().find("i.orange").addClass("hidden");
+            $(obj).hide();
+        }
+
+        function setConentMenu(e) {
+            var $obj = $($("#menu-tpl").html());
+            $obj.find(".expandAll").click(function () {
+                $('.main .ReturnLeft ul li ul').css("display", "block");
+            });
+            $obj.find(".contractAll").click(function () {
+                $('.main .ReturnLeft ul li ul').css("display", "none");
+            });
+            $obj.find(".showAll").click(function () {
+                $('.main .ReturnLeft ul li').css("display", "");
+                $('.main .ReturnLeft ul li ul').css("display", "none");
+            });
+            $obj.find(".showLock").click(function () {
+                $('.main .ReturnLeft ul li').css("display", "");
+                $('.main .ReturnLeft ul li ul').css("display", "none");
+                $(".ReturnContent > ul > li").each(function (obj) {
+                    if ($(this).hasClass("lock") == false) {
+                        $(this).hide();
+                    } else {
+                        $(this).find("li").each(function () {
+                            if ($(this).hasClass("lock") == false) {
+                                $(this).css("display", "none");
+                            } else {
+                                $(this).parent().show();
+                            }
+                        })
+                    }
+                })
+            });
+            top.showContextmenu($obj, window, e);
+        }
+
+        $(function () {
+            loadTable();
+            var clipboard = new ClipboardJS('.copy');
+            clipboard.on('success', function (e) {
+                layer.msg("已复制到剪切板中！");
+            });
+
+            $("body").on("click", ".i.t > span,.i.v > span", function () {
+                var sTableId = $(this).parent().attr('id');
+                $('.main .ReturnLeft #' + sTableId + ' ul').slideToggle('fast');
+            });
+            $("body").on("click", ".i.t > span a.tryLock,.i.v > span a.tryLock", function (event) { event.stopPropagation(); });
+
+            $("#inputSearch").keypress(function (e) {
+                if (e.keyCode == 13) { e.preventDefault(); }
+            }).keyup(function (e) {
+                var $text = $(this).val().toLocaleLowerCase();
+                $('.ReturnContent > ul > li').css("display", "none");
+                $('.ReturnContent ul li ul').css("display", "none");
+                $('.ReturnContent ul li ul li').css("display", "");
+                $(".ReturnContent > ul > li").each(function (obj) {
+                    var $this = $(this);
+                    if ($(this).attr("data-commont").toLocaleLowerCase().indexOf($text) >= 0 || $(this).attr("data-tname").toLocaleLowerCase().indexOf($text) >= 0) {
+                        $(this).show();
+                    } else {
+                        $(this).find("li").each(function () {
+                            if ($(this).attr("data-commont").toLocaleLowerCase().indexOf($text) >= 0 || $(this).attr("data-name").toLocaleLowerCase().indexOf($text) >= 0) {
+                                $this.show();
+                                $(this).parent().show();
+                                $(this).show();
+                            } else {
+                                $(this).hide();
+                            }
+                        })
+                    }
+                })
+            })
+            $('.main').on({
+                mouseenter: function () {
+                    var inner = "<a href='javascript:;' tabindex='-1' class='tryLock' onclick='lockThis(this);'>锁定</a>";
+                    if ($(this).parent().hasClass("lock")) {
+                        inner = "<a href='javascript:;' tabindex='-1' class='tryLock' onclick='unlockThis(this);'>解除锁定</a>";
+                    }
+                    $(this).find('i.i').before(inner);
+                },
+                mouseleave: function () { $('.tryLock').remove(); }
+            }, 'li span.table');
+
+            $(document).contextmenu(function (e) {
+                setConentMenu(e);
+                return false;
+            });
+        });
+ 
+    </script>
+
+</body>
+</html>

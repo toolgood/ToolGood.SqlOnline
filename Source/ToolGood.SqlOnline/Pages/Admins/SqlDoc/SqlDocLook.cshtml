@@ -1,0 +1,46 @@
+﻿@page
+@model ToolGood.SqlOnline.Pages.Admins.SqlDoc.SqlDocLookModel
+@{
+    Layout = "~/Pages/Shared/_Layout_Edit.cshtml";
+}
+<div style="overflow-x:hidden">
+    <form id="edit-form">
+        <div class="layui-form" style="padding: 20px 30px 0 0;">
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">数据库名称</label>
+                <div class="layui-input-block">
+                    <div class="layui-input" style="padding:8px;"><span style="color:blue"> [@Model.SqlDoc.SqlType]</span> @Model.SqlDoc.SqlConnName</div>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">标题</label>
+                <div class="layui-input-block">
+                    <input type="text" class="layui-input" value="@Model.SqlDoc.Title" readonly>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">内容</label>
+                <div class="layui-input-block">
+                    <textarea class="layui-textarea" style="height: 130px;" readonly>@(Model.SqlDoc.Content)</textarea>
+                    <div class="layui-form-mid layui-word-aux">
+                        @Model.SqlDoc.AdminName
+                        @if (string.IsNullOrEmpty(Model.SqlDoc.AdminJobNo) == false) {
+                            <span> | @(Model.SqlDoc.AdminJobNo) </span>
+                        }
+                        |  @(Model.SqlDoc.AdminTrueName)
+                        @if (string.IsNullOrEmpty(Model.SqlDoc.AdminPhone) == false) {
+                            <span> |  @Model.SqlDoc.AdminPhone </span>
+                        }
+                        <span> |  @Model.SqlDoc.ModifyTime.ToString("yyyy-MM-dd HH:mm:ss") </span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="layui-form-item" style="text-align:center;padding-left: 30px;">
+                <button type="button" class="layui-btn layui-btn-primary" onclick="closeWindow();"> &nbsp;&nbsp; 关 闭 &nbsp;&nbsp; </button>
+            </div>
+        </div>
+
+    </form>
+</div>

@@ -1,0 +1,91 @@
+﻿@page
+@using ToolGood.SqlOnline.Configs
+@model IndexModel
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <meta http-equiv="Content-Language" content="zh-CN" />
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="Cache-Control" content="no-siteapp" />
+    <meta http-equiv="Cache-Control" content="no-transform" />
+    <meta name="robots" content="noindex,nofollow">
+    <title>SQL online 登录页面</title>
+    <script>if (self != top) { top.location.href = self.location.href; }</script>
+    <link href="/_/login/login.css" v rel="stylesheet" />
+</head>
+<body>
+    <div class="loginscreen" style="padding-top:150px;">
+        <div>
+            <div>
+                <img src="/_/img/logo.png" v alt="SQL Online Logo" style="width:260px;" />
+            </div>
+            <form id="loginForm" style="margin-top: 30px;" autocomplete="off">
+                @Html.AntiForgeryToken()
+                <div id="hidden" class="hidden" style="display:none;width:0;height:0;">
+                    <input type="text" name="username" id="username" value="test" maxlength="20" required="" placeholder="请输入用户名" autocomplete="off" />
+                    <input type="password" name="password" id="password" value="fuckAutocomplete" maxlength="20" required="" placeholder="请输入密码" autocomplete="new-password" />
+                </div>
+
+                <div class="form-group">
+                    @if (SystemSetting.EnvironmentType.HasFlag(EnvironmentType.Debug)) {
+                        <input type="text" value="admin" class="form-control" placeholder="账号 UserName" name="tname" maxlength="20" id="tname" autocomplete="off" autofocus>
+                    } else {
+                        <input type="text" value="" class="form-control" placeholder="账号 UserName" name="tname" maxlength="20" id="tname" autocomplete="off" autofocus>
+                    }
+                </div>
+                <div class="form-group">
+                    <input type="password" class="form-control" placeholder="密码 Password" maxlength="20" name="tpwd" autocomplete="new-password" style="display:none">
+                    @if (SystemSetting.EnvironmentType.HasFlag(EnvironmentType.Debug)) {
+                        <input type="password" value="a123456" class="form-control" placeholder="密码 Password" maxlength="20" id="tpwd" autocomplete="new-password">
+                    } else {
+                        <input type="password" value="" class="form-control" placeholder="密码 Password" maxlength="20" id="tpwd" autocomplete="new-password">
+                    }
+
+                </div>
+                <div class="form-group l">
+                    <input type="text" class="form-control Code" placeholder="验证码 Captcha" name="vcode" maxlength="5" id="vcode" autocomplete="off" autofocus>
+                    <div class="CodeImg" style="padding-top: 0px;">
+                        <img src="/Admins/Account/VerifyCode" id="vcode-img" width="100" height="32" alt="点击切换验证码" class="vcode" title="点击切换验证码" />
+                    </div>
+                </div>
+                <button type="button" class="btn" onclick="login()"> 登 录 &nbsp; Login </button>
+
+            </form>
+            <p class="copyright">
+                <small>
+                    Copyright &copy; 2021
+                    <a href="http://www.toolgood.com" target="_blank">ToolGood.com</a>
+                    All Rights Reserved.
+                </small>
+            </p>
+        </div>
+    </div>
+    <iframe id="newWin" src="" style="width:0;height:0"></iframe>
+    <script src="/_/js/jquery.min.js"></script>
+    <script src="/_/layer/layer.js"></script>
+    <script src="/_/frame/AjaxData.js"></script>
+    @if (SystemSetting.EnvironmentType.HasFlag(EnvironmentType.Debug)) {
+        <script>
+            if (localStorage) {
+                localStorage.setItem("debug", "true");
+            }
+        </script>
+    }
+    <script> $(function () { $.init('@(Model.RsaModulus)', '@(Model.RsaExponent)'); }) </script>
+    <script src="/_/login/adminLogin.js"></script>
+    <script>
+        var _hmt = _hmt || [];
+        (function () {
+            var hm = document.createElement("script");
+            hm.src = "https://hm.baidu.com/hm.js?b3ecaecfd213e672759183a18e7a965b";
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(hm, s);
+        })();
+    </script>
+</body>
+</html>

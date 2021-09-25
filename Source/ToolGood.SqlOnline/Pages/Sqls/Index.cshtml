@@ -1,0 +1,252 @@
+﻿@page
+@model ToolGood.SqlOnline.Pages.Sqls.IndexModel
+@{
+    Layout = "~/Pages/Shared/_Layout_Index.cshtml";
+}
+@section css{
+    <link href="/_/zTree/css/zTreeStyle.css" rel="stylesheet" />
+    <link href="/_/css/sqls.css" rel="stylesheet" />
+}
+<div id="app" class="layui-layout layui-layout-admin">
+    <div id="header" class="layui-header header ">
+        <div class="layui-main">
+            <div class="logo">
+                <span class="logo-lg" style="font-size: 24px;"> @(Model.Logo) </span>
+            </div>
+            <ul class="layui-nav" pc="" id="top_Menu">
+                <li class="layui-nav-item" lay-unselect>
+                    <a href="javascript:;" class="layui-icon pack pack-left" title="收起左侧菜单"></a>
+                </li>
+                @foreach (var item in Model.TopMenus) {
+                    if (string.IsNullOrEmpty(item.Url)) {
+                        <li class="layui-nav-item"><a href="/admins/?code=@item.Code" data-id="@item.Id" @Model.GetMenuClass(item)>@item.Name</a></li>
+                    } else {
+                        <li class="layui-nav-item"><a href="@item.Url" data-id="@item.Id" @Model.GetMenuClass(item)>@item.Name</a></li>
+                    }
+                }
+            </ul>
+
+            <ul class="layui-nav useroption" style="left:auto;right:0">
+                <li class="layui-nav-item">
+                    <a href="javascript:;" style="color:white;"> 你好！@Model.AdminDto.TrueName</a>
+                    <dl class="layui-nav-child" style="top: 45px;">
+                        <dd><a href="/admins/User/Info?w=500&h=350" style="color:black;" class="openwin" title="用户信息">修改信息</a></dd>
+                        <dd><a href="/admins/User/ChangePassword?w=500&h=300" style="color:black;" class="openwin" title="修改登录密码">修改登录密码</a></dd>
+                        @if (Model.AdminDto.IsAdminMode()) {
+                            <dd><a href="/admins/Tools/Ajax/Logout" id="AdminMode" style="color:black;" title="退出管理模式">退出管理模式</a></dd>
+                        } else {
+                            <dd><a href="/admins/Tools/Ajax/Logout" id="AdminMode" style="color:black;display:none" title="退出管理模式">退出管理模式</a></dd>
+                        }
+                    </dl>
+                </li>
+                <li class="layui-nav-item">
+                    <a href="/admins/logout" title="退出登录">退出</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div style="height: calc( 100% - 42px); width: 100%; position: absolute">
+        <div id="layui-side" class="layui-side layui-bg-black">
+            <div class="layui-side-scroll" style="width: 100%;">
+                <div style="width: 100%;background-color: #eee;">
+                    <div class="layui-btn-group">
+                        <a href="https://sqlonline.toolgood.com/" class="layui-btn layui-btn-primary layui-btn-sm J_menuItem" style="background-color: #e2e2e2;font-weight:bold;">
+                            <i class="layui-icon">&#xe68e;</i>主页
+                        </a>
+                        <a href="/sqls/docs/open?w=800&h=500" title="文档" class="layui-btn layui-btn-primary layui-btn-sm openwin" style="background-color: #e2e2e2;font-weight:bold;">
+                            <i class="layui-icon">&#xe63c;</i>文档
+                        </a>
+                        <a href="https://github.com/toolgood/ToolGood.SqlOnline/issues" target="_blank" class="layui-btn layui-btn-primary layui-btn-sm" style="background-color: #e2e2e2;font-weight:bold;">
+                            <i class="layui-icon">&#xe606;</i>反馈
+                        </a>
+                    </div>
+                </div>
+
+                <div id="side-scroll" style="display: block;height: calc(100% - 30px);">
+                    <ul id="treeDemo" class="ztree"></ul>
+                </div>
+            </div>
+        </div>
+        <div id="layui-body" class="layui-body" style="bottom:0; ">
+            <div class="row content-tabs">
+                <button class="roll-nav roll-left layui-icon J_tabLeft"> &#xe65a; </button>
+                <nav class="page-tabs J_menuTabs"><div class="page-tabs-content"></div></nav>
+                <button class="roll-nav roll-right layui-icon J_tabRight"> &#xe65b; </button>
+                <ul class="layui-nav btn-group roll-nav roll-right more-opt">
+                    <li class="layui-nav-item">
+                        <a class="dropdown J_tabClose" data-toggle="dropdown">操作</a>
+                        <dl class="layui-nav-child">
+                            <dd class="J_tabShowActive"><a>定位当前选项卡</a></dd>
+                            <dd class="J_tabCloseAll"><a>关闭全部选项卡</a></dd>
+                            <dd class="J_tabCloseOther"><a>关闭其他选项卡</a></dd>
+                        </dl>
+                    </li>
+                </ul>
+            </div>
+            <div class="content-main">
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="displayDiv" style="display:none"></div>
+<ul id='contextmenu-div' class='contextmenu'></ul>
+
+<script type="text/template" id="menu-tpl">
+    <li><a class="cm-new">新建查询</a></li>
+    <li><a class="cm-structure">数据结构查询</a></li>
+    <li class="separator"></li>
+
+    <li class="hidden separator ts-menu t-menu"></li>
+    <li class="hidden header t-menu">表操作</li>
+    <li class="hidden t-menu sql"><a class="TableSelect100">查询前100条数据</a></li>
+    <li class="hidden separator t-menu"></li>
+    <li class="hidden t-menu sql"><a class="TableInsertSql">生成INSERT语句</a></li>
+    <li class="hidden t-menu sql"><a class="TableUpdateSql">生成UPDATE语句</a></li>
+    <li class="hidden t-menu sql"><a class="TableDeleteSql">生成DELETE语句</a></li>
+
+    <li class="hidden separator vs-menu v-menu"></li>
+    <li class="hidden header v-menu">视图操作</li>
+    <li class="hidden v-menu sql"><a class="ViewSelect100">查询前100条数据</a></li>
+    <li class="hidden separator t-menu"></li>
+    <li class="hidden v-menu sql"><a class="ViewCreateSql">生成CREATE语句</a></li>
+    <li class="hidden v-menu sql"><a class="ViewAlterSql">生成ALTER语句</a></li>
+
+    <li class="hidden separator ps-menu p-menu"></li>
+    <li class="hidden header p-menu">存储过程操作</li>
+    <li class="hidden p-menu sql"><a class="ProcedureExecuteSql">生成EXECUTE语句</a></li>
+    <li class="hidden separator p-menu"></li>
+    <li class="hidden p-menu sql"><a class="ProcedureCreateSql">生成CREATE语句</a></li>
+    <li class="hidden p-menu sql"><a class="ProcedureAlterSql">生成ALTER语句</a></li>
+
+    <li class="hidden separator fs-menu f-menu"></li>
+    <li class="hidden header f-menu">函数操作</li>
+    <li class="hidden f-menu sql"><a class="FunctionSelectSql">生成SELECT语句</a></li>
+    <li class="hidden separator f-menu"></li>
+    <li class="hidden f-menu sql"><a class="FunctionCreateSql">生成CREATE语句</a></li>
+    <li class="hidden f-menu sql"><a class="FunctionAlterSql">生成ALTER语句</a></li>
+
+</script>
+@section js{
+    <script src="/_/js/split.min.js"></script>
+    <script src="/_/zTree/js/jquery.ztree.core.js"></script>
+    <script src="/_/js/jquery.nicescroll.min.js"></script>
+    <script src="/_/js/clipboard.js"></script>
+    <script>
+        var treeObj;
+        var index = 1;
+        $(function () {
+            Split(['#layui-side', '#layui-body'], { sizes: [15, 85], minSize: [200, 0], gutterSize: 5, snapOffset: 0, });
+            $("#side-scroll").niceScroll({
+                cursorcolor: "rgba(255, 255, 255, 0.5)", // 改变滚动条颜色，使用16进制颜色值
+                cursorwidth: "6px", // 滚动条的宽度，单位：便素
+                cursorborder: "0", // CSS方式定义滚动条边框
+                cursorborderradius: "5px", // 滚动条圆角（像素）
+                zindex: "999999", // 改变滚动条的DIV的z-index值
+                railalign: 'right', // 对齐垂直轨道
+                railvalign: 'bottom', // 对齐水平轨道
+            });
+            $("#side-scroll").mouseenter(function () { setTimeout(function () { $("#side-scroll").getNiceScroll().resize(); }, 200); })
+
+            //setTimeout(function () { addMenuTab("主页", "https://toolgood.com/sqlonline"); }, "500");
+
+            var autoParam = ["sqlConnId", "sqlType", "database", "schema", "searchType", "search"];
+            var settingAsync = {
+                treeId: "tree",
+                async: { url: "/sqls/ajax/GetSqlTree", enable: true, type: 'POST', contentType: "application/json", dataType: "JSON", autoParam: autoParam, useRsa: true }
+                , data: { simpleData: { enable: true } }
+                , view: { selectedMulti: false }
+                , callback: {
+                    onRightClick: zTreeOnRightClick,
+                    onDblClick: zTreeOnDblClick,
+                    onAsyncSuccess: function () { setTimeout(function () { $("#side-scroll").getNiceScroll().resize(); }, 300); },
+                    onExpand: function () { setTimeout(function () { $("#side-scroll").getNiceScroll().resize(); }, 300); },
+                }
+            };
+            treeObj = $.fn.zTree.init($("#treeDemo"), settingAsync, []);
+        });
+    </script>
+
+    <script>
+        String.prototype.startWith = function (str) {
+            if (str == null || str == "" || this.length == 0 || str.length > this.length) { return false; }
+            if (this.substring(0, str.length) == str) { return true; }
+            return false;
+        };
+        function getTitleByZtreeNode(treeNode) {
+            var node = treeNode;
+            while (node.level > 1) { node = node.getParentNode(); }
+            var title = node.name + "-" + index;
+            return title;
+        }
+        function zTreeOnDblClick(event, treeId, treeNode) {
+            if (treeNode == null) { return; }
+            var menuCode = "";
+            if (treeNode.id.startWith("t-")) { menuCode = "TableSelect100"; }
+            if (treeNode.id.startWith("v-")) { menuCode = "ViewSelect100"; }
+            if (treeNode.id.startWith("f-")) { menuCode = "FunctionSelectSql"; }
+            if (treeNode.id.startWith("p-")) { menuCode = "ProcedureExecuteSql"; }
+            if (menuCode == "") { return; }
+            openNewMenuTab(menuCode, treeNode);
+        };
+
+        function openNewMenuTab(menuCode, treeNode) {
+            var tid = new Date().valueOf();
+            var title = getTitleByZtreeNode(treeNode);
+            var sqlConnId = encodeURI(treeNode.sqlConnId);
+            var database = encodeURI(treeNode.database);
+            var schema = encodeURI(treeNode.schema);
+            var name = encodeURI(treeNode.search);
+
+            var url = "/Sqls/Editors/Main?action=" + menuCode + "&title=" + encodeURI(title) + "&sqlConnId=" + sqlConnId + "&database=" + database
+                + "&schema=" + schema + "&name=" + name;
+            addMenuTab(title, url);
+            index++;
+        }
+
+        function zTreeOnRightClick(event, treeId, treeNode) {
+            hideContextmenu();
+            treeObj.selectNode(treeNode);
+            var obj = $($("#menu-tpl").html());
+            var t = treeNode.id.split('-')[0];
+            obj.filter("." + t + "-menu").show();
+            showFunctionContextmenu(obj, window, event);
+            return false;
+        };
+        function showFunctionContextmenu(obj, window, event) {
+            obj.find("a.cm-new").click(function () {
+                var treeNode = treeObj.getSelectedNodes()[0];
+
+                var tid = new Date().valueOf();
+                var title = getTitleByZtreeNode(treeNode);
+                var sqlConnId = encodeURI(treeNode.sqlConnId);
+                var database = encodeURI(treeNode.database);
+
+                var url = "/Sqls/Editors/Main?action=new&title=" + title + "&sqlConnId=" + sqlConnId + "&database=" + database;
+                addMenuTab(title, url);
+                index++;
+            });
+            obj.find("a.cm-structure").click(function () {
+                var treeNode = treeObj.getSelectedNodes()[0];
+                var sqlConnId = encodeURI(treeNode.sqlConnId);
+                var database = encodeURI(treeNode.database);
+                var node = treeNode;
+                while (node.level != 0) { node = node.getParentNode(); }
+
+                var url = "/Sqls/TableInfo?sqlConnId=" + sqlConnId + "&database=" + database;
+                addMenuTab(node.name + "-结构", url);
+                index++;
+            });
+
+            obj.filter(".sql").click(function () {
+                var menuCode = $(this).find("a").attr("class");
+                var treeNode = treeObj.getSelectedNodes()[0];
+                openNewMenuTab(menuCode, treeNode);
+            });
+            showContextmenu(obj, window, event);
+        }
+
+
+
+    </script>
+}

@@ -1,0 +1,65 @@
+﻿@page
+@model ToolGood.SqlOnline.Pages.Admins.Database.Conns.SqlServerModel
+@{
+    Layout = "~/Pages/Shared/_Layout_Edit.cshtml";
+}
+<div style="overflow-x:hidden">
+    <form id="edit-form">
+        <div class="layui-form" style="padding: 20px 30px 0 0;">
+            <div class="layui-form-item">
+                <label class="layui-form-label">服务器IP<span class="red"> *</span></label>
+                <div class="layui-input-block">
+                    <input type="text" class="layui-input" id="ip" autocomplete="off" onchange="change()" onpropertychange="change()">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">端口号<span class="red"> *</span></label>
+                <div class="layui-input-block">
+                    <input type="text" class="layui-input" id="port" value="1433" autocomplete="off" onchange="change()" onpropertychange="change()">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">用户名<span class="red"> *</span></label>
+                <div class="layui-input-block">
+                    <input type="text" class="layui-input" id="user" autocomplete="off" onchange="change()" onpropertychange="change()">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">密码<span class="red"> *</span></label>
+                <div class="layui-input-block">
+                    <input type="text" class="layui-input" id="password" autocomplete="off" onchange="change()" onpropertychange="change()">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">默认数据库</label>
+                <div class="layui-input-block">
+                    <input type="text" class="layui-input" id="database" autocomplete="off" onchange="change()" onpropertychange="change()">
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">连接字符串</label>
+                <div class="layui-input-block">
+                    <textarea class="layui-textarea" id="connectionString" readonly></textarea>
+                </div>
+            </div>
+
+            <div class="layui-form-item" style="text-align:center;padding-left: 30px;">
+                <button type="button" class="layui-btn layui-btn-primary" onclick="closeWindow();"> &nbsp;&nbsp; 关 闭 &nbsp;&nbsp; </button>
+            </div>
+        </div>
+
+    </form>
+</div>
+@section js{
+    <script>
+        function change() {
+            var connStr = "Data Source=" + $("#ip").val() + "," + $("#port").val() +";Integrated Security=False";
+            if ($("#database").val().length > 0) {
+                connStr += ";Initial Catalog=" + $("#database").val();
+            }
+            connStr += ";User ID=" + $("#user").val() + ";Password=" + $("#password").val();
+            $("#connectionString").val(connStr);
+        }
+    </script>
+}

@@ -1,0 +1,99 @@
+﻿@page
+@model ToolGood.SqlOnline.Pages.Admins.Securitys.LoginListModel
+@{
+    Layout = "~/Pages/Shared/_Layout_List.cshtml";
+    Dictionary<string, string> dict = new Dictionary<string, string>();
+    dict["true"] = "成功";
+    dict["false"] = "失败";
+}
+<div style="overflow: hidden;">
+    <div class="data-header">
+        <div class="search-v2">
+            <form onsubmit="javascript:return false;" >
+                <div class="filter">
+                    <label class="label">登录名：</label>
+                    <input type="text" class="text" name="name" id="txt_name" autocomplete="off">
+                </div>
+                <div class="filter">
+                    <label class="label">状态：</label>
+                    <select class="selected" name="success" id="sel_success">
+                        <option value="">请选择</option>
+                        @dict.ToOption();
+                    </select>
+                </div>
+                <div class="filter">
+                    <label class="label">IP地址：</label>
+                    <input type="text" class="text" name="ip" id="txt_ip"  autocomplete="off">
+                </div>
+                <div class="filter">
+                    <button type="button" class="layui-btn layui-btn-xs layui-btn-normal search-btn">&nbsp; 搜索 &nbsp; </button>
+                    <button type="button" class="layui-btn layui-btn-xs layui-btn-primary" onclick="pageReload()">&nbsp; 重置 &nbsp; </button>
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+    <div class="data-content">
+        <table class="layui-hide" id="dataList" lay-filter="dataList"></table>
+    </div>
+</div>
+
+@section js{
+    <script>
+        layui.use(["layer", "form", "table"], function () {
+            var getListUrl = './Ajax/GetAdminLoginList';
+            var cols = [];
+            cols.push({ field: 'id', title: '序号', width: '80',  });
+            cols.push({ field: 'addingTime', title: '时间', width: '160',   });
+            cols.push({ field: 'name', title: '登录名', width: '140', });
+            cols.push({ field: 'machineCode', title: '机器码', width: '250',  });
+            cols.push({ field: 'message', title: '消息', width: '300',  });
+            cols.push({ field: 'success', title: '状态', width: '100', templet: function (d) { if (d.success) { return "成功"; } return "失败"; } });
+            cols.push({ field: 'ip', title: 'Ip地址', width: '200',  });
+
+            var tableOptions = {
+                useRsa: true,
+                url: getListUrl,
+                size: 'sm',
+                even: true,
+                method: 'POST',
+                cols: [cols],
+                page: true,
+                limit: 30,
+                limits: [10, 20, 30, 50, 100],
+                response: {statusCode:1,msgName: 'message'},
+                height: 'full-' + ($('.data-header').outerHeight(true) + 5),
+                done: function () { layer.closeAll('loading'); },
+                request: { pageName: 'pageIndex', limitName: 'pageSize' },
+                text: { none: '<span style="color:red;">暂无记录</span>' }
+            };
+
+            var layer = layui.layer, table = layui.table;
+            layer.load(2);
+            table.init('dataList', tableOptions);
+
+            table.on('sort(dataList)', function (obj) {
+                table.reload("dataList", { initSort: obj, where: { field: obj.field, order: obj.type }, page: { curr: 1 } });
+            });
+
+            $('.search-btn').click(function (event) {
+                layer.load(2);
+                event && event.stopPropagation();
+                table.reload("dataList", {
+                    where: {
+                        name: $("#txt_name").val(),
+                        success: $("#sel_success").val(),
+                        ip: $("#txt_ip").val(),
+                    }
+                    , page: { curr: 1 }
+                });
+                return false;
+            });
+
+        });
+        function pageReload() {
+            location.reload();
+        }
+    </script>
+}
