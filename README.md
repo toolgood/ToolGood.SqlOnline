@@ -96,7 +96,7 @@ POST加密：
 
 ![login-2.png](imgs/login-2.png)
 
-## 调整试说明
+## 调试说明
 先执行ToolGood.DataCreate，生成数据文件。
 
 
