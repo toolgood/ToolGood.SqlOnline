@@ -12,25 +12,17 @@
         jApp.addClass('inited');
     }
 
-    $('.pack').click(function () {
-        onPackHandler(!$('#app').is('.pack-up'))
-    });
+    $('.pack').click(function () { onPackHandler(!$('#app').is('.pack-up')) });
     //左侧
     function onPackHandler(isPaceUp) {
         var jThis = $('.pack');
 
         if (isPaceUp) {
-            layui.data('T_global', {
-                key: 'isPaceUp',
-                value: true
-            });
+            layui.data('T_global', { key: 'isPaceUp', value: true });
             jThis.removeClass('pack-left').addClass('pack-right')
             jApp.addClass('pack-up')
         } else {
-            layui.data('T_global', {
-                key: 'isPaceUp',
-                value: false
-            });
+            layui.data('T_global', { key: 'isPaceUp', value: false });
             jThis.removeClass('pack-right').addClass('pack-left')
             jApp.removeClass('pack-up')
         }

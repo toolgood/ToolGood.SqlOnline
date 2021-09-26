@@ -59,97 +59,84 @@ $(function () {
         }
     }
     _testIsSupportStorage();
-});
-function HidenLoading() { layer.close(_index_loading); }
-function openLoading() { _index_loading = layer.load(1); }
-function MessageAlert(msg, title, icon, callBack) {
-    layer.msg(msg, {
-        title: title,
-        icon: icon,
-        time: 2000 //2秒关闭（如果不配置，默认是3秒）
-    }, function (index) {
-        callBack && callBack();
-        layer.close(index);
-    });
-}
-function MessageSuccess(msg, callBack) {
-    MessageAlert(msg, '成功', 1, callBack);
-}
- 
-function login() {
-    if ($("#tname").val().length < 2) { layer.alert("请输入用户名"); $("#tname").focus(); return; }
-    if ($("#tpwd").val().length < 3) { layer.alert("请输入密码"); $("#tpwd").focus(); return; }
-    if ($("#vcode").val().length < 5) { layer.alert("请输入验证码"); $("#vcode").focus(); return; }
-    var data = {
-        "__RequestVerificationToken": $("input[name='__RequestVerificationToken']").val(),
-        TName: $("#tname").val(),
-        TPwd: $("#tpwd").val(),
-        Vcode: $("#vcode").val(),
-    };
-    if (window.GetMachineCode) {
-        var code = window.GetMachineCode();
-        data.MachineCode = code;
-    }
-    openLoading();
 
-    if ($("#tpwd").length > 0) {
-        var str = "";
-        for (var i = 0; i < $("#tpwd").val().length; i++) { str += "•"; }
-        $("#tpwd").val(str);
-        $("#tpwd").attr("type", "text");
+    window.HidenLoading = function () { layer.close(_index_loading); }
+    window.openLoading = function () { _index_loading = layer.load(1); }
+    window.MessageAlert = function (msg, title, icon, callBack) {
+        layer.msg(msg, {
+            title: title,
+            icon: icon,
+            time: 2000 //2秒关闭（如果不配置，默认是3秒）
+        }, function (index) {
+            callBack && callBack();
+            layer.close(index);
+        });
     }
-    
-    $.login("/admins/ajax/Account/Login", data, function (r) {
-        HidenLoading();
-        if (r.state == "SUCCESS") {
-            var url = getQueryString("url");
-            if (url == null) { url = "/admins"; }
-            MessageSuccess("登录成功，即将跳转，耐心等候。", function () {
-                if (sessionStorage) {
-                    sessionStorage.setItem("o", "1");
-                }
-                location.href = url;
-            });
-        } else {
-            $("#tpwd").attr("type", "password");
+    window.MessageSuccess = function (msg, callBack) {
+        MessageAlert(msg, '成功', 1, callBack);
+    }
+    window.login = function () {
+        if ($("#tname").val().length < 2) { layer.alert("请输入用户名"); $("#tname").focus(); return; }
+        if ($("#tpwd").val().length < 3) { layer.alert("请输入密码"); $("#tpwd").focus(); return; }
+        if ($("#vcode").val().length < 5) { layer.alert("请输入验证码"); $("#vcode").focus(); return; }
+        var data = {
+            "__RequestVerificationToken": $("input[name='__RequestVerificationToken']").val(),
+            TName: $("#tname").val(),
+            TPwd: $("#tpwd").val(),
+            Vcode: $("#vcode").val(),
+        };
+        if (window.GetMachineCode) {
+            var code = window.GetMachineCode();
+            data.MachineCode = code;
+        }
+        openLoading();
 
+        if ($("#tpwd").length > 0) {
+            var str = "";
+            for (var i = 0; i < $("#tpwd").val().length; i++) { str += "•"; }
+            $("#tpwd").val(str);
+            $("#tpwd").attr("type", "text");
+        }
+
+        $.login("/admins/ajax/Account/Login", data, function (r) {
             HidenLoading();
-            layer.alert(r.message);
+            if (r.state == "SUCCESS") {
+                var url = getQueryString("url");
+                if (url == null) { url = "/admins"; }
+                MessageSuccess("登录成功，即将跳转，耐心等候。", function () {
+                    if (sessionStorage) {
+                        sessionStorage.setItem("o", "1");
+                    }
+                    location.href = url;
+                });
+            } else {
+                $("#tpwd").attr("type", "password");
+
+                HidenLoading();
+                layer.alert(r.message);
+                $("#tpwd").val(data.TPwd);
+                var url = "/admins/Account/VerifyCode?r=" + Math.random();
+                $("#vcode-img").attr("src", url);
+                $("#vcode").val("");
+            }
+        }, function (r) {
+            $("#tpwd").attr("type", "password");
+            HidenLoading();
+            layer.alert("网络连接出错！");
             $("#tpwd").val(data.TPwd);
             var url = "/admins/Account/VerifyCode?r=" + Math.random();
             $("#vcode-img").attr("src", url);
             $("#vcode").val("");
-        }
-    }, function (r) {
-        $("#tpwd").attr("type", "password");
-        HidenLoading();
-        layer.alert("网络连接出错！");
-        $("#tpwd").val(data.TPwd);
-        var url = "/admins/Account/VerifyCode?r=" + Math.random();
-        $("#vcode-img").attr("src", url);
-        $("#vcode").val("");
-    });
-}
-
-function getQueryString(name) {
-    var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
-    var r = window.location.search.substr(1).match(reg);
-    if (r != null) return unescape(r[2]);
-    return null;
-}
-
-$(function () {
+        });
+    }
+    window.getQueryString = function (name) {
+        var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
+        var r = window.location.search.substr(1).match(reg);
+        if (r != null) return unescape(r[2]);
+        return null;
+    }
     if (window.GetMachineCode) {
         var code = window.GetMachineCode();
         $.get('/ajax/AddMachineCode?code=' + code)
     }
-})
-
-//// 子页面  window.parent.postMessage('showIframe', '*')
-//addEventListener('message', e => {
-//    if (e.origin === 'http://sponsor.sqlonline.net' || e.origin === 'https://sponsor.sqlonline.net') {
-//        if (showIframe) {
-//            showIframe();
-//        }
-//    }
-//})
+});

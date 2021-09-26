@@ -58,14 +58,13 @@
 
             <div class="layui-form-item" style="text-align:center;padding-left: 30px;">
                 <button type="button" class="layui-btn layui-btn-normal" onclick="save(this);"> &nbsp;&nbsp; 提 交 &nbsp;&nbsp; </button>
-                <button type="button" class="layui-btn layui-btn-primary" onclick="closeTabContent();"> &nbsp;&nbsp; 关 闭 &nbsp;&nbsp; </button>
             </div>
         </div>
     </form>
 </div>
 @section js{
     <script>
-        layui.use(["layer", "form", 'util', "element"], function () {            });
+        layui.use(["layer", "form", 'util', "element"], function () { });
         function save(obj) {
             $(obj).prop("disabled", true);
             var url = "./Ajax/EditEmailSend";

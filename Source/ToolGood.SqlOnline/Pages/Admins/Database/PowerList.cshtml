@@ -159,7 +159,7 @@
             json.search = $("#txt_name").val();
             $("#adminGroupId").val(json.Id);
             $.adminModePost('./ajax/GetConnPowerList', json, function (data) {
-                var html = tpl("#tpl", data.data);
+                var html = doT.template($("#tpl").html())(data.data);
                 $("#pass").html(html);
                 layui.form.render('checkbox');
             }, function (data) {

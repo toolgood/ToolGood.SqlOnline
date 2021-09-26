@@ -17,6 +17,12 @@
 		<PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="5.0.10" />
 	</ItemGroup>
 
+
+
+	<ItemGroup>
+	  <_WebToolingArtifacts Remove="Properties\PublishProfiles\Test.pubxml" />
+	</ItemGroup>
+
 	<ItemGroup>
 		<PackageReference Include="Microsoft.Data.Sqlite" Version="5.0.10" />
 		<PackageReference Include="ToolGood.AntiDuplication" Version="2.0.0.1" />

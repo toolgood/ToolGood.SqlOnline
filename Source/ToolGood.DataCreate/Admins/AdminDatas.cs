@@ -65,37 +65,6 @@ namespace ToolGood.DataCreate
                 TrueName = "管理员",
             });
 
-            helper.Insert(new DbSysAdmin() {
-                Name = "test001",
-                Salt = salt,
-                Password = DataUtil.CreatePassword("test001", salt, "a123456"),
-                ManagerPassword = DataUtil.CreatePassword("test001", salt, "a123456789"),
-                TrueName = "测试人员1",
-            });
-
-            helper.Insert(new DbSysAdmin() {
-                Name = "test002",
-                Salt = salt,
-                Password = DataUtil.CreatePassword("test002", salt, "a123456"),
-                ManagerPassword = DataUtil.CreatePassword("test002", salt, "a123456789"),
-                TrueName = "测试人员2",
-            });
-            helper.Insert(new DbSysAdmin() {
-                Name = "test003",
-                Salt = salt,
-                Password = DataUtil.CreatePassword("test003", salt, "a123456"),
-                ManagerPassword = DataUtil.CreatePassword("test003", salt, "a123456789"),
-                TrueName = "测试人员3",
-            });
-
-            helper.Insert(new DbSysAdmin() {
-                Name = "test004",
-                Salt = salt,
-                Password = DataUtil.CreatePassword("test004", salt, "a123456"),
-                ManagerPassword = DataUtil.CreatePassword("test004", salt, "a123456789"),
-                TrueName = "测试人员4",
-            });
-
             #endregion
 
             #region DbSysAdmin_Group
