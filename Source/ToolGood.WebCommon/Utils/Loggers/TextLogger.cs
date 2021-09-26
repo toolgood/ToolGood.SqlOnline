@@ -21,7 +21,7 @@ namespace ToolGood.WebCommon.Internals
 
         public TextLogger()
         {
-            File_Name = "App_Data\\{type}\\{yyyy}{MM}{dd}_{type}.log";
+            File_Name = "App_Data/{type}/{yyyy}{MM}{dd}_{type}.log";
         }
 
         public override void WriteLog(string type, string content)
@@ -40,7 +40,7 @@ namespace ToolGood.WebCommon.Internals
             filePath.Replace("{type}", type);
 
             var file = MyHostingEnvironment.MapPath(filePath.ToString());
-            //var file = Path.GetFullPath(filePath.ToString());
+            file = Path.GetFullPath(file);
             Directory.CreateDirectory(Path.GetDirectoryName(file));
             fileLoggerQueue.EnqueueMessage(file, content);
         }

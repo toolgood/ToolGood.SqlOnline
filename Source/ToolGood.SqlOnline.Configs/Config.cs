@@ -18,7 +18,8 @@ namespace ToolGood.SqlOnline.Configs
         public static SqlHelper WriteHelper {
             get {
                 if (_dbHelper == null || _dbHelper._IsDisposed) {
-                    var path = "App_Data\\setting.sav";
+                    var path = Path.GetFullPath("App_Data/setting.sav");
+
                     _dbHelper = SqlHelperFactory.OpenSqliteFile(path);
                 }
                 return _dbHelper;
@@ -31,7 +32,8 @@ namespace ToolGood.SqlOnline.Configs
         public static SqlHelper ReadHelper {
             get {
                 if (_readHelper == null || _readHelper._IsDisposed) {
-                    var path = "Data Source=App_Data\\setting.sav;Mode=ReadOnly;";
+                    var path2 = Path.GetFullPath("App_Data/setting.sav");
+                    var path = $"Data Source={path2};Mode=ReadOnly;";
                     _readHelper = SqlHelperFactory.OpenDatabase(path, SqlType.SQLite);
                 }
                 return _readHelper;
@@ -43,7 +45,7 @@ namespace ToolGood.SqlOnline.Configs
         public static SqlHelper GetLogSqlHelper(DateTime date)
         {
             if (_logHelper == null || _logHelper._IsDisposed) {
-                var path = @$"App_Data\SqlQueryLog\{date.ToString("yyyyMM")}.sav";
+                var path =Path.GetFullPath( $"App_Data/SqlQueryLog/{date.ToString("yyyyMM")}.sav");
                 if (File.Exists(path) == false) {
                     Directory.CreateDirectory(Path.GetDirectoryName(path));
                     File.Create(path).Close();

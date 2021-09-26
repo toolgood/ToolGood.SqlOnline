@@ -20,7 +20,10 @@
 
 
 	<ItemGroup>
-	  <_WebToolingArtifacts Remove="Properties\PublishProfiles\Test.pubxml" />
+		<_WebToolingArtifacts Remove="Properties\PublishProfiles\Test.pubxml" />
+		<_WebToolingArtifacts Remove="Properties\PublishProfiles\windows-x64-iis.pubxml" />
+		<_WebToolingArtifacts Remove="Properties\PublishProfiles\windows-x64-SingleFile.pubxml" />
+		<_WebToolingArtifacts Remove="Properties\PublishProfiles\linux-x64-SingleFile.pubxml" />
 	</ItemGroup>
 
 	<ItemGroup>
