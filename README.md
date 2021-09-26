@@ -65,16 +65,16 @@
         2、代码生成器
 ## 页面展示
 SQL编辑页面：
-![edit-2.png](./imgs/edit-2.png)
-![edit-3.png](./imgs/edit-3.png)
+![edit-2.png](https://github.com/toolgood/ToolGood.SqlOnline/imgs/edit-2.png)
+![edit-3.png](https://github.com/toolgood/ToolGood.SqlOnline/imgs/edit-3.png)
 
 代码生成：
-![codegen.png](./imgs/codegen.png)
+![codegen.png](https://github.com/toolgood/ToolGood.SqlOnline/imgs/codegen.png)
 
 
 POST加密：
-![login-1.png](./imgs/login-1.png)
-![login-2.png](./imgs/login-2.png)
+![login-1.png](https://github.com/toolgood/ToolGood.SqlOnline/imgs/login-1.png)
+![login-2.png](https://github.com/toolgood/ToolGood.SqlOnline/imgs/login-2.png)
 
 
 
