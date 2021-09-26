@@ -1,10 +1,11 @@
 # SQL online
 
-《SQL online》是一款免费的SQL在线编辑器，主打数据安全。
+《SQL online》是一款免费的SQL在线编辑器，主打数据安全，跨平台支持windows、Linux。
 
 下载地址：https://pan.baidu.com/s/1sTFu_eGQxtHyEEZYBaRdJg 提取码：5bkj 
 
 账号：admin 密码：a123456 管理密码：a123456789
+
 
 ## 主要功能：
     1、登录界面防止浏览器自动记录账号密码。
@@ -62,6 +63,19 @@
         1、数据结构查询
 
         2、代码生成器
+## 页面展示
+SQL编辑页面：
+![edit-2.png](./imgs/edit-2.png)
+![edit-3.png](./imgs/edit-3.png)
+
+代码生成：
+![codegen.png](./imgs/codegen.png)
+
+
+POST加密：
+![login-1.png](./imgs/login-1.png)
+![login-2.png](./imgs/login-2.png)
+
 
 
 ## 开发计划：
