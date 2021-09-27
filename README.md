@@ -4,7 +4,7 @@
 
 官网：https://www.sqlonline.net
 
-交流群：950217920，验证码：sqlonline
+交流Q群：950217920，验证码：sqlonline
 
 ## SQL online 编译后程序下载
 
