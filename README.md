@@ -4,7 +4,9 @@
 
 官网：https://www.sqlonline.net
 
-## SQL online 下载
+交流群：950217920，验证码：sqlonline
+
+## SQL online 编译后程序下载
 
 下载地址：https://pan.baidu.com/s/1sTFu_eGQxtHyEEZYBaRdJg 提取码：5bkj 
 
