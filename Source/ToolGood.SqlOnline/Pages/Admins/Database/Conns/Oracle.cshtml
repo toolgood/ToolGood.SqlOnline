@@ -1,5 +1,4 @@
 ﻿@page
-@model ToolGood.SqlOnline.Pages.Admins.Database.Conns.OracleModel
 @{
     Layout = "~/Pages/Shared/_Layout_Edit.cshtml";
 }
@@ -15,13 +14,13 @@
             <div class="layui-form-item">
                 <label class="layui-form-label">端口号<span class="red"> *</span></label>
                 <div class="layui-input-block">
-                    <input type="text" class="layui-input" id="port" value="5432" autocomplete="off" onchange="change()" onpropertychange="change()">
+                    <input type="text" class="layui-input" id="port" value="" autocomplete="off" onchange="change()" onpropertychange="change()">
                 </div>
             </div>
             <div class="layui-form-item">
                 <label class="layui-form-label">用户名<span class="red"> *</span></label>
                 <div class="layui-input-block">
-                    <input type="text" class="layui-input" id="user" value="postgres" autocomplete="off" onchange="change()" onpropertychange="change()">
+                    <input type="text" class="layui-input" id="user" value="" autocomplete="off" onchange="change()" onpropertychange="change()">
                 </div>
             </div>
             <div class="layui-form-item">
@@ -33,7 +32,7 @@
             <div class="layui-form-item">
                 <label class="layui-form-label">服务名</label>
                 <div class="layui-input-block">
-                    <input type="text" class="layui-input" id="database" value="postgres" autocomplete="off" onchange="change()" onpropertychange="change()">
+                    <input type="text" class="layui-input" id="database" value="" autocomplete="off" onchange="change()" onpropertychange="change()">
                 </div>
             </div>
 
