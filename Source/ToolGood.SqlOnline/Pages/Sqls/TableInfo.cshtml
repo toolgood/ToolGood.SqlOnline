@@ -35,7 +35,7 @@
         <ul class="tree">
             {{ for (var i=0;i<it.length;i++){ }}
             {{ var t=it[i]; }}
-            <li class="i {{= t.t }} " id="{{= t.n }}" data-commont="{{= (t.c!=undefined?t.c:"") }}" data-tname="{{= t.n }}">
+            <li class="i {{= t.t }} " id="{{= t.n.replace('.','_') }}" data-commont="{{= (t.c!=undefined?t.c:"") }}" data-tname="{{= t.n }}">
                 <span style="width:100%" class="table">
                     <i class="layui-icon orange table hidden">&#xe658;</i> {{= t.n }}
                     <a href='javascript:;' class='insertColumn' tabindex="-1" data-clipboard-text="{{= t.n}}" style="display:none" onclick='insertColumn(this); return false;'>插入</a>

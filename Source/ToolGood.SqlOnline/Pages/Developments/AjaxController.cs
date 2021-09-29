@@ -110,7 +110,7 @@ namespace ToolGood.SqlOnline.Pages.Developments
                     var key = item.SchemaName + "." + item.Name;
                     if (dict.TryGetValue(key, out model) == false) {
                         model = new StructureModel();
-                        if (string.IsNullOrEmpty(item.SchemaName) || item.SchemaName == "dbo") {
+                        if (string.IsNullOrEmpty(item.SchemaName) || item.SchemaName == "dbo" || item.SchemaName == "public") {
                             model.Name = item.Name;
                         } else {
                             model.Name = key;

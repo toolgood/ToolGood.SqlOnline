@@ -11,6 +11,7 @@ using ToolGood.SqlOnline.Application;
 using ToolGood.SqlOnline.Application.Admins;
 using ToolGood.SqlOnline.IPlugin;
 using ToolGood.SqlOnline.Plugin.Mysql;
+using ToolGood.SqlOnline.Plugin.PostgreSQL;
 using ToolGood.SqlOnline.Plugin.Sqlite;
 using ToolGood.SqlOnline.Plugin.SqlServer;
 
@@ -32,7 +33,8 @@ namespace ToolGood.SqlOnline.Commons
             provider.Init(cache);
             provider = new SqliteProvider();
             provider.Init(cache);
-
+            provider = new PostgreSQLProvider();
+            provider.Init(cache);
             provider = null;
 
             //var assList = AppDomain.CurrentDomain.GetAssemblies().Where(q => q.FullName?.Contains("Plugin") ?? false).ToList();

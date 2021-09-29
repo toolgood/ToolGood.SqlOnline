@@ -185,6 +185,11 @@ namespace ToolGood.SqlOnline.Pages.Sqls
                         dto.name = node.SchemaName + "." + node.TableName;
                     }
                 }
+                if (searchDto.SqlType.Equals("PostgreSQL", StringComparison.OrdinalIgnoreCase)) {
+                    if (node.SchemaName != "public") {
+                        dto.name = node.SchemaName + "." + node.TableName;
+                    }
+                }
                 tree.Add(dto);
             }
             return tree;
@@ -206,6 +211,11 @@ namespace ToolGood.SqlOnline.Pages.Sqls
                 };
                 if (searchDto.SqlType.Equals("sqlserver", StringComparison.OrdinalIgnoreCase)) {
                     if (node.SchemaName != "dbo") {
+                        dto.name = node.SchemaName + "." + node.ViewName;
+                    }
+                }
+                if (searchDto.SqlType.Equals("PostgreSQL", StringComparison.OrdinalIgnoreCase)) {
+                    if (node.SchemaName != "public") {
                         dto.name = node.SchemaName + "." + node.ViewName;
                     }
                 }
@@ -233,10 +243,16 @@ namespace ToolGood.SqlOnline.Pages.Sqls
                         dto.name = node.SchemaName + "." + node.ProcedureName;
                     }
                 }
+                if (searchDto.SqlType.Equals("PostgreSQL", StringComparison.OrdinalIgnoreCase)) {
+                    if (node.SchemaName != "public") {
+                        dto.name = node.SchemaName + "." + node.ProcedureName;
+                    }
+                }
                 tree.Add(dto);
             }
             return tree;
         }
+        
         private List<SqlTreeDto> GetSqlTree(List<FunctionEntity> sqlConnDtos, SqlSearchDto searchDto)
         {
             List<SqlTreeDto> tree = new List<SqlTreeDto>();
@@ -254,6 +270,11 @@ namespace ToolGood.SqlOnline.Pages.Sqls
                 };
                 if (searchDto.SqlType.Equals("sqlserver", StringComparison.OrdinalIgnoreCase)) {
                     if (node.SchemaName != "dbo") {
+                        dto.name = node.SchemaName + "." + node.FunctionName;
+                    }
+                }
+                if (searchDto.SqlType.Equals("PostgreSQL", StringComparison.OrdinalIgnoreCase)) {
+                    if (node.SchemaName != "public") {
                         dto.name = node.SchemaName + "." + node.FunctionName;
                     }
                 }
@@ -283,13 +304,16 @@ namespace ToolGood.SqlOnline.Pages.Sqls
                     var key = item.SchemaName + "." + item.Name;
                     if (dict.TryGetValue(key, out model) == false) {
                         model = new StructureModel();
-                        if (string.IsNullOrEmpty(item.SchemaName) || item.SchemaName == "dbo") {
+                        if (string.IsNullOrEmpty(item.SchemaName) || item.SchemaName == "dbo" || item.SchemaName == "public") {
                             model.Name = item.Name;
                         } else {
                             model.Name = key;
                         }
                         model.Comment = item.Comment;
-                        if (item.Type == "t" || item.Type == "table") {
+                        if (item.TableType.Trim() == "t" || item.TableType== "BASE TABLE" 
+                            || item.TableType.Equals("table", StringComparison.OrdinalIgnoreCase)
+                            || item.TableType.Trim().Equals("u", StringComparison.OrdinalIgnoreCase)
+                            ) {
                             model.Type = "t";
                         } else {
                             model.Type = "v";

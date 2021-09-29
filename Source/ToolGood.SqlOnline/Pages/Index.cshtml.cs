@@ -2,6 +2,7 @@
  *  版权所有(C) 2021 ToolGood(林知君)
  *  GPLv3 License - http://www.gnu.org/licenses/gpl-3.0.html  
  */
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using ToolGood.SqlOnline.Application;
 using ToolGood.SqlOnline.Configs;
@@ -14,15 +15,17 @@ namespace ToolGood.SqlOnline.Pages
     {
         public string RsaExponent { get; private set; }
         public string RsaModulus { get; private set; }
-
+        public bool UseDevelopment { get; private set; }
         private readonly IAdminApplication _adminApplication;
+
+
 
         public IndexModel(IAdminApplication adminApplication)
         {
             _adminApplication = adminApplication;
         }
 
-        public IActionResult OnGetAsync()
+        public async Task<IActionResult> OnGetAsync()
         {
 
             GetPrivateKey();
@@ -37,6 +40,10 @@ namespace ToolGood.SqlOnline.Pages
             DeleteCookie(CookieSetting.AdminCookieLogin);
             DeleteSession(SessionSetting.AdminSession);
 
+            var settingValue =await _adminApplication.GetSettingValueByCode("UseDevelopment");
+            if (settingValue != null && settingValue.Value=="1") {
+                UseDevelopment = true;
+            }
 
             var rsa = RsaHelper.Instance;
             RsaExponent = rsa.RsaExponent;

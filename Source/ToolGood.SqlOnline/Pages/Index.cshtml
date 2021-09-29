@@ -54,12 +54,16 @@
                     </div>
                 </div>
                 <button type="button" class="btn" onclick="login()"> 登 录 &nbsp; Login </button>
-
+                @if (Model.UseDevelopment) {
+                    <br />
+                    <br />
+                    <a href="/Developments" class="btn" style="text-decoration: none; border-color: #d2d2d2; background: 0 0; color: #666; "> 开发环境 &nbsp; Development </a>
+                }
             </form>
             <p class="copyright">
                 <small>
                     Copyright &copy; 2021
-                    <a href="http://www.SqlOnline.net" target="_blank">SqlOnline.net</a>
+                    <a href="https://www.sqlonline.net" target="_blank">SqlOnline.net</a>
                     All Rights Reserved.
                 </small>
             </p>

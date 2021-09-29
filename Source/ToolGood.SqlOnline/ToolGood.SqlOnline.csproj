@@ -38,6 +38,7 @@
 		<ProjectReference Include="..\ToolGood.SqlOnline.Datas\ToolGood.SqlOnline.Datas.csproj" />
 		<ProjectReference Include="..\ToolGood.SqlOnline.Dtos\ToolGood.SqlOnline.Dtos.csproj" />
 		<ProjectReference Include="..\ToolGood.SqlOnline.Plugin.Mysql\ToolGood.SqlOnline.Plugin.Mysql.csproj" />
+		<ProjectReference Include="..\ToolGood.SqlOnline.Plugin.PostgreSQL\ToolGood.SqlOnline.Plugin.PostgreSQL.csproj" />
 		<ProjectReference Include="..\ToolGood.SqlOnline.Plugin.Sqlite\ToolGood.SqlOnline.Plugin.Sqlite.csproj" />
 		<ProjectReference Include="..\ToolGood.SqlOnline.Plugin.SqlServer\ToolGood.SqlOnline.Plugin.SqlServer.csproj" />
 		<ProjectReference Include="..\ToolGood.WebCommon\ToolGood.WebCommon.csproj" />
