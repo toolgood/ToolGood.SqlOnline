@@ -28,6 +28,8 @@ namespace ToolGood.SqlOnline.Datas.Databases
         /// </summary>
         public string Comment { get; set; }
 
+        public string Language { get; set; }
+
         public List<ProcedureParamEntity> Params { get; set; }
         public override string ToString()
         {

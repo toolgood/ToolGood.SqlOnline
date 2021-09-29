@@ -5,6 +5,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="ToolGood.ReadyGo3" Version="4.0.0.5" />
+    <PackageReference Include="ToolGood.ReadyGo3" Version="4.0.0.9" />
   </ItemGroup>
 </Project>

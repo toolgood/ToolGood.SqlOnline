@@ -42,7 +42,7 @@ order by name";
         {
             var helper = SqlHelperFactory.OpenDatabase(connStr, _provider.GetProviderFactory(), SqlType.SqlServer);
 
-            UseDatabase(helper, databaseName);
+            helper.ChangeDatabase(databaseName);
             var sql = @"select DB_NAME() AS DataBaseName ,SCHEMA_NAME(d.schema_id) SchemaName, d.name TableName,isnull(f.value,'') Comment
 from sys.objects d 
 left join sys.extended_properties f on d.object_id=f.major_id and f.minor_id=0 
@@ -55,8 +55,7 @@ where d.type='U' ";
         public List<TableColumnEntity> GetTableColumns(string connStr, string databaseName, string schemaName, string tableName)
         {
             var helper = SqlHelperFactory.OpenDatabase(connStr, _provider.GetProviderFactory(), SqlType.SqlServer);
-
-            UseDatabase(helper, databaseName);
+            helper.ChangeDatabase(databaseName);
 
             var sql = @"SELECT 
        DB_NAME() AS DataBaseName ,
@@ -100,7 +99,7 @@ where  d.type='U' ";
         {
             var helper = SqlHelperFactory.OpenDatabase(connStr, _provider.GetProviderFactory(), SqlType.SqlServer);
 
-            UseDatabase(helper, databaseName);
+            helper.ChangeDatabase(databaseName);
             var sql = @"select DB_NAME() AS DataBaseName ,SCHEMA_NAME(d.schema_id) SchemaName, d.name TableName,isnull(f.value,'') Comment
 from sys.objects d 
 left join sys.extended_properties f on d.object_id=f.major_id and f.minor_id=0 
@@ -115,7 +114,7 @@ where d.type='U' and SCHEMA_NAME(d.schema_id)=@0  and d.name=@1  ";
         public List<TableShowEntity> GetTableShowList(string connStr, string databaseName)
         {
             var helper = SqlHelperFactory.OpenDatabase(connStr, _provider.GetProviderFactory(), SqlType.SqlServer);
-            UseDatabase(helper, databaseName);
+            helper.ChangeDatabase(databaseName);
 
             var sql = @"SELECT 
         h.name as SchemaName,

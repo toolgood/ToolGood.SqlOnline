@@ -6,7 +6,7 @@
 
   <ItemGroup>
     <PackageReference Include="MySql.Data" Version="8.0.26" />
-    <PackageReference Include="ToolGood.ReadyGo3" Version="4.0.0.5" />
+    <PackageReference Include="ToolGood.ReadyGo3" Version="4.0.0.9" />
   </ItemGroup>
 
   <ItemGroup>

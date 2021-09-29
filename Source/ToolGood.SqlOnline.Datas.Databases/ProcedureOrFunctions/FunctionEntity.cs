@@ -50,6 +50,7 @@ namespace ToolGood.SqlOnline.Datas.Databases
         /// </summary>
         public string ReturnScale { get; set; }
 
+        public string Language { get; set; }
 
         public List<FunctionParamEntity> Params { get; set; }
     }

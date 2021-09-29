@@ -45,6 +45,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ToolGood.SqlOnline.Plugin.M
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ToolGood.SqlOnline.Plugin.Sqlite", "ToolGood.SqlOnline.Plugin.Sqlite\ToolGood.SqlOnline.Plugin.Sqlite.csproj", "{0A315163-73E2-4071-916C-3680551E4231}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ToolGood.SqlOnline.Plugin.PostgreSQL", "ToolGood.SqlOnline.Plugin.PostgreSQL\ToolGood.SqlOnline.Plugin.PostgreSQL.csproj", "{C511C5EF-C96A-4CAA-98B2-CAAFB5EEEF9D}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ToolGood.SqlOnline.Plugin.Oracle", "ToolGood.SqlOnline.Plugin.Oracle\ToolGood.SqlOnline.Plugin.Oracle.csproj", "{3FA74260-79EC-46D2-9DAB-BC77D124E7B0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -107,6 +111,14 @@ Global
 		{0A315163-73E2-4071-916C-3680551E4231}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0A315163-73E2-4071-916C-3680551E4231}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0A315163-73E2-4071-916C-3680551E4231}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C511C5EF-C96A-4CAA-98B2-CAAFB5EEEF9D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C511C5EF-C96A-4CAA-98B2-CAAFB5EEEF9D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C511C5EF-C96A-4CAA-98B2-CAAFB5EEEF9D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C511C5EF-C96A-4CAA-98B2-CAAFB5EEEF9D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3FA74260-79EC-46D2-9DAB-BC77D124E7B0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3FA74260-79EC-46D2-9DAB-BC77D124E7B0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3FA74260-79EC-46D2-9DAB-BC77D124E7B0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3FA74260-79EC-46D2-9DAB-BC77D124E7B0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -131,6 +143,8 @@ Global
 		{35E7CE0A-8066-460A-8014-6462D3ADC347} = {7CFACE0E-5F95-481B-8E99-F368390025EE}
 		{4C0E9D1C-4344-4B94-81D7-4D4FE5FF833A} = {7CFACE0E-5F95-481B-8E99-F368390025EE}
 		{0A315163-73E2-4071-916C-3680551E4231} = {7CFACE0E-5F95-481B-8E99-F368390025EE}
+		{C511C5EF-C96A-4CAA-98B2-CAAFB5EEEF9D} = {7CFACE0E-5F95-481B-8E99-F368390025EE}
+		{3FA74260-79EC-46D2-9DAB-BC77D124E7B0} = {7CFACE0E-5F95-481B-8E99-F368390025EE}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {37087A66-CA43-4D78-A994-11991A5E2170}

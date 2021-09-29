@@ -6,7 +6,7 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Data.Sqlite" Version="5.0.10" />
-    <PackageReference Include="ToolGood.ReadyGo3" Version="4.0.0.5" />
+    <PackageReference Include="ToolGood.ReadyGo3" Version="4.0.0.9" />
   </ItemGroup>
 
   <ItemGroup>

@@ -88,8 +88,8 @@ namespace ToolGood.SqlOnline.Dtos
             if (string.IsNullOrEmpty(columnEntity.DefaultValue) == false) {
                 DefaultValue = columnEntity.DefaultValue;
             }
-            if (string.IsNullOrEmpty(columnEntity.Comment) == false) {
-                Comment = columnEntity.Comment;
+            if (string.IsNullOrEmpty(columnEntity.ColumnComment) == false) {
+                Comment = columnEntity.ColumnComment;
             }
 
             if (columnEntity.IsPrimaryKey && columnEntity.IsIdentity) {
