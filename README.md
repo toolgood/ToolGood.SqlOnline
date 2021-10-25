@@ -10,7 +10,7 @@
 
 下载地址：https://pan.baidu.com/s/1sTFu_eGQxtHyEEZYBaRdJg 提取码：5bkj 
 
-账号：admin 密码：a123456 管理密码：a123456789
+账号：admin 登录密码：a123456 管理密码：a123456789
 
 
 
@@ -111,8 +111,17 @@ SQL online 是以开发、查错、排错、优化为主的平台，SQL审计将
 
 
 ## 调试说明
-先执行ToolGood.DataCreate，生成数据文件。
+账号：admin 登录密码：a123456 管理密码：a123456789
 
+1、先执行ToolGood.DataCreate，生成数据文件，在数据文件保存在`App_Data/setting.sav`。
+
+2、进入【基础配置】-> 进入【数据库连接】-> 添加【数据库连接】。
+
+3、进入【基础配置】-> 设置【数据库权限】。
+
+4、进入【SQL online】，左侧菜单可以右击鼠标，可弹出菜单。
+
+注：发布时使用 Release
 
 
 ## 开发计划：
