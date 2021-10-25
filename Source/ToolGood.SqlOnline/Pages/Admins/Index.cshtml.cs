@@ -12,7 +12,7 @@ using ToolGood.SqlOnline.Dtos;
 
 namespace ToolGood.SqlOnline.Pages.Admins
 {
-    [AdminMenu("AdminTopDesktop", "show")]
+    //[AdminMenu("AdminTopDesktop", "show")]
     public class IndexModel : AdminPageModel
     {
         private readonly IAdminApplication _adminApplication;
