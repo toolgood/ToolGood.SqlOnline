@@ -103,7 +103,11 @@ namespace ToolGood.SqlOnline.Application
         Task<ExecuteResult> ExecuteSql_AllPermissions(Req<ExecuteSqlDto> request);
         #endregion
 
+        #region 查询导出
 
+        Task<ExecuteResult> ExecuteSql_Select_Export(ExecuteSqlDto request, int adminId);
+
+        #endregion
 
     }
 }

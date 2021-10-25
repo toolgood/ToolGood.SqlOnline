@@ -1,0 +1,57 @@
+﻿@page
+@model ToolGood.SqlOnline.Pages.Sqls.Editors.ExportModel
+@using ToolGood.SqlOnline.Configs
+@{
+    Layout = "~/Pages/Shared/_Layout_Edit.cshtml";
+}
+<div style="overflow-x:hidden;background-color:#f3f3f4;height: 100%;">
+    <form id="edit-form" style="height: 100%;">
+        <div class="layui-form" lay-filter="form" style="padding: 20px 30px 0 0;">
+            <div class="layui-form-item">
+                <label class="layui-form-label">权限</label>
+                <div class="layui-input-block">
+                    <input type="radio" name="Export" lay-skin="primary" value="1" title="Excel" checked />
+                    <input type="radio" name="Export" lay-skin="primary" value="2" title=".csv" />
+                    <input type="radio" name="Export" lay-skin="primary" value="3" title=".json" />
+                    <input type="radio" name="Export" lay-skin="primary" value="4" title=".xml" />
+                    <input type="radio" name="Export" lay-skin="primary" value="5" title=".txt" />
+                    <div class="layui-form-mid layui-word-aux">
+                        .csv .json .xml 只返回第一个Select语句。
+                    </div> 
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">管理密码<span class="red"> *</span></label>
+                <div class="layui-input-block">
+                    @if (SystemSetting.EnvironmentType.HasFlag(EnvironmentType.Debug)) {
+                        <input type="password" value="a123456789" class="layui-input" id="pwd" name="password" autocomplete="off">
+                    } else {
+                        <input type="password" value="" class="layui-input" id="pwd" name="password" autocomplete="off">
+                    }
+                    <div class="layui-form-mid layui-word-aux">
+                        输入密码后，Select导出个数无上限。角色必须要有所有权限。
+                    </div>
+                </div>
+            </div>
+
+            <div class="layui-form-item" style="text-align:center;padding-left: 30px;">
+                <button type="button" class="layui-btn layui-btn-normal" onclick="save(this);"> &nbsp;&nbsp; 执 行 &nbsp;&nbsp; </button>
+                <button type="button" class="layui-btn layui-btn-primary" onclick="closeWindow();"> &nbsp;&nbsp; 关 闭 &nbsp;&nbsp; </button>
+            </div>
+        </div>
+    </form>
+</div>
+@section js{
+    <script>
+        function save(obj) {
+            //if ($("#pwd").val().length < 2) { layer.alert("请输入管理密码"); $("#pwd").focus(); return; }
+            var data = $("#edit-form").serializeJson();
+            data.authority = 5;
+            if ($("#pwd").val().length == 0) {
+                data.authority = 4;
+            }
+            top.$currEditorWindow.runSqlAndExport2(data.authority, data.password, data.Export)
+            closeWindow();
+        }
+    </script>
+}

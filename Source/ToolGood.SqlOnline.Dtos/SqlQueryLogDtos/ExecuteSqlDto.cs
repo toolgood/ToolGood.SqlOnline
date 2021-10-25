@@ -15,9 +15,15 @@ namespace ToolGood.SqlOnline.Dto
         public string Sql { get; set; }
         public string Key { get; set; }
         /// <summary>
-        /// 0）select、1）insert/update、2）delete、3）all
+        /// 0）select、1）insert/update、2）delete、3)all  4)download  5)download+all
         /// </summary>
         public int Authority { get; set; }
+
+        /// <summary>
+        /// 0)txt 1)Excel  2)csv 3）Json 4)xml
+        /// </summary>
+        public int ExportType { get; set; }
+
         public string Password { get; set; }
 
     }

@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Data.Common;
 using System.Net.Http;
 using System.Text;
+using System.Linq;
 using System.Threading.Tasks;
 using ToolGood.Common.Utils;
 using ToolGood.ReadyGo3;
@@ -514,7 +515,7 @@ where doc.IsDelete=0 and a.IsDelete=0 and conn.IsDelete=0 and doc.IsShare=1 and 
         public async Task<string> CreateCommand(Req<ExecuteSqlDto> request)
         {
             var helper = GetReadHelper();
-            if (request.Data.Authority > 0) {
+            if (new int[] { 1, 2, 3, 5 }.Contains(request.Data.Authority)) {
                 var admin = await helper.FirstOrDefault_Async<DbSysAdmin>(new { Id = request.Data.AdminId, IsDelete = false, IsFrozen = false });
                 if (admin == null) { return "ERROR:当前用户不存在！"; }
                 var oldp = DataUtil.CreatePassword(admin.Name, admin.Salt, request.Data.Password);
@@ -533,6 +534,10 @@ where conn.IsDelete=0 and pass.IsDelete=0 and g.AdminId=@0 and conn.Id=@1 ";
                 sql += " and pass.CanDelete=1";
             } else if (request.Data.Authority == 3) {
                 sql += " and pass.AllPermissions=1";
+            } else if (request.Data.Authority == 4) {
+                sql += " and pass.CanDownload=1";
+            } else if (request.Data.Authority == 5) {
+                sql += " and pass.CanDownload=1 and pass.AllPermissions=1";
             }
             sql += " limit 1";
             var connDto = await helper.FirstOrDefault_Async<SqlConnDto>(sql, request.Data.AdminId, request.Data.SqlConnId);
@@ -816,6 +821,46 @@ where conn.IsDelete=0 and pass.IsDelete=0 and g.AdminId=@0 and conn.Id=@1 ";
                 }
             }
         }
+        private async Task WriteExecuteSelectLog(int adminId, ExecuteSqlDto data, string SqlConnectionName, DateTime addingTime, EnumRunReadResult result, int runTime, string exception = null)
+        {
+            var helper = GetReadHelper();
+            var admin = await helper.Where<DbSysAdmin>(q => q.IsDelete == false).Where(q => q.Id == adminId).FirstOrDefault_Async();
+            var setttings = await helper.Select_Async<DbSqlQueryLogSetting>("where IsDelete=0 and IsFrozen=0 ");
+            helper.Dispose();
+
+            DbSqlQueryLog readLog = new DbSqlQueryLog() {
+                AddingTime = addingTime,
+                AdminId = admin.Id,
+                AdminJobNo = admin.JobNo,
+                AdminName = admin.Name,
+                AdminPhone = admin.Phone,
+                AdminTrueName = admin.TrueName,
+                SqlConnectionId = data.SqlConnId,
+                SqlConnectionName = SqlConnectionName,
+                DatabaseName = data.Database,
+                Sql = data.Sql,
+                RunReadResult = result,
+                RunTime = runTime,
+                Exception = exception
+            };
+            foreach (var item in setttings) {
+                if (item.LogType == 1) {
+                    var logHelper = Config.GetLogSqlHelper(DateTime.Now);
+                    logHelper.Insert(readLog);
+                    logHelper.Dispose();
+                } else if (item.LogType == 2) {
+                    await PostContent(item.Data, readLog.ToJson());
+                } else if (item.LogType == 3) {
+                    var logHelper = SqlHelperFactory.OpenDatabase(item.Data, SqlType.SqlServer);
+                    logHelper.Insert(readLog);
+                    logHelper.Dispose();
+                } else if (item.LogType == 4) {
+                    var logHelper = SqlHelperFactory.OpenDatabase(item.Data, SqlType.MySql);
+                    logHelper.Insert(readLog);
+                    logHelper.Dispose();
+                }
+            }
+        }
 
         private async Task PostContent(string url, string json)
         {
@@ -838,8 +883,52 @@ where conn.IsDelete=0 and pass.IsDelete=0 and g.AdminId=@0 and conn.Id=@1 ";
 
         #endregion
 
+        #region 查询导出
 
-        
+        public async Task<ExecuteResult> ExecuteSql_Select_Export(ExecuteSqlDto request, int adminId)
+        {
+            if (string.IsNullOrWhiteSpace(request.Key) == false && _commandDict.TryGetValue(request.Key, out TempCommand command)) {
+                try {
+                    if (command.Authority != request.Authority) {
+                        return new ExecuteResult() { StartTime = DateTime.Now, Exception = "权限不一致！" };
+                    }
+                    int readMaxRows = command.ReadMaxRows;
+                    if (command.Authority == 5) { readMaxRows = int.MaxValue; }
+
+                    var provider = SqlCache.Instance.GetSqlCommonProvider(command.SqlType);
+                    if (command.Command != null) {
+                        var startTime = DateTime.Now;
+                        var stopwatch = System.Diagnostics.Stopwatch.StartNew();
+                        var result = await provider.ExecuteSql_Select(command.Command, request.Sql, readMaxRows);
+                        stopwatch.Stop();
+                        try {
+                            if (result.Exception != null) {
+                                await WriteExecuteSelectLog(adminId, request, command.Name, startTime, EnumRunReadResult.Fail, (int)stopwatch.ElapsedMilliseconds, result.Exception);
+                            } else {
+                                await WriteExecuteSelectLog(adminId, request, command.Name, startTime, EnumRunReadResult.Success, (int)stopwatch.ElapsedMilliseconds);
+                            }
+                        } catch (Exception ex) { }
+                        return result;
+                    }
+                } finally {
+                    _commandDict.Remove(request.Key);
+                    if (command.Command != null) {
+                        var conn = command.Command.Connection;
+                        command.Command.Dispose();
+                        command.Command = null;
+                        if (conn != null) {
+                            conn.Dispose();
+                        }
+                    }
+                    command = null;
+                }
+            }
+            return new ExecuteResult() { StartTime = DateTime.Now, Exception = "无法打开连接！" };
+
+        }
+
+        #endregion
+
 
     }
 }

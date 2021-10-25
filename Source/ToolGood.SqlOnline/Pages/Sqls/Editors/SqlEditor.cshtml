@@ -35,6 +35,7 @@
                     <button type="button" id="runBtn" class="layui-btn layui-btn-xs layui-btn-normal" onclick="runSql()"> &nbsp; 执 行 &nbsp; </button>
                     <button type="button" id="stopBtn" class="layui-btn layui-btn-xs layui-btn-danger" style="display:none" onclick="stopSql()"> &nbsp; 暂 停 &nbsp; </button>
                     <button type="button" onclick="runSqlAndAuthority(this)" style="line-height: 26px;" title="高级" class="layui-btn layui-btn-xs layui-btn-primary openwin"> &nbsp; 高 级 &nbsp; </button>
+                    <button type="button" onclick="runSqlAndExport(this)" style="line-height: 26px;" title="导出" class="layui-btn layui-btn-xs layui-btn-primary openwin"> &nbsp; 导 出 &nbsp; </button>
                 </div>
                 <div class="filter" style="float:right">
                     <button type="button" class="layui-btn layui-btn-xs layui-btn-normal" onclick="parent.switchAssistWin()"> &nbsp; 数据结构 &nbsp; </button>
@@ -145,6 +146,15 @@
             }
             $window.runSqlAndAuthority(database, sql);
         }
+        function runSqlAndExport() {
+            var database = $("#sel_databaseName").val();
+            var sql = editor.getSelectedText();
+            if (sql.length == 0) {
+                sql = editor.getValue();
+            }
+            $window.runSqlAndExport(database, sql);
+        }
+
         $(function () {
             $window.InitEditor();
             $(window).resize(function () {

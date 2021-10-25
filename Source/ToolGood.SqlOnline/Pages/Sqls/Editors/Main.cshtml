@@ -237,5 +237,72 @@
             })
 
         }
+
+        function runSqlAndExport(database, sql, Export) {
+            top.$currEditorWindow = window;
+            openTopWindow("导出", "/Sqls/Editors/Export?w=650&h=300");
+        }
+        function runSqlAndExport2(authority, password, Export) {
+            var database = getDatabase();
+            sql = getSql();
+            if (sql.length == 0) {
+                sql = getFullSql();
+            }
+            var $data = $("#edit-form").serializeJson();
+            $data.database = database;
+            $data.authority = authority;
+            $data.password = password;
+            
+            var url = "./Ajax/CreateExecute";
+            $.rsaPost(url, $data, function (data) {
+                if (data.state != "SUCCESS") {
+                    $(".ReturnContent").html('');
+                    openTopMsg(data.message);
+                    return;
+                }
+                showRunBtn();
+                clearTab();
+                sqlKey = data.data;
+                $data.key = sqlKey;
+                $data.sql = sql;
+                $data.ExportType = Export;
+
+                downloadSelect("./Ajax/DoExecuteSql_Select_Export", $data);
+            }, function () {
+                showRunBtn();
+                $(".ReturnContent").html('');
+                openTopMsg("服务器连接失败...");
+            })
+        }
+        function downloadSelect(url, _args) {
+            var tempForm = document.createElement("form");
+            tempForm.id = "tempForm1";
+            tempForm.method = "post";
+            tempForm.action = url;
+            tempForm.target = "_blank"; 
+            for (var key in _args) {
+                var hideInput1 = document.createElement("input");
+                hideInput1.type = "hidden";
+                hideInput1.name = key; 
+                hideInput1.value = _args[key];
+                tempForm.appendChild(hideInput1);
+            }
+    
+            if (document.all) {
+                tempForm.attachEvent("onsubmit", function () { });        //IE
+            } else {
+                var subObj = tempForm.addEventListener("submit", function () { }, false);    //firefox
+            }
+            document.body.appendChild(tempForm);
+            if (document.all) {
+                tempForm.fireEvent("onsubmit");
+            } else {
+                tempForm.dispatchEvent(new Event("submit"));
+            }
+            tempForm.submit();
+            document.body.removeChild(tempForm);
+        }
+
+
     </script>
 }
