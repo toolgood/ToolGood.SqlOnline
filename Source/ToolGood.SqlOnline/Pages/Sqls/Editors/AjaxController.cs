@@ -152,7 +152,7 @@ namespace ToolGood.SqlOnline.Pages.Sqls.Editors
                 XSSFRow dataRow = (XSSFRow)sheet.CreateRow(rowIndex);
                 int colNum = -1;
                 for (int j = 0; j < resultItem.Columns.Count; j++) {
-                    SetCellValue(dataRow, ++colNum, resultItem.Columns[j], style);
+                    dataRow.WriteString(++colNum, resultItem.Columns[j], style);
                 }
                 #endregion
                 sheet.CreateFreezePane(0, 1, 0, 1);//冻结首行
@@ -193,20 +193,6 @@ namespace ToolGood.SqlOnline.Pages.Sqls.Editors
             using (var ms = new MemoryStream()) {
                 workbook.Write(ms);
                 return ms.ToArray();
-            }
-        }
-
-        private void SetCellValue(IRow row, int index, string value, ICellStyle style)
-        {
-            var cell0 = row.CreateCell(index);
-            cell0.CellStyle = style;
-            if (value != null) {
-                cell0.SetCellValue(value);
-                var sheet = row.Sheet;
-                var width = sheet.GetColumnWidth(index);
-                if (width < (value.ToString().Length + 10) * 256) {
-                    sheet.SetColumnWidth(index, (value.ToString().Length + 10) * 256);
-                }
             }
         }
 
@@ -296,7 +282,7 @@ namespace ToolGood.SqlOnline.Pages.Sqls.Editors
                     }
                     xmls.AppendChild(xml);
                 }
-                using (var tran=new MemoryStream()) {
+                using (var tran = new MemoryStream()) {
                     xmlDoc.Save(tran);
                     return tran.ToArray();
                 }

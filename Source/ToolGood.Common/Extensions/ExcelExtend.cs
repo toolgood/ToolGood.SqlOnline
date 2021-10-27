@@ -287,11 +287,7 @@ namespace ToolGood.Common.Extensions
             cell0.CellStyle = style;
             cell0.SetCellValue(value);
 
-            var width = row.Sheet.GetColumnWidth(index);
-            var text = value.ToString("F" + doublePoint);
-            if (width < (text.Length + 10) * 256) {
-                row.Sheet.SetColumnWidth(index, (text.Length + 10) * 256);
-            }
+            row.Sheet.SetColumnWidth2(index, value.ToString("F" + doublePoint).Length);
         }
         /// <summary>
         /// 写入数字
@@ -322,10 +318,12 @@ namespace ToolGood.Common.Extensions
             cell0.CellStyle = style;
             cell0.SetCellValue((double)value);
 
+            row.Sheet.SetColumnWidth2(index, value.ToString("F" + doublePoint).Length);
+
             //var width = row.Sheet.GetColumnWidth(index);
             //var text = value.ToString("F" + doublePoint);
             //if (width < (text.Length + 10) * 256) {
-            //    row.Sheet.SetColumnWidth(index, (text.Length + 10) * 256);
+            //    row.Sheet.SetColumnWidth2(index, (text.Length + 10) * 256);
             //}
         }
         /// <summary>
@@ -351,10 +349,8 @@ namespace ToolGood.Common.Extensions
         {
             var cell0 = row.GetOrCreateCell(index);
             cell0.SetCellValue(value);
-            var width = row.Sheet.GetColumnWidth(index);
-            if (width < (value.ToString().Length + 10) * 256) {
-                row.Sheet.SetColumnWidth(index, (value.ToString().Length + 10) * 256);
-            }
+
+            row.Sheet.SetColumnWidth2(index, value.ToString().Length);
         }
         /// <summary>
         /// 写入数字
@@ -378,10 +374,9 @@ namespace ToolGood.Common.Extensions
         {
             var cell0 = row.GetOrCreateCell(index);
             cell0.SetCellValue(value);
-            var width = row.Sheet.GetColumnWidth(index);
-            if (width < (value.ToString().Length + 10) * 256) {
-                row.Sheet.SetColumnWidth(index, (value.ToString().Length + 10) * 256);
-            }
+
+            row.Sheet.SetColumnWidth2(index, value.ToString().Length);
+
         }
         /// <summary>
         /// 写入数字
@@ -409,10 +404,7 @@ namespace ToolGood.Common.Extensions
             cell0.CellStyle = style;
             cell0.SetCellValue(value);
 
-            var width = row.Sheet.GetColumnWidth(index);
-            if (width < (value.ToString().Length + 10) * 256) {
-                row.Sheet.SetColumnWidth(index, (value.ToString().Length + 10) * 256);
-            }
+            row.Sheet.SetColumnWidth2(index, value.ToString().Length);
         }
         /// <summary>
         /// 写入数字
@@ -441,10 +433,7 @@ namespace ToolGood.Common.Extensions
             cell0.CellStyle = style;
             cell0.SetCellValue((double)value);
 
-            var width = row.Sheet.GetColumnWidth(index);
-            if (width < (value.ToString().Length + 10) * 256) {
-                row.Sheet.SetColumnWidth(index, (value.ToString().Length + 10) * 256);
-            }
+            row.Sheet.SetColumnWidth2(index, value.ToString().Length);
         }
         /// <summary>
         /// 写入数字
@@ -629,11 +618,7 @@ namespace ToolGood.Common.Extensions
             cell0.CellStyle = style;
             cell0.SetCellValue(value);
 
-            var width = row.Sheet.GetColumnWidth(index);
-            var text = (value * 100).ToString("F" + doublePoint);
-            if (width < (text.Length + 1 + 10) * 256) {
-                row.Sheet.SetColumnWidth(index, (text.Length + 1 + 10) * 256);
-            }
+            row.Sheet.SetColumnWidth2(index, (value * 100).ToString("F" + doublePoint).Length + 1);
         }
         /// <summary>
         /// 写入百分数
@@ -664,11 +649,7 @@ namespace ToolGood.Common.Extensions
             cell0.CellStyle = style;
             cell0.SetCellValue((double)value);
 
-            var width = row.Sheet.GetColumnWidth(index);
-            var text = (value * 100).ToString("F" + doublePoint);
-            if (width < (text.Length + 1 + 10) * 256) {
-                row.Sheet.SetColumnWidth(index, (text.Length + 1 + 10) * 256);
-            }
+            row.Sheet.SetColumnWidth2(index, (value * 100).ToString("F" + doublePoint).Length + 1);
         }
         /// <summary>
         /// 写入百分数
@@ -696,10 +677,7 @@ namespace ToolGood.Common.Extensions
             cell0.CellStyle = style;
             cell0.SetCellValue(value);
 
-            var width = row.Sheet.GetColumnWidth(index);
-            if (width < (value.ToString().Length + 1 + 10) * 256) {
-                row.Sheet.SetColumnWidth(index, (value.ToString().Length + 1 + 10) * 256);
-            }
+            row.Sheet.SetColumnWidth2(index, value.ToString().Length + 1);
         }
         /// <summary>
         /// 写入百分数
@@ -726,10 +704,7 @@ namespace ToolGood.Common.Extensions
             cell0.CellStyle = style;
             cell0.SetCellValue((double)value);
 
-            var width = row.Sheet.GetColumnWidth(index);
-            if (width < (value.ToString().Length + 1 + 10) * 256) {
-                row.Sheet.SetColumnWidth(index, (value.ToString().Length + 1 + 10) * 256);
-            }
+            row.Sheet.SetColumnWidth2(index, value.ToString().Length + 1);
         }
         /// <summary>
         /// 写入百分数
@@ -861,10 +836,7 @@ namespace ToolGood.Common.Extensions
             cell0.CellStyle = style;
             cell0.SetCellValue(value);
 
-            var width = row.Sheet.GetColumnWidth(index);
-            if (width < 20 * 256) {
-                row.Sheet.SetColumnWidth(index, 20 * 256);
-            }
+            row.Sheet.SetColumnWidth2(index, value.ToString().Length);
         }
         /// <summary>
         /// 写入日期
@@ -890,10 +862,7 @@ namespace ToolGood.Common.Extensions
             cell0.CellStyle = style;
             cell0.SetCellValue(value);
 
-            var width = row.Sheet.GetColumnWidth(index);
-            if (width < 20 * 256) {
-                row.Sheet.SetColumnWidth(index, 20 * 256);
-            }
+            row.Sheet.SetColumnWidth2(index, value.ToString().Length);
         }
         /// <summary>
         /// 写入日期
@@ -973,10 +942,8 @@ namespace ToolGood.Common.Extensions
             cell0.CellStyle = style;
             cell0.SetCellValue(value);
 
-            var width = row.Sheet.GetColumnWidth(index);
-            if (width < 30 * 256) {
-                row.Sheet.SetColumnWidth(index, 30 * 256);
-            }
+            row.Sheet.SetColumnWidth2(index, value.ToString().Length);
+
         }
         /// <summary>
         /// 写入日期时间
@@ -998,10 +965,7 @@ namespace ToolGood.Common.Extensions
             cell0.CellStyle = style;
             cell0.SetCellValue(value);
 
-            var width = row.Sheet.GetColumnWidth(index);
-            if (width < 30 * 256) {
-                row.Sheet.SetColumnWidth(index, 30 * 256);
-            }
+            row.Sheet.SetColumnWidth2(index, value.ToString().Length);
         }
         /// <summary>
         /// 写入日期时间
@@ -1071,10 +1035,8 @@ namespace ToolGood.Common.Extensions
             cell0.CellStyle = style;
             cell0.SetCellValue(value);
 
-            var width = row.Sheet.GetColumnWidth(index);
-            if (width < 18 * 256) {
-                row.Sheet.SetColumnWidth(index, 18 * 256);
-            }
+            row.Sheet.SetColumnWidth2(index, value.ToString().Length);
+      
         }
         /// <summary>
         /// 写入时间
@@ -1096,10 +1058,7 @@ namespace ToolGood.Common.Extensions
             cell0.CellStyle = style;
             cell0.SetCellValue(value);
 
-            var width = row.Sheet.GetColumnWidth(index);
-            if (width < 18 * 256) {
-                row.Sheet.SetColumnWidth(index, 18 * 256);
-            }
+            row.Sheet.SetColumnWidth2(index, value.ToString().Length);
         }
         /// <summary>
         /// 写入时间
@@ -1160,11 +1119,8 @@ namespace ToolGood.Common.Extensions
             cell0.CellStyle = style;
             if (value != null) {
                 cell0.SetCellValue(value);
-                var sheet = row.Sheet;
-                var width = sheet.GetColumnWidth(index);
-                if (width < (value.ToString().Length + 10) * 256) {
-                    sheet.SetColumnWidth(index, (value.ToString().Length + 10) * 256);
-                }
+
+                row.Sheet.SetColumnWidth2(index, value.ToString().Length);
             }
         }
         public static void WriteString(this IRow row, int index, string value)
@@ -1172,55 +1128,42 @@ namespace ToolGood.Common.Extensions
             var cell0 = row.GetOrCreateCell(index);
             if (value != null) {
                 cell0.SetCellValue(value);
-                var sheet = row.Sheet;
-                var width = sheet.GetColumnWidth(index);
-                if (width < (value.ToString().Length + 10) * 256) {
-                    sheet.SetColumnWidth(index, (value.ToString().Length + 10) * 256);
-                }
+
+                row.Sheet.SetColumnWidth2(index, value.ToString().Length);
+                 
             }
         }
         public static void WriteString(this IRow row, int index, decimal value)
         {
             var cell0 = row.GetOrCreateCell(index);
             cell0.SetCellValue(value.ToString());
-            var sheet = row.Sheet;
-            var width = sheet.GetColumnWidth(index);
-            if (width < (value.ToString().Length + 10) * 256) {
-                sheet.SetColumnWidth(index, (value.ToString().Length + 10) * 256);
-            }
+
+            row.Sheet.SetColumnWidth2(index, value.ToString().Length);
         }
         public static void WriteString(this IRow row, int index, decimal? value)
         {
             var cell0 = row.GetOrCreateCell(index);
             if (value != null) {
                 cell0.SetCellValue((value ?? 0).ToString());
-                var sheet = row.Sheet;
-                var width = sheet.GetColumnWidth(index);
-                if (width < ((value ?? 0).ToString().Length + 10) * 256) {
-                    sheet.SetColumnWidth(index, ((value ?? 0).ToString().Length + 10) * 256);
-                }
+
+                row.Sheet.SetColumnWidth2(index, value?.ToString().Length??0);
+
             }
         }
         public static void WriteString(this IRow row, int index, int value)
         {
             var cell0 = row.GetOrCreateCell(index);
             cell0.SetCellValue(value.ToString());
-            var sheet = row.Sheet;
-            var width = sheet.GetColumnWidth(index);
-            if (width < (value.ToString().Length + 10) * 256) {
-                sheet.SetColumnWidth(index, (value.ToString().Length + 10) * 256);
-            }
+
+            row.Sheet.SetColumnWidth2(index, value.ToString().Length);
+
         }
         public static void WriteString(this IRow row, int index, int? value)
         {
             var cell0 = row.GetOrCreateCell(index);
             if (value != null) {
-                cell0.SetCellValue(value.Value.ToString());
-                var sheet = row.Sheet;
-                var width = sheet.GetColumnWidth(index);
-                if (width < (value.ToString().Length + 10) * 256) {
-                    sheet.SetColumnWidth(index, (value.ToString().Length + 10) * 256);
-                }
+                cell0.SetCellValue(value?.ToString()??"");
+                row.Sheet.SetColumnWidth2(index, value?.ToString().Length ?? 0);
             }
         }
         public static void WriteString(this IRow row, int index, DateTime dateTime, string format)
@@ -1228,11 +1171,9 @@ namespace ToolGood.Common.Extensions
             var cell0 = row.GetOrCreateCell(index);
             var value = dateTime.ToString(format);
             cell0.SetCellValue(value.ToString());
-            var sheet = row.Sheet;
-            var width = sheet.GetColumnWidth(index);
-            if (width < (value.ToString().Length + 10) * 256) {
-                sheet.SetColumnWidth(index, (value.ToString().Length + 10) * 256);
-            }
+
+            row.Sheet.SetColumnWidth2(index, value.Length  );
+ 
         }
         public static void WriteString(this IRow row, int index, DateTime? dateTime, string format)
         {
@@ -1240,11 +1181,8 @@ namespace ToolGood.Common.Extensions
             if (dateTime != null) {
                 var value = dateTime.Value.ToString(format);
                 cell0.SetCellValue(value.ToString());
-                var sheet = row.Sheet;
-                var width = sheet.GetColumnWidth(index);
-                if (width < (value.ToString().Length + 10) * 256) {
-                    sheet.SetColumnWidth(index, (value.ToString().Length + 10) * 256);
-                }
+
+                row.Sheet.SetColumnWidth2(index, value.Length);
             }
         }
 
@@ -1306,6 +1244,18 @@ namespace ToolGood.Common.Extensions
                 cell0 = sheet.CreateRow(row);
             }
             return cell0;
+        }
+        private static void SetColumnWidth2(this ISheet sheet, int index, int textLength)
+        {
+            var colWidth = (textLength + 5) * 256;
+            var width = sheet.GetColumnWidth(index);
+            if (width < colWidth && width != 20000) {
+                if (colWidth < 20000) {
+                    sheet.SetColumnWidth(index, colWidth);
+                } else {
+                    sheet.SetColumnWidth(index, 20000);
+                }
+            }
         }
 
 

@@ -121,6 +121,19 @@ SQL online 是以开发、查错、排错、优化为主的平台，SQL审计将
 
 4、进入【SQL online】，左侧菜单可以右击鼠标，可弹出菜单。
 
+5、数据库保存在 App_Data\setting.sav , 为sqlite。
+
+
+## IIS 发布注意事项
+1、发布时使用 Release
+
+2、下载安装 Hosting Bundle，下载地址： https://dotnet.microsoft.com/download/dotnet/5.0
+
+3、编辑应用程序池： 设置【.NET CLR 版本】为【无托管代码】。
+
+4、IIS查错，在根目录下添加【logs文件夹】，修改【web.config】，设置`stdoutLogEnabled`为`true` ，报错后查看【logs文件夹】内文件
+
+
 注：发布时使用 Release
 
 
