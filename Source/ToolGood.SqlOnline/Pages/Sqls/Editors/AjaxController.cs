@@ -4,12 +4,13 @@
  */
 using System;
 using System.Collections.Generic;
+using System.Data.SqlTypes;
 using System.IO;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Xml;
 using Microsoft.AspNetCore.Mvc;
-using NPOI.HSSF.UserModel;
 using NPOI.SS.UserModel;
 using NPOI.XSSF.UserModel;
 using ToolGood.Common.Extensions;
@@ -208,7 +209,7 @@ namespace ToolGood.SqlOnline.Pages.Sqls.Editors
             foreach (var resultItem in result.Result) {
                 for (int i = 0; i < resultItem.Columns.Count; i++) {
                     var col = resultItem.Columns[i];
-                    stringBuilder.Append(col);
+                    stringBuilder.Append(MakeValueCsvFriendly(col));
                     if (i < resultItem.Columns.Count - 1) {
                         stringBuilder.Append(',');
                     }
@@ -218,7 +219,7 @@ namespace ToolGood.SqlOnline.Pages.Sqls.Editors
                 foreach (var values in resultItem.Values) {
                     for (int i = 0; i < values.Length; i++) {
                         var col = values[i];
-                        stringBuilder.Append(col);
+                        stringBuilder.Append(MakeValueCsvFriendly(col));
                         if (i < resultItem.Columns.Count - 1) {
                             stringBuilder.Append(',');
                         }
@@ -230,6 +231,35 @@ namespace ToolGood.SqlOnline.Pages.Sqls.Editors
                 return stringBuilder.ToString();
             }
             return stringBuilder.ToString();
+        }
+
+        private string MakeValueCsvFriendly(object value, string columnSeparator = ",")
+        {
+            if (value == null) return "";
+            if (value is INullable && ((INullable)value).IsNull) return "";
+
+            string output;
+            if (value is DateTime) {
+                if (((DateTime)value).TimeOfDay.TotalSeconds == 0) {
+                    output = ((DateTime)value).ToString("yyyy-MM-dd");
+                } else {
+                    output = ((DateTime)value).ToString("yyyy-MM-dd HH:mm:ss");
+                }
+            } else {
+                var val= value.ToString().Trim();
+                if (Regex.IsMatch(val,@"^\d{12,}(\.\d+)?$",RegexOptions.Compiled)) {
+                    return "=\"" + val + "\"";
+                }
+                output = val;
+            }
+
+            if (output.Length > 30000) //cropping value for stupid Excel
+                output = output.Substring(0, 30000);
+
+            if (output.Contains(columnSeparator) || output.Contains("\"") || output.Contains("\n") || output.Contains("\r"))
+                output = '"' + output.Replace("\"", "\"\"") + '"';
+
+            return output;
         }
 
         private string BuildJson(ExecuteResult result)
