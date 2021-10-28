@@ -19,15 +19,12 @@ namespace ToolGood.SqlOnline.Plugin.SqlServer
         {
             _provider = new SqlServerProvider();
         }
-        private void UseDatabase(SqlHelper helper, string dataBaseName)
-        {
-            helper.Execute("Use [" + dataBaseName + "]");
-        }
+ 
 
         public List<ProcedureEntity> GetProcedures(string connStr, string databaseName)
         {
             var sqlHelper = SqlHelperFactory.OpenDatabase(connStr, _provider.GetProviderFactory(), SqlType.SqlServer);
-            UseDatabase(sqlHelper, databaseName);
+            sqlHelper.ChangeDatabase(databaseName);
 
             var sql = @"SELECT DB_NAME() DataBaseName,
        SCHEMA_NAME(pr.schema_id) SchemaName,
@@ -45,8 +42,8 @@ left join sys.extended_properties g on pr.object_id=g.major_id  and g.name='MS_D
         public List<ProcedureParamEntity> GetProcedureParams(string connStr, string databaseName, string schemaName, string procedureName)
         {
             var sqlHelper = SqlHelperFactory.OpenDatabase(connStr, _provider.GetProviderFactory(), SqlType.SqlServer);
+            sqlHelper.ChangeDatabase(databaseName);
 
-            UseDatabase(sqlHelper, databaseName);
             var sql = @"SELECT DB_NAME() DataBaseName,
        h.name as SchemaName,
        pr.name ProcedureName,
@@ -83,7 +80,7 @@ left join sys.schemas h on pr.schema_id=h.schema_id ";
         public ProcedureEntity GetProcedure(string connStr, string databaseName, string schemaName, string procedureName)
         {
             var sqlHelper = SqlHelperFactory.OpenDatabase(connStr, _provider.GetProviderFactory(), SqlType.SqlServer);
-            UseDatabase(sqlHelper, databaseName);
+            sqlHelper.ChangeDatabase(databaseName);
 
             var sql = @"SELECT DB_NAME() DataBaseName,
        SCHEMA_NAME(pr.schema_id) SchemaName,
@@ -153,7 +150,7 @@ left join sys.extended_properties g on pr.object_id=g.major_id  and g.name='MS_D
         public string GetProcedureDefinition(string connStr, string databaseName, string schemaName, string procedureName)
         {
             var helper = SqlHelperFactory.OpenDatabase(connStr, _provider.GetProviderFactory(), SqlType.SqlServer);
-            UseDatabase(helper, databaseName);
+            helper.ChangeDatabase(databaseName);
             var sql2 = @"SELECT OBJECT_DEFINITION (pr.object_id)
 FROM sys.objects pr    
 WHERE SCHEMA_NAME(pr.schema_id)=@0 and pr.name=@1";

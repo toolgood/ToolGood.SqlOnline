@@ -20,16 +20,12 @@ namespace ToolGood.SqlOnline.Plugin.SqlServer
         {
             _provider = new SqlServerProvider();
         }
-        private void UseDatabase(SqlHelper helper, string dataBaseName)
-        {
-            helper.Execute("Use [" + dataBaseName + "]");
-        }
 
         public List<ViewEntity> GetViews(string connStr, string databaseName)
         {
             var sqlHelper = SqlHelperFactory.OpenDatabase(connStr, _provider.GetProviderFactory(), SqlType.SqlServer);
+            sqlHelper.ChangeDatabase(databaseName);
 
-            UseDatabase(sqlHelper, databaseName);
             var sql = @"select DB_NAME() AS DataBaseName ,SCHEMA_NAME(d.schema_id) SchemaName, d.name ViewName,isnull(f.value,'') Comment
 FROM sys.objects d 
 left join sys.extended_properties f on d.object_id=f.major_id and f.minor_id=0 
@@ -44,7 +40,7 @@ where d.type='V' ";
         {
             var sqlHelper = SqlHelperFactory.OpenDatabase(connStr, _provider.GetProviderFactory(), SqlType.SqlServer);
 
-            UseDatabase(sqlHelper, databaseName);
+            sqlHelper.ChangeDatabase(databaseName);
             var sql = @"SELECT 
        DB_NAME() AS DataBaseName ,
        d.name as ViewName, 
@@ -81,7 +77,7 @@ where  d.type='V' ";
         {
             var sqlHelper = SqlHelperFactory.OpenDatabase(connStr, _provider.GetProviderFactory(), SqlType.SqlServer);
 
-            UseDatabase(sqlHelper, databaseName);
+            sqlHelper.ChangeDatabase(databaseName);
             var sql = @"select DB_NAME() AS DataBaseName ,SCHEMA_NAME(d.schema_id) SchemaName, d.name ViewName,isnull(f.value,'') Comment
 FROM sys.objects d 
 left join sys.extended_properties f on d.object_id=f.major_id and f.minor_id=0 
@@ -149,10 +145,10 @@ where d.type='V' and SCHEMA_NAME(d.schema_id)=@0 and d.name=@1 ";
             return new SqlEditorDto() { JsMode = _provider.GetJsMode(), SqlType = _provider.GetServerName(), SqlString = stringBuilder.ToString() };
         }
 
-        public string GetTableDefinition(string connStr, string dataBaseName, string schemaName, string tableName)
+        public string GetTableDefinition(string connStr, string databaseName, string schemaName, string tableName)
         {
             var helper = SqlHelperFactory.OpenDatabase(connStr, _provider.GetProviderFactory(), SqlType.SqlServer);
-            UseDatabase(helper, dataBaseName);
+            helper.ChangeDatabase(databaseName);
             const string sql = @"SELECT OBJECT_DEFINITION (pr.object_id)
 FROM sys.objects pr    
 WHERE pr.type = 'V' 

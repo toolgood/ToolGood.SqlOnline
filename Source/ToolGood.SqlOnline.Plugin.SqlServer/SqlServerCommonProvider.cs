@@ -5,6 +5,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using ToolGood.ReadyGo3;
 using ToolGood.SqlOnline.Datas.Databases;
 using ToolGood.SqlOnline.Dtos;
@@ -14,14 +15,28 @@ namespace ToolGood.SqlOnline.Plugin.SqlServer
 {
     public class SqlServerCommonProvider : ExecuteProviderBase, ISqlCommonProvider
     {
+        private new static Regex selectRegex = new Regex(@"\b(delete|insert|update|truncate|call|exec|execute|create|alter|drop|grant|change|backup|trigger|event|merge|rename|index|table|view|function|procedure|proc)\b", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+        private new static Regex insertUpdateRegex = new Regex(@"\b(delete|truncate|call|exec|execute|create|alter|drop|grant|change|backup|trigger|event|merge|rename|index|table|view|function|procedure|proc)\b", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+        private new static Regex deleteRegex = new Regex(@"\b(truncate|call|exec|execute|create|alter|drop|grant|change|backup|trigger|event|merge|rename|index|table|view|function|procedure|proc)\b", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+
         public SqlServerCommonProvider()
         {
             _provider = new SqlServerProvider();
         }
 
-        private void UseDatabase(SqlHelper helper, string dataBaseName)
+        protected override Regex GetSelectRegex()
         {
-            helper.Execute("Use [" + dataBaseName + "]");
+            return selectRegex;
+        }
+
+        protected override Regex GetInsertUpdateRegex()
+        {
+            return insertUpdateRegex;
+        }
+
+        protected override Regex GetDeleteRegex()
+        {
+            return deleteRegex;
         }
 
 
@@ -265,7 +280,7 @@ where  d.type in ('U','V') order by SchemaName,Name ";
         public string GetTableDefinition(string connStr, string dataBaseName, string schemaName, string tableName)
         {
             var helper = SqlHelperFactory.OpenDatabase(connStr, _provider.GetProviderFactory(), SqlType.SqlServer);
-            UseDatabase(helper, dataBaseName);
+            helper.ChangeDatabase(dataBaseName);
             const string sql = @"select OBJECT_DEFINITION (d.object_id) AS 'Definition'
 FROM sys.objects d 
 where d.type='U' and SCHEMA_NAME(d.schema_id)=@0 and  d.name=@1 ";
@@ -277,7 +292,7 @@ where d.type='U' and SCHEMA_NAME(d.schema_id)=@0 and  d.name=@1 ";
         public bool ChangeComment(string connStr, string databaseName, string schemaName, string tableName, string comment)
         {
             var helper = SqlHelperFactory.OpenDatabase(connStr, _provider.GetProviderFactory(), SqlType.SqlServer);
-            UseDatabase(helper, databaseName);
+            helper.ChangeDatabase(databaseName);
             const string sql = @"IF ((SELECT COUNT(*) from fn_listextendedproperty('MS_Description', 'SCHEMA', @0, 'TABLE', @1, NULL, NULL)) > 0) 
 EXEC sp_updateextendedproperty @name = N'MS_Description', @value = @2, @level0type = 'SCHEMA', @level0name = @1, @level1type = 'TABLE', @level1name = @2
 ELSE

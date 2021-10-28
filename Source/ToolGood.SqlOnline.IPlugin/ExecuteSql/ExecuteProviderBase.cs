@@ -21,6 +21,24 @@ namespace ToolGood.SqlOnline.IPlugin
         protected static Regex updateSqlRegex = new Regex(@"\bupdate +(.*?) +set +([\s\S]*?)(from +[\s\S]*?)?(where +[\s\S]+)$", RegexOptions.IgnoreCase);
         protected static Regex deleteSqlRegex = new Regex(@"\bdelete +from +([^ ]+) +(where [\s\S]+)$", RegexOptions.IgnoreCase);
 
+        protected virtual Regex GetSelectRegex()
+        {
+            return selectRegex;
+        }
+
+        protected virtual Regex GetInsertUpdateRegex()
+        {
+            return insertUpdateRegex;
+        }
+
+        protected virtual Regex GetDeleteRegex()
+        {
+            return deleteRegex;
+        }
+
+
+
+
         public virtual DbCommand CreateCommand(string connStr, string databaseName)
         {
             var factory = _provider.GetProviderFactory();
@@ -37,7 +55,7 @@ namespace ToolGood.SqlOnline.IPlugin
         #region ExecuteSql
         public virtual async Task<ExecuteResult> ExecuteSql_Select(DbCommand command, string sql, int readMaxRows)
         {
-            var m = selectRegex.Match(sql);
+            var m = GetSelectRegex().Match(sql);
             ExecuteResult result = new ExecuteResult();
             if (m.Success) {
                 result.IsException = true;
@@ -70,7 +88,7 @@ namespace ToolGood.SqlOnline.IPlugin
 
         public virtual async Task<ExecuteResult> ExecuteSql_InsertUpdate(DbCommand command, string sql, int readMaxRows, int changeMaxRows)
         {
-            var m = insertUpdateRegex.Match(sql);
+            var m = GetInsertUpdateRegex().Match(sql);
             ExecuteResult result = new ExecuteResult();
             if (m.Success) {
                 result.IsException = true;
@@ -114,7 +132,7 @@ namespace ToolGood.SqlOnline.IPlugin
 
         public virtual async Task<ExecuteResult> ExecuteSql_Delete(DbCommand command, string sql, int readMaxRows, int changeMaxRows)
         {
-            var m = deleteRegex.Match(sql);
+            var m = GetDeleteRegex().Match(sql);
             ExecuteResult result = new ExecuteResult();
             if (m.Success) {
                 result.IsException = true;

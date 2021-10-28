@@ -20,15 +20,12 @@ namespace ToolGood.SqlOnline.Plugin.SqlServer
             _provider = new SqlServerProvider();
         }
 
-        private void UseDatabase(SqlHelper helper, string dataBaseName)
-        {
-            helper.Execute("Use [" + dataBaseName + "]");
-        }
 
         public List<FunctionEntity> GetFunctions(string connStr, string databaseName)
         {
             var sqlHelper = SqlHelperFactory.OpenDatabase(connStr, _provider.GetProviderFactory(), SqlType.SqlServer);
-            UseDatabase(sqlHelper, databaseName);
+            sqlHelper.ChangeDatabase(databaseName);
+
             var sql = @"SELECT DB_NAME() DataBaseName,
        SCHEMA_NAME(sp.schema_id) SchemaName,
        sp.name FunctionName,
@@ -45,7 +42,8 @@ WHERE sp.type IN ('FN', 'IF', 'TF')  AND ISNULL(sp.is_ms_shipped, 0) = 0 ";
         public List<FunctionParamEntity> GetFunctionParams(string connStr, string databaseName, string schemaName, string functionName)
         {
             var sqlHelper = SqlHelperFactory.OpenDatabase(connStr, _provider.GetProviderFactory(), SqlType.SqlServer);
-            UseDatabase(sqlHelper, databaseName);
+            sqlHelper.ChangeDatabase(databaseName);
+
             var sql = @"SELECT DB_NAME() DataBaseName,
        SCHEMA_NAME(pr.schema_id) SchemaName,
        pr.name FunctionName,
@@ -75,7 +73,8 @@ and SCHEMA_NAME(pr.schema_id)=@0 and pr.name=@1 order by p.object_id asc
         public FunctionEntity GetFunction(string connStr, string databaseName, string schemaName, string functionName)
         {
             var sqlHelper = SqlHelperFactory.OpenDatabase(connStr, _provider.GetProviderFactory(), SqlType.SqlServer);
-            UseDatabase(sqlHelper, databaseName);
+            sqlHelper.ChangeDatabase(databaseName);
+
             var sql = @"SELECT DB_NAME() DataBaseName,
        SCHEMA_NAME(sp.schema_id) SchemaName,
        sp.name FunctionName,
@@ -145,7 +144,8 @@ WHERE sp.type IN ('FN', 'IF', 'TF')  AND ISNULL(sp.is_ms_shipped, 0) = 0 and SCH
         public string GetFunctionDefinition(string connStr, string databaseName, string schemaName, string procedureName)
         {
             var helper = SqlHelperFactory.OpenDatabase(connStr, _provider.GetProviderFactory(), SqlType.SqlServer);
-            UseDatabase(helper, databaseName);
+            helper.ChangeDatabase(databaseName);
+
             var sql2 = @"SELECT OBJECT_DEFINITION (pr.object_id)
 FROM sys.objects pr    
 WHERE pr.type IN ('FN', 'IF', 'TF') 
