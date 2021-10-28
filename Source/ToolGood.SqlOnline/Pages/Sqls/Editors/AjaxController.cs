@@ -92,7 +92,7 @@ namespace ToolGood.SqlOnline.Pages.Sqls.Editors
                 return File(bytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"Export_{DateTime.Now.ToString("yyyyMMddHHmmss")}.xlsx");
             } else if (request.ExportType == 2) { //csv
                 var txt = BuildCsv(executeResult);
-                return File(Encoding.UTF8.GetBytes(txt), "text/csv", $"Export_{DateTime.Now.ToString("yyyyMMddHHmmss")}.csv");
+                return File(Encoding.GetEncoding("GBK").GetBytes(txt), "text/csv", $"Export_{DateTime.Now.ToString("yyyyMMddHHmmss")}.csv");
             } else if (request.ExportType == 3) { //json
                 var txt = BuildJson(executeResult);
                 return File(Encoding.UTF8.GetBytes(txt), "text/json", $"Export_{DateTime.Now.ToString("yyyyMMddHHmmss")}.json");

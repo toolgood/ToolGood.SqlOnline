@@ -37,6 +37,8 @@ namespace ToolGood.SqlOnline
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
+
             MyIoc.SetServiceCollection(services);
             MyHttpContext.SetServiceCollection(services);
             services.RegisterAssemblyInterfaces("ToolGood.SqlOnline.Application", null, LifeStyle.PerLifetimeScope);

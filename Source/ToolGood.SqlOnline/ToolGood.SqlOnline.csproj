@@ -29,6 +29,7 @@
 	<ItemGroup>
 		<PackageReference Include="Microsoft.Data.Sqlite" Version="5.0.11" />
 		<PackageReference Include="NPOI" Version="2.5.5" />
+		<PackageReference Include="System.Text.Encoding.CodePages" Version="5.0.0" />
 		<PackageReference Include="ToolGood.AntiDuplication" Version="2.0.0.1" />
 	</ItemGroup>
 
