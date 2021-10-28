@@ -158,6 +158,9 @@ namespace ToolGood.SqlOnline.Pages.Sqls.Editors
                 sheet.CreateFreezePane(0, 1, 0, 1);//冻结首行
 
                 var doubleCellStyle = sheet.CreateDoubleCellStyle();
+                var datetimeCellStyle = sheet.Workbook.CreateCellStyle();
+                IDataFormat datastyle = sheet.Workbook.CreateDataFormat();
+                datetimeCellStyle.DataFormat = datastyle.GetFormat("yyyy-MM-dd hh:mm:ss");
 
                 rowIndex++;
                 foreach (var values in resultItem.Values) {
@@ -170,7 +173,7 @@ namespace ToolGood.SqlOnline.Pages.Sqls.Editors
                         } else if (col is double num_double) {
                             row.WriteDouble(j, num_double, doubleCellStyle);
                         } else if (col is DateTime num_dt) {
-                            row.WriteDateTime(j, num_dt);
+                            row.WriteDateTime(j, num_dt, datetimeCellStyle);
                         } else if (col is string num_str) {
                             row.WriteString(j, num_str);
                         } else {
