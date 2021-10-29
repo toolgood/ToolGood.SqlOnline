@@ -169,7 +169,7 @@ where  d.type in ('U','V') order by SchemaName,Name ";
         {
             var tableColumns = GetTableColumns(connStr, databaseName, schemaName, tableName);
             StringBuilder stringBuilder = new StringBuilder();
-            stringBuilder.AppendFormat("USE [{0}]\r\n", databaseName);
+            stringBuilder.AppendFormat("USE [{0}];\r\n", databaseName);
             stringBuilder.AppendLine();
 
             stringBuilder.AppendLine("SELECT TOP 100");
@@ -204,7 +204,7 @@ where  d.type in ('U','V') order by SchemaName,Name ";
             tableColumns.RemoveAll(q => q.IsIdentity);
 
             StringBuilder stringBuilder = new StringBuilder();
-            stringBuilder.AppendFormat("USE [{0}]\r\n\r\n", databaseName);
+            stringBuilder.AppendFormat("USE [{0}];\r\n\r\n", databaseName);
             stringBuilder.AppendFormat("INSERT INTO [{0}].[{1}](\r\n", schemaName, tableName);
             var maxLength = tableColumns.Max(q => q.ColumnName.Length) + 10;
             for (int i = 0; i < tableColumns.Count; i++) {
@@ -239,7 +239,7 @@ where  d.type in ('U','V') order by SchemaName,Name ";
             tableColumns.RemoveAll(q => q.IsIdentity);
 
             StringBuilder stringBuilder = new StringBuilder();
-            stringBuilder.AppendFormat("USE [{0}]\r\n\r\n", databaseName);
+            stringBuilder.AppendFormat("USE [{0}];\r\n\r\n", databaseName);
 
             stringBuilder.AppendFormat("UPDATE [{0}].[{1}] SET \r\n", schemaName, tableName);
             var maxLength = tableColumns.Max(q => q.ColumnName.Length) + 10;
@@ -263,7 +263,7 @@ where  d.type in ('U','V') order by SchemaName,Name ";
         public SqlEditorDto GetDeleteSql(string connStr, string databaseName, string schemaName, string tableName)
         {
             StringBuilder stringBuilder = new StringBuilder();
-            stringBuilder.AppendFormat("USE [{0}]\r\n\r\n", databaseName);
+            stringBuilder.AppendFormat("USE [{0}];\r\n\r\n", databaseName);
             stringBuilder.AppendFormat("DELETE FROM [{0}].[{1}] WHERE <where condition> \r\n", schemaName, tableName);
             return new SqlEditorDto() { JsMode = _provider.GetJsMode(), SqlType = _provider.GetServerName(), SqlString = stringBuilder.ToString() };
         }
@@ -271,7 +271,7 @@ where  d.type in ('U','V') order by SchemaName,Name ";
         public SqlEditorDto GetCreateSql(string connStr, string databaseName, string schemaName, string tableName)
         {
             StringBuilder stringBuilder = new StringBuilder();
-            stringBuilder.AppendFormat("USE [{0}]\r\n\r\n", databaseName);
+            stringBuilder.AppendFormat("USE [{0}];\r\n\r\n", databaseName);
             var table = GetTableDefinition(connStr, databaseName, schemaName, tableName);
             stringBuilder.Append(table);
             return new SqlEditorDto() { JsMode = _provider.GetJsMode(), SqlType = _provider.GetServerName(), SqlString = stringBuilder.ToString() };
