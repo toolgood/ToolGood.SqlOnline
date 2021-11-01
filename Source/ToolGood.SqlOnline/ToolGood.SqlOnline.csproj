@@ -29,6 +29,7 @@
 	<ItemGroup>
 		<PackageReference Include="Microsoft.Data.Sqlite" Version="5.0.11" />
 		<PackageReference Include="NPOI" Version="2.5.5" />
+		<PackageReference Include="SharpCompress" Version="0.30.0" />
 		<PackageReference Include="System.Text.Encoding.CodePages" Version="5.0.0" />
 		<PackageReference Include="ToolGood.AntiDuplication" Version="2.0.0.1" />
 	</ItemGroup>
@@ -44,6 +45,10 @@
 		<ProjectReference Include="..\ToolGood.SqlOnline.Plugin.Sqlite\ToolGood.SqlOnline.Plugin.Sqlite.csproj" />
 		<ProjectReference Include="..\ToolGood.SqlOnline.Plugin.SqlServer\ToolGood.SqlOnline.Plugin.SqlServer.csproj" />
 		<ProjectReference Include="..\ToolGood.WebCommon\ToolGood.WebCommon.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Folder Include="wwwroot\_\outTableInfo\img\" />
 	</ItemGroup>
 
 

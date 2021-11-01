@@ -1,0 +1,57 @@
+body { margin: 0px; padding: 0px; font-family: 'Segoe UI',Arial,'Microsoft Yahei',sans-serif; color: #000; letter-spacing: 1px; font-size: 75%; background: #F4F4F4; }
+a { color: #000; text-decoration: none; }
+*, *::before, *::after { box-sizing: inherit; }
+ul, li { padding: 0; margin: 0; }
+button { background-color: #428bca; padding: 0px 5px; font-size: 11.9px; border-radius: 3px; font-weight: 500; line-height: 20px; text-align: center; cursor: pointer; border: 1px solid #428bca; color: #fff; }
+
+.Filter { background: #ECECEC; border-bottom: 1px solid #D8D8D8; height: 30px; line-height: 30px; padding: 0 5px; }
+
+.main .Return { margin: 5px; border: 1px solid #DCDCDC; background: #FFF; }
+.main .ReturnLeft, .Differ .ReturnRight { border: 1px solid #DCDCDC; background: #FFF; }
+.main .ReturnTitle { background: #ececec; border-bottom: 1px solid #DCDCDC; padding: 2px 5px; }
+.main .ReturnContent { background: #FFF; }
+.main .ReturnLeft { float: left;    }
+.main .ReturnRight { float: right;   }
+
+ul.tree, ul.tree ul { margin: 0; padding: 0; list-style: none; }
+ul.tree li { font-size: 11px; white-space: nowrap; border-bottom: 1px solid #f4f0f0; }
+ul.tree li span { line-height: 24px; }
+ul.tree ul li { height: 24px; line-height: 24px; font-size: 11px; }
+ul.tree li.i { background-image: url(../img/dbs/bg.gif); background-repeat: no-repeat; }
+ul.tree li.i.t { background-image: url(../img/dbs/icon-table.gif); background-repeat: no-repeat; background-position: 11px 7px; }
+ul.tree li.i.v { background-image: url(../img/dbs/icon-view.gif); background-repeat: no-repeat; background-position: 11px 7px; }
+ul.tree li.i.p { background-image: url(../img/dbs/icon-proc.gif); background-repeat: no-repeat; background-position: 11px 7px; }
+ul.tree li.i.t span, ul.tree li.i.v span, ul.tree li.i.p span { padding-left: 30px; color: #337ab7; text-decoration: none; }
+ul.tree li.i.f { background-position: 30px -96px; padding-left: 65px; margin-left: -18px; }
+ul.tree li.i.fk { background-position: 30px 0px; padding-left: 65px; margin-left: -18px; }
+ul.tree li.i.fka { background-position: 30px -192px; padding-left: 65px; margin-left: -18px; }
+ul.tree li.i.fa { background-position: 30px -240px; padding-left: 65px; margin-left: -18px; }
+ul.tree ul li.f:last-child { background-position: 30px -48px; padding-left: 65px; margin-left: -18px; }
+ul.tree li li i { padding-left: 5px; color: #A0A0A0; }
+ul.tree li.t i.i { color: #827AA5; }
+ul.tree li li i.i { color: #7AA57A; }
+ul.tree .d span { color: red; text-decoration: line-through; }
+ul.tree .n span { color: red; text-decoration: line-through; }
+ul.tree .g span { color: green !important; }
+ul.tree .e, ul.tree .e span { color: red !important; }
+ul.tree .te span { color: red !important; }
+
+ul.tree .d, ul.tree .d span, ul.tree .d i, ul.tree .d i.i { color: #ddd !important; text-decoration: line-through; }
+ul.tree .n, ul.tree .n span, ul.tree .n i, ul.tree .n i.i { color: #ddd !important; text-decoration: line-through; }
+
+.main .Return .List { height: 55px; overflow-y: auto; line-height: 26px; word-wrap: break-word; padding: 5px; }
+.main .Return .List span { background-image: url(../img/bg.gif); background-repeat: no-repeat; padding: 0 5px 0 22px; line-height: 20px; height: 20px; font-size: 12px; border: 1px solid #eee; margin-right: 5px; display: inline-block; }
+.main .Return .List span.new { background-position: 0px -288px; }
+.main .Return .List span.edit { background-position: 0px -319px; }
+.main .Return .List span.delete { background-position: 0px -353px; }
+
+
+.ReturnContent.show-column li ul { display: block; }
+.ReturnContent li ul { display: none; }
+
+.tryLock { color: blue !important; }
+.insertColumn { color: blue !important; }
+ul.tree li.i.t li span, ul.tree li.i.v li span, ul.tree li.i.p li span { padding-left: 0; }
+ul.tree li.i.t span a, ul.tree li.i.v span a, ul.tree li.i.p span a { padding-left: 0; }
+ul.tree li i.orange, ul.tree li li i.orange { color: orange !important; padding-left: 0; font-size: 11px; }
+.hidden { display: none; }

@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using SharpCompress.Archives.Zip;
 using ToolGood.SqlOnline.Application;
 using ToolGood.SqlOnline.Datas.Databases;
 using ToolGood.SqlOnline.Dtos;
@@ -112,8 +114,8 @@ namespace ToolGood.SqlOnline.Pages.Sqls
                 SqlType = dto.SqlType,
                 SqlConnId = dto.SqlConnId,
                 Database = dto.Database,
-                Search=dto.Search,
-                Schema=dto.Schema,
+                Search = dto.Search,
+                Schema = dto.Schema,
                 SearchType = "GetTableNames",
             };
         }
@@ -175,10 +177,10 @@ namespace ToolGood.SqlOnline.Pages.Sqls
                     SqlType = searchDto.SqlType,
                     SqlConnId = searchDto.SqlConnId,
                     Database = node.DatabaseName,
-                    Schema=node.SchemaName,
-                    Search=node.TableName,
+                    Schema = node.SchemaName,
+                    Search = node.TableName,
                     icon = GetIcon("table"),
-                    
+
                 };
                 if (searchDto.SqlType.Equals("sqlserver", StringComparison.OrdinalIgnoreCase)) {
                     if (node.SchemaName != "dbo") {
@@ -252,7 +254,7 @@ namespace ToolGood.SqlOnline.Pages.Sqls
             }
             return tree;
         }
-        
+
         private List<SqlTreeDto> GetSqlTree(List<FunctionEntity> sqlConnDtos, SqlSearchDto searchDto)
         {
             List<SqlTreeDto> tree = new List<SqlTreeDto>();
@@ -310,7 +312,7 @@ namespace ToolGood.SqlOnline.Pages.Sqls
                             model.Name = key;
                         }
                         model.Comment = item.Comment;
-                        if (item.TableType.Trim() == "t" || item.TableType== "BASE TABLE" 
+                        if (item.TableType.Trim() == "t" || item.TableType == "BASE TABLE"
                             || item.TableType.Equals("table", StringComparison.OrdinalIgnoreCase)
                             || item.TableType.Trim().Equals("u", StringComparison.OrdinalIgnoreCase)
                             ) {
@@ -328,6 +330,78 @@ namespace ToolGood.SqlOnline.Pages.Sqls
             return Error();
         }
         #endregion
+
+        [IgnoreAntiforgeryToken]
+        [HttpPost]
+        public async Task<IActionResult> GetOutTableInfo(SqlSearchDto dto)
+        {
+            var list = await _sqlOnlineApplication.GetTableShowColumns(AdminDto.Id, dto.SqlConnId, dto.Database);
+            List<StructureModel> models = new List<StructureModel>();
+            if (list != null) {
+                Dictionary<string, StructureModel> dict = new Dictionary<string, StructureModel>();
+                foreach (var item in list) {
+                    StructureModel model;
+                    var key = item.SchemaName + "." + item.Name;
+                    if (dict.TryGetValue(key, out model) == false) {
+                        model = new StructureModel();
+                        if (string.IsNullOrEmpty(item.SchemaName) || item.SchemaName == "dbo" || item.SchemaName == "public") {
+                            model.Name = item.Name;
+                        } else {
+                            model.Name = key;
+                        }
+                        model.Comment = item.Comment;
+                        if (item.TableType.Trim() == "t" || item.TableType == "BASE TABLE"
+                            || item.TableType.Equals("table", StringComparison.OrdinalIgnoreCase)
+                            || item.TableType.Trim().Equals("u", StringComparison.OrdinalIgnoreCase)
+                            ) {
+                            model.Type = "t";
+                        } else {
+                            model.Type = "v";
+                        }
+                        dict[key] = model;
+                        models.Add(model);
+                    }
+                    model.Items.Add(new StructureItemModel(item));
+                }
+            }
+            var filePath = MyHostingEnvironment.MapWebRootPath("/_/outTableInfo/index.html");
+            var html = System.IO.File.ReadAllText(filePath);
+            StringBuilder stringBuilder = new StringBuilder(html);
+            stringBuilder.Replace("[[DatabaseName]]", dto.Database);
+            stringBuilder.Replace("[[data]]", Newtonsoft.Json.JsonConvert.SerializeObject(models));
+
+            using (var archive = ZipArchive.Create()) {
+                var folderPath = MyHostingEnvironment.MapWebRootPath("/_/outTableInfo/");
+                archive.AddEntry("css/dbs.css", new System.IO.FileInfo(System.IO.Path.Combine(folderPath, "css/dbs.css")).OpenRead(), true);
+                archive.AddEntry("css/global.css", new System.IO.FileInfo(System.IO.Path.Combine(folderPath, "css/global.css")).OpenRead(), true);
+                archive.AddEntry("img/dbs/bg.gif", new System.IO.FileInfo(System.IO.Path.Combine(folderPath, "img/dbs/bg.gif")).OpenRead(), true);
+                archive.AddEntry("img/dbs/icon-proc.gif", new System.IO.FileInfo(System.IO.Path.Combine(folderPath, "img/dbs/icon-proc.gif")).OpenRead(), true);
+                archive.AddEntry("img/dbs/icon-table.gif", new System.IO.FileInfo(System.IO.Path.Combine(folderPath, "img/dbs/icon-table.gif")).OpenRead(), true);
+                archive.AddEntry("img/dbs/icon-view.gif", new System.IO.FileInfo(System.IO.Path.Combine(folderPath, "img/dbs/icon-view.gif")).OpenRead(), true);
+
+                archive.AddEntry(@"js\layer\skin\default\icon.png", new System.IO.FileInfo(System.IO.Path.Combine(folderPath, @"js\layer\skin\default\icon.png")).OpenRead(), true);
+                archive.AddEntry(@"js\layer\skin\default\icon-ext.png", new System.IO.FileInfo(System.IO.Path.Combine(folderPath, @"js\layer\skin\default\icon-ext.png")).OpenRead(), true);
+
+                archive.AddEntry(@"js\layer\skin\default\layer.css", new System.IO.FileInfo(System.IO.Path.Combine(folderPath, @"js\layer\skin\default\layer.css")).OpenRead(), true);
+                archive.AddEntry(@"js\layer\skin\default\loading-0.gif", new System.IO.FileInfo(System.IO.Path.Combine(folderPath, @"js\layer\skin\default\loading-0.gif")).OpenRead(), true);
+                archive.AddEntry(@"js\layer\skin\default\loading-1.gif", new System.IO.FileInfo(System.IO.Path.Combine(folderPath, @"js\layer\skin\default\loading-1.gif")).OpenRead(), true);
+                archive.AddEntry(@"js\layer\skin\default\loading-2.gif", new System.IO.FileInfo(System.IO.Path.Combine(folderPath, @"js\layer\skin\default\loading-2.gif")).OpenRead(), true);
+
+
+                archive.AddEntry(@"js\layer\layer.js", new System.IO.FileInfo(System.IO.Path.Combine(folderPath, @"js\layer\layer.js")).OpenRead(), true);
+                archive.AddEntry(@"js\clipboard.js", new System.IO.FileInfo(System.IO.Path.Combine(folderPath, @"js\clipboard.js")).OpenRead(), true);
+                archive.AddEntry(@"js\doT.min.js", new System.IO.FileInfo(System.IO.Path.Combine(folderPath, @"js\doT.min.js")).OpenRead(), true);
+                archive.AddEntry(@"js\jquery.min.js", new System.IO.FileInfo(System.IO.Path.Combine(folderPath, @"js\jquery.min.js")).OpenRead(), true);
+
+                archive.AddEntry(@"index.html", new System.IO.MemoryStream(Encoding.UTF8.GetBytes(stringBuilder.ToString())), true);
+
+                using (var ms = new System.IO.MemoryStream()) {
+                    archive.SaveTo(ms);
+                    return File(ms.ToArray(), "application/zip",  dto.Database + "_tableInfo.zip");
+                }
+            }
+        }
+
 
     }
 }

@@ -1,0 +1,121 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>数据结构</title>
+    <meta name="viewport" content="width=device-width" />
+    <link href="css/global.css" rel="stylesheet" />
+    <link href="css/dbs.css" rel="stylesheet" />
+    <style>
+        @media screen and (min-width: 960px) {
+            .Filter { padding: 0 160px; }
+            .main { padding: 5px 150px !important; }
+        }
+        html { background: #F4F4F4; }
+    </style>
+</head>
+<body>
+    <div class="Filter" style="font-size:13px;overflow:hidden">
+        <form id="edit-form">
+            <input type="hidden" id="SqlConnId" name="SqlConnId" value="@Model.ConnId" />
+            库名：
+            <select name="DatabaseName" id="DatabaseName" style="height: 20px;">
+                <option>[[DatabaseName]]</option>
+            </select>
+            | 筛选：<input id="inputSearch" type="text" class="inputSearch" style="width:250px;" title="请输入关键字">
+            | 双击【表名】、【列名】复制到剪切板
+
+        </form>
+    </div>
+    <div class="main" style="padding: 5px;">
+        <div class="ReturnLeft" style="width: 100%;">
+            <div class="ReturnContent" style="width: 100%;">
+            </div>
+        </div>
+    </div>
+    <script type="text/template" id="tpl">
+        <ul class="tree">
+            {{ for (var i=0;i<it.length;i++){ }}
+            {{ var t=it[i]; }}
+            <li class="i {{= t.t }} " id="{{= t.n.replace('.','_') }}" data-commont="{{= (t.c!=undefined?t.c:"") }}" data-tname="{{= t.n }}">
+                <span style="width:100%" class="table">
+                    <a href="javascript:;" class="copy" tabindex="-1" onclick="insertColumn(this)" data-clipboard-text="{{= t.n}}">{{= t.n}}</a>
+                    <!--<a href='javascript:;' class='insertColumn' tabindex="-1" data-clipboard-text="{{= t.n}}" style="display:none" onclick='insertColumn(this); return false;'>插入</a>-->
+                    <i class="i">【{{= (t.c!=undefined?t.c:"") }}】</i>
+                    &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+                    &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+                    &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+                    &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+                    &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+                    &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+                </span>
+                <ul>
+                    {{ for (var j=0;j<t.items.length;j++){ }}
+                    {{ var c=t.items[j]; }}
+                    <li class="i field {{= c.k }}" data-commont="{{= (c.c!=undefined?c.c:"") }}" data-name="{{= c.n }}">
+                        <span style="width:100%">
+                            <a href="javascript:;" class="copy" tabindex="-1" onclick="insertColumn(this)" data-clipboard-text="{{= c.n}}">{{= c.n}}</a>
+                            <i>{{= c.t}}{{= (c.nu!=undefined?c.nu:"")}}</i>
+                            <i class="i">{{= (c.c!=undefined?c.c:"") }}</i>{{ if(c.v!=undefined){ }}<i class="ii">{{= c.v }}</i>{{  } }}
+                        </span>
+                    </li>
+                    {{  } }}
+                </ul>
+            </li>
+            {{  } }}
+        </ul>
+    </script>
+    <script src="js/jquery.min.js"></script>
+    <script src="js/layer/layer.js"></script>
+    <script src="js/doT.min.js"></script>
+    <script src="js/clipboard.js"></script>
+
+
+    <script>
+        $(function () {
+            var data = [[data]];
+            var html = $("#tpl").html();
+            var tmpText = doT.template(html);
+            var h = tmpText(data);
+            $(".ReturnContent").html(h);
+
+            var clipboard = new ClipboardJS('.copy');
+            clipboard.on('success', function (e) {
+                layer.msg("已复制到剪切板中！");
+            });
+ 
+            $("body").on("click", ".i.t > span,.i.v > span", function () {
+                var sTableId = $(this).parent().attr('id');
+                $('.main .ReturnLeft #' + sTableId + ' ul').slideToggle('fast');
+            });
+
+            $("#inputSearch").keypress(function (e) {
+                if (e.keyCode == 13) { e.preventDefault(); }
+            }).keyup(function (e) {
+                var $text = $(this).val().toLocaleLowerCase();
+                $('.ReturnContent > ul > li').css("display", "none");
+                $('.ReturnContent ul li ul').css("display", "none");
+                $('.ReturnContent ul li ul li').css("display", "");
+                $(".ReturnContent > ul > li").each(function (obj) {
+                    var $this = $(this);
+                    if ($(this).attr("data-commont").toLocaleLowerCase().indexOf($text) >= 0 || $(this).attr("data-tname").toLocaleLowerCase().indexOf($text) >= 0) {
+                        $(this).show();
+                    } else {
+                        $(this).find("li").each(function () {
+                            if ($(this).attr("data-commont").toLocaleLowerCase().indexOf($text) >= 0 || $(this).attr("data-name").toLocaleLowerCase().indexOf($text) >= 0) {
+                                $this.show();
+                                $(this).parent().show();
+                                $(this).show();
+                            } else {
+                                $(this).hide();
+                            }
+                        })
+                    }
+                })
+            })
+      
+        });
+    </script>
+
+</body>
+</html>

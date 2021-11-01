@@ -20,8 +20,9 @@
             <select name="DatabaseName" id="DatabaseName" style="height: 20px;">
                 @Model.DatabaseEntities.ToOption(q => q.DatabaseName.ToString(), Model.DatabaseName)
             </select>
-            <button type="button" class="selectDb" onclick="loadTable()" title="">切换</button>
+            <button type="button" class="selectDb" onclick="loadTable()" title=""> 切换 </button>
             | 筛选：<input id="inputSearch" type="text" class="inputSearch" style="width:60px;" title="请输入关键字">
+            <button type="button" class="selectDb" onclick="exportZip()" title=""> 导出结构 </button>
         </form>
     </div>
     <div class="main" style="padding: 5px;">
@@ -40,6 +41,12 @@
                     <i class="layui-icon orange table hidden">&#xe658;</i> {{= t.n }}
                     <a href='javascript:;' class='insertColumn' tabindex="-1" data-clipboard-text="{{= t.n}}" style="display:none" onclick='insertColumn(this); return false;'>插入</a>
                     <i class="i">【{{= (t.c!=undefined?t.c:"") }}】</i>
+                    &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+                    &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+                    &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+                    &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+                    &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+                    &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
                 </span>
                 <ul>
                     {{ for (var j=0;j<t.items.length;j++){ }}
@@ -222,6 +229,40 @@
                     $editor.insertColumn(txt);
                 }
             }
+        }
+
+        function exportZip() {
+            var _args = {};
+            _args["SqlConnId"] = $("#SqlConnId").val();
+            _args["Database"] = $("#DatabaseName").val();
+            url = "/Sqls/Ajax/GetOutTableInfo";
+
+            var tempForm = document.createElement("form");
+            tempForm.id = "tempForm1";
+            tempForm.method = "post";
+            tempForm.action = url;
+            tempForm.target = "_blank";
+            for (var key in _args) {
+                var hideInput1 = document.createElement("input");
+                hideInput1.type = "hidden";
+                hideInput1.name = key;
+                hideInput1.value = _args[key];
+                tempForm.appendChild(hideInput1);
+            }
+
+            if (document.all) {
+                tempForm.attachEvent("onsubmit", function () { });        //IE
+            } else {
+                var subObj = tempForm.addEventListener("submit", function () { }, false);    //firefox
+            }
+            document.body.appendChild(tempForm);
+            if (document.all) {
+                tempForm.fireEvent("onsubmit");
+            } else {
+                tempForm.dispatchEvent(new Event("submit"));
+            }
+            tempForm.submit();
+            document.body.removeChild(tempForm);
         }
     </script>
 
