@@ -11,6 +11,9 @@
     <link href="/_/css/global.css" rel="stylesheet" />
     <link href="/_/css/dbs.css" rel="stylesheet" />
     <link href="/_/layui/css/layui.css" rel="stylesheet" />
+    <style>
+        html { background: #F4F4F4; overflow-y:hidden; }
+    </style>
 </head>
 <body>
     <div class="Filter" style="font-size:13px;overflow:hidden">
@@ -55,7 +58,8 @@
                         <span style="width:100%">
                             <i class="layui-icon orange hidden">&#xe658;</i><a href="javascript:;" class="copy" tabindex="-1" onclick="insertColumn(this)" data-clipboard-text="{{= c.n}}">{{= c.n}}</a>
                             <i>{{= c.t}}{{= (c.nu!=undefined?c.nu:"")}}</i>
-                            <i class="i">{{= (c.c!=undefined?c.c:"") }}</i>{{ if(c.v!=undefined){ }}<i class="ii">{{= c.v }}</i>{{  } }}
+                            {{ if(c.v!=undefined){ }}<i class="ii">[{{= c.v }}]</i>{{  } }}
+                            <i class="i">{{= (c.c!=undefined?c.c:"") }}</i>
                         </span>
                     </li>
                     {{  } }}

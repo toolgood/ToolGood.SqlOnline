@@ -11,7 +11,7 @@
             .Filter { padding: 0 160px; }
             .main { padding: 5px 150px !important; }
         }
-        html { background: #F4F4F4; }
+        html { background: #F4F4F4; overflow-y:hidden; }
     </style>
 </head>
 <body>
@@ -56,7 +56,8 @@
                         <span style="width:100%">
                             <a href="javascript:;" class="copy" tabindex="-1" onclick="insertColumn(this)" data-clipboard-text="{{= c.n}}">{{= c.n}}</a>
                             <i>{{= c.t}}{{= (c.nu!=undefined?c.nu:"")}}</i>
-                            <i class="i">{{= (c.c!=undefined?c.c:"") }}</i>{{ if(c.v!=undefined){ }}<i class="ii">{{= c.v }}</i>{{  } }}
+                            {{ if(c.v!=undefined){ }}<i class="ii">[{{= c.v }}]</i>{{  } }}
+                            <i class="i">{{= (c.c!=undefined?c.c:"") }}</i>
                         </span>
                     </li>
                     {{  } }}
