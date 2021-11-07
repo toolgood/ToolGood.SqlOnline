@@ -12,6 +12,9 @@
             .main { padding: 5px 150px !important; }
         }
         html { background: #F4F4F4; overflow-x: hidden; }
+        li.i a.tryLock { display: none; }
+        li.i:hover a.tryLock { display: inline-block; -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none; }
+        .notext { -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none; }
     </style>
 </head>
 <body>
@@ -38,26 +41,28 @@
             {{ for (var i=0;i<it.length;i++){ }}
             {{ var t=it[i]; }}
             <li class="i {{= t.t }} " id="{{= t.n.replace('.','_') }}" data-commont="{{= (t.c!=undefined?t.c:"") }}" data-tname="{{= t.n }}">
-                <span style="width:100%" class="table">
-                    <a href="javascript:;" class="copy" tabindex="-1" onclick="insertColumn(this)" data-clipboard-text="{{= t.n}}">{{= t.n}}</a>
-                    <!--<a href='javascript:;' class='insertColumn' tabindex="-1" data-clipboard-text="{{= t.n}}" style="display:none" onclick='insertColumn(this); return false;'>插入</a>-->
-                    <i class="i">【{{= (t.c!=undefined?t.c:"") }}】</i>
-                    &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
-                    &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
-                    &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
-                    &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
-                    &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
-                    &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+                <span style="width:100%;font-weight:600" class="table">
+                    <a href="javascript:;" class="copy name" tabindex="-1" data-clipboard-text="{{= t.n}}">{{= t.n}}</a>
+                    <a href='javascript:;' class='tryLock'>切换</a>
+                    <i class="i commont">【{{= (t.c!=undefined?t.c:"") }}】</i>
+                    <span class=notext>
+                        &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+                        &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+                        &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+                        &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+                        &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+                        &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+                    </span>
                 </span>
                 <ul>
                     {{ for (var j=0;j<t.items.length;j++){ }}
                     {{ var c=t.items[j]; }}
                     <li class="i field {{= c.k }}" data-commont="{{= (c.c!=undefined?c.c:"") }}" data-name="{{= c.n }}">
                         <span style="width:100%">
-                            <a href="javascript:;" class="copy" tabindex="-1" onclick="insertColumn(this)" data-clipboard-text="{{= c.n}}">{{= c.n}}</a>
+                            <a href="javascript:;" class="copy name" tabindex="-1" data-clipboard-text="{{= c.n}}">{{= c.n}}</a>
                             <i>{{= c.t}}{{= (c.nu!=undefined?c.nu:"")}}</i>
                             {{ if(c.v!=undefined){ }}<i class="ii">[{{= c.v }}]</i>{{  } }}
-                            <i class="i">{{= (c.c!=undefined?c.c:"") }}</i>
+                            <i class="i commont">{{= (c.c!=undefined?c.c:"") }}</i>
                         </span>
                     </li>
                     {{  } }}
@@ -99,15 +104,67 @@
                 $('.ReturnContent ul li ul li').css("display", "");
                 $(".ReturnContent > ul > li").each(function (obj) {
                     var $this = $(this);
-                    if ($(this).attr("data-commont").toLocaleLowerCase().indexOf($text) >= 0 || $(this).attr("data-tname").toLocaleLowerCase().indexOf($text) >= 0) {
+                    var find = false;
+
+                    var name = $(this).attr("data-tname");
+                    start = name.toLocaleLowerCase().indexOf($text);
+                    if (start >= 0) {
+                        html = name.substr(0, start) + "<span style='color:red;padding:0;'>" + name.substr(start, $text.length) + "</span>" + name.substr(start + $text.length);
+                        $(this).find(".table a.name").html(html);
+                        find = true;
+                    } else if ($(this).find(".table a.name").html().indexOf('</span>') >= 0) {
+                        $(this).find(".table a.name").html(name);
+                    }
+
+                    name = $(this).attr("data-commont");
+                    start = name.toLocaleLowerCase().indexOf($text);
+                    if (start >= 0) {
+                        var start = $(this).attr("data-commont").toLocaleLowerCase().indexOf($text);
+                        html = "【" + name.substr(0, start - 1) + "<span style='color:red;padding:0;'>" + name.substr(start, $text.length) + "</span>" + name.substr(start + $text.length) + "】";
+                        $(this).find(".table i.commont").html(html)
+                        find = true;
+                    } else if ($(this).find("i.commont").html().indexOf('</span>') >= 0) {
+                        $(this).find("i.commont").html(name);
+                    }
+                    if (find == true) {
                         $(this).show();
+                        $(this).find("li").each(function () {
+                            if ($(this).find("a.name").html().indexOf('</span>') >= 0) {
+                                $(this).find("a.name").html($(this).attr("data-name"));
+                            }
+                            if ($(this).find("i.commont").html().indexOf('</span>') >= 0) {
+                                $(this).find("i.commont").html($(this).attr("data-commont"));
+                            }
+                        })
                     } else {
                         $(this).find("li").each(function () {
-                            if ($(this).attr("data-commont").toLocaleLowerCase().indexOf($text) >= 0 || $(this).attr("data-name").toLocaleLowerCase().indexOf($text) >= 0) {
+                            var find2 = false;
+                            name = $(this).attr("data-name");
+                            start = name.toLocaleLowerCase().indexOf($text);
+                            if (start >= 0) {
+                                html = name.substr(0, start) + "<span style='color:red;padding:0;'>" + name.substr(start, $text.length) + "</span>" + name.substr(start + $text.length);
+                                $(this).find("a.name").html(html);
                                 $this.show();
                                 $(this).parent().show();
                                 $(this).show();
-                            } else {
+                                find2 = true;
+                            } else if ($(this).find("a.name").html().indexOf('</span>') >= 0) {
+                                $(this).find("a.name").html($(this).attr("data-name"));
+                            }
+
+                            name = $(this).attr("data-commont");
+                            start = name.toLocaleLowerCase().indexOf($text);
+                            if (start >= 0) {
+                                html = name.substr(0, start) + "<span style='color:red;padding:0;'>" + name.substr(start, $text.length) + "</span>" + name.substr(start + $text.length);
+                                $(this).find("i.commont").html(html)
+                                $this.show();
+                                $(this).parent().show();
+                                $(this).show();
+                                find2 = true;
+                            } else if ($(this).find("i.commont").html().indexOf('</span>') >= 0) {
+                                $(this).find("i.commont").html($(this).attr("data-commont"));
+                            }
+                            if (find2 == false) {
                                 $(this).hide();
                             }
                         })
