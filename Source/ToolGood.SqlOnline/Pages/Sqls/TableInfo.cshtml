@@ -199,72 +199,21 @@
                 $('.ReturnContent ul li ul li').css("display", "");
                 $(".ReturnContent > ul > li").each(function (obj) {
                     var $this = $(this);
-                    var find = false;
-
-                    var name = $(this).attr("data-tname");
-                    start = name.toLocaleLowerCase().indexOf($text);
-                    if (start >= 0) {
-                        html = name.substr(0, start) + "<span style='color:red;padding:0;'>" + name.substr(start, $text.length) + "</span>" + name.substr(start + $text.length);
-                        $(this).find(".table a.name").html(html);
-                        find = true;
-                    } else if ($(this).find(".table a.name").html().indexOf('</span>') >= 0) {
-                        $(this).find(".table a.name").html(name);
-                    }
-
-                    name = $(this).attr("data-commont");
-                    start = name.toLocaleLowerCase().indexOf($text);
-                    if (start >= 0) {
-                        var start = $(this).attr("data-commont").toLocaleLowerCase().indexOf($text);
-                        html = "【" + name.substr(0, start - 1) + "<span style='color:red;padding:0;'>" + name.substr(start, $text.length) + "</span>" + name.substr(start + $text.length) + "】";
-                        $(this).find(".table i.commont").html(html)
-                        find = true;
-                    } else if ($(this).find("i.commont").html().indexOf('</span>') >= 0) {
-                        $(this).find("i.commont").html(name);
-                    }
-                    if (find == true) {
+                    if ($(this).attr("data-commont").toLocaleLowerCase().indexOf($text) >= 0 || $(this).attr("data-tname").toLocaleLowerCase().indexOf($text) >= 0) {
                         $(this).show();
-                        $(this).find("li").each(function () {
-                            if ($(this).find("a.name").html().indexOf('</span>') >= 0) {
-                                $(this).find("a.name").html($(this).attr("data-name"));
-                            }
-                            if ($(this).find("i.commont").html().indexOf('</span>') >= 0) {
-                                $(this).find("i.commont").html($(this).attr("data-commont"));
-                            }
-                        })
                     } else {
                         $(this).find("li").each(function () {
-                            var find2 = false;
-                            name = $(this).attr("data-name");
-                            start = name.toLocaleLowerCase().indexOf($text);
-                            if (start >= 0) {
-                                html = name.substr(0, start) + "<span style='color:red;padding:0;'>" + name.substr(start, $text.length) + "</span>" + name.substr(start + $text.length);
-                                $(this).find("a.name").html(html);
+                            if ($(this).attr("data-commont").toLocaleLowerCase().indexOf($text) >= 0 || $(this).attr("data-name").toLocaleLowerCase().indexOf($text) >= 0) {
                                 $this.show();
                                 $(this).parent().show();
                                 $(this).show();
-                                find2 = true;
-                            } else if ($(this).find("a.name").html().indexOf('</span>') >= 0) {
-                                $(this).find("a.name").html($(this).attr("data-name"));
-                            }
-
-                            name = $(this).attr("data-commont");
-                            start = name.toLocaleLowerCase().indexOf($text);
-                            if (start >= 0) {
-                                html = name.substr(0, start) + "<span style='color:red;padding:0;'>" + name.substr(start, $text.length) + "</span>" + name.substr(start + $text.length);
-                                $(this).find("i.commont").html(html)
-                                $this.show();
-                                $(this).parent().show();
-                                $(this).show();
-                                find2 = true;
-                            } else if ($(this).find("i.commont").html().indexOf('</span>') >= 0) {
-                                $(this).find("i.commont").html($(this).attr("data-commont"));
-                            }
-                            if (find2 == false) {
+                            } else {
                                 $(this).hide();
                             }
                         })
                     }
                 })
+                setTimeout(function () { showSearch(); }, 2000);
             })
 
             $('.main').on({
@@ -283,6 +232,69 @@
                 return false;
             });
         });
+
+        var showSearching = false;
+        function showSearch() {
+            if (showSearching) { return; }
+            showSearching = true;
+            var $text = $("#inputSearch").val().toLocaleLowerCase();
+            $(".ReturnContent > ul > li").each(function (obj) {
+                var find = false;
+
+                var name = $(this).attr("data-tname");
+                start = name.toLocaleLowerCase().indexOf($text);
+                if (start >= 0) {
+                    html = name.substr(0, start) + "<span style='color:red;padding:0;'>" + name.substr(start, $text.length) + "</span>" + name.substr(start + $text.length);
+                    $(this).find(".table a.name").html(html);
+                    find = true;
+                } else if ($(this).find(".table a.name").html().indexOf('</span>') >= 0) {
+                    $(this).find(".table a.name").html(name);
+                }
+
+                name = $(this).attr("data-commont");
+                start = name.toLocaleLowerCase().indexOf($text);
+                if (start >= 0) {
+                    html = "【" + name.substr(0, start - 1) + "<span style='color:red;padding:0;'>" + name.substr(start, $text.length) + "</span>" + name.substr(start + $text.length) + "】";
+                    $(this).find(".table i.commont").html(html)
+                    find = true;
+                } else if ($(this).find("i.commont").html().indexOf('</span>') >= 0) {
+                    $(this).find("i.commont").html(name);
+                }
+                if (find == true) {
+                    $(this).show();
+                    $(this).find("li").each(function () {
+                        if ($(this).find("a.name").html().indexOf('</span>') >= 0) {
+                            $(this).find("a.name").html($(this).attr("data-name"));
+                        }
+                        if ($(this).find("i.commont").html().indexOf('</span>') >= 0) {
+                            $(this).find("i.commont").html($(this).attr("data-commont"));
+                        }
+                    })
+                } else {
+                    $(this).find("li").each(function () {
+                        name = $(this).attr("data-name");
+                        start = name.toLocaleLowerCase().indexOf($text);
+                        if (start >= 0) {
+                            html = name.substr(0, start) + "<span style='color:red;padding:0;'>" + name.substr(start, $text.length) + "</span>" + name.substr(start + $text.length);
+                            $(this).find("a.name").html(html);
+                        } else if ($(this).find("a.name").html().indexOf('</span>') >= 0) {
+                            $(this).find("a.name").html($(this).attr("data-name"));
+                        }
+
+                        name = $(this).attr("data-commont");
+                        start = name.toLocaleLowerCase().indexOf($text);
+                        if (start >= 0) {
+                            html = name.substr(0, start) + "<span style='color:red;padding:0;'>" + name.substr(start, $text.length) + "</span>" + name.substr(start + $text.length);
+                            $(this).find("i.commont").html(html)
+                        } else if ($(this).find("i.commont").html().indexOf('</span>') >= 0) {
+                            $(this).find("i.commont").html($(this).attr("data-commont"));
+                        }
+                    })
+                }
+            })
+            showSearching = false;
+        }
+
 
         function insertColumn(obj) {
             if ($editor) {
