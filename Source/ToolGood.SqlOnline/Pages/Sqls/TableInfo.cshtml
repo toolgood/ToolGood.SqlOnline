@@ -12,13 +12,13 @@
     <link href="/_/css/dbs.css" rel="stylesheet" />
     <link href="/_/layui/css/layui.css" rel="stylesheet" />
     <style>
-        html { background: #F4F4F4; overflow-x:hidden; }
+        html { background: #F4F4F4; overflow-x: hidden; }
         .notext { -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none; }
     </style>
 </head>
 <body>
     <div class="Filter" style="font-size:13px;overflow:hidden">
-        <form id="edit-form">
+        <form id="edit-form" class="notext">
             <input type="hidden" id="SqlConnId" name="SqlConnId" value="@Model.ConnId" />
             库：
             <select name="DatabaseName" id="DatabaseName" style="height: 20px;">
@@ -26,6 +26,8 @@
             </select>
             <button type="button" class="selectDb" onclick="loadTable()" title=""> 切换 </button>
             | 筛选：<input id="inputSearch" type="text" class="inputSearch" style="width:60px;" title="请输入关键字">
+            <label><input type="checkbox" id="onlyTableName" style="vertical-align: middle;"> 只匹配表名 </label>
+            |
             <button type="button" class="selectDb" onclick="exportZip()" title=""> 导出结构 </button>
         </form>
     </div>
@@ -42,7 +44,7 @@
             {{ var t=it[i]; }}
             <li class="i {{= t.t }} " id="{{= t.n.replace('.','_') }}" data-commont="{{= (t.c!=undefined?t.c:"") }}" data-tname="{{= t.n }}">
                 <span style="width:100%;font-weight:600" class="table">
-                    <i class="layui-icon orange table hidden">&#xe658;</i> 
+                    <i class="layui-icon orange table hidden">&#xe658;</i>
                     <a href='javascript:;' class="name">{{= t.n }}</a>
                     <a href='javascript:;' class='insertColumn' tabindex="-1" data-clipboard-text="{{= t.n}}" style="display:none" onclick='insertColumn(this); return false;'>插入</a>
                     <i class="i commont">【{{= (t.c!=undefined?t.c:"") }}】</i>
@@ -182,7 +184,7 @@
                     layer.msg("已复制到剪切板中！");
                 });
             }
-  
+
 
             $("body").on("click", ".i.t > span,.i.v > span", function () {
                 var sTableId = $(this).parent().attr('id');
@@ -193,27 +195,10 @@
             $("#inputSearch").keypress(function (e) {
                 if (e.keyCode == 13) { e.preventDefault(); }
             }).keyup(function (e) {
-                var $text = $(this).val().toLocaleLowerCase();
-                $('.ReturnContent > ul > li').css("display", "none");
-                $('.ReturnContent ul li ul').css("display", "none");
-                $('.ReturnContent ul li ul li').css("display", "");
-                $(".ReturnContent > ul > li").each(function (obj) {
-                    var $this = $(this);
-                    if ($(this).attr("data-commont").toLocaleLowerCase().indexOf($text) >= 0 || $(this).attr("data-tname").toLocaleLowerCase().indexOf($text) >= 0) {
-                        $(this).show();
-                    } else {
-                        $(this).find("li").each(function () {
-                            if ($(this).attr("data-commont").toLocaleLowerCase().indexOf($text) >= 0 || $(this).attr("data-name").toLocaleLowerCase().indexOf($text) >= 0) {
-                                $this.show();
-                                $(this).parent().show();
-                                $(this).show();
-                            } else {
-                                $(this).hide();
-                            }
-                        })
-                    }
-                })
-                setTimeout(function () { showSearch(); }, 2000);
+                changeShow();
+            })
+            $("#onlyTableName").change(function () {
+                changeShow();
             })
 
             $('.main').on({
@@ -232,6 +217,32 @@
                 return false;
             });
         });
+
+        function changeShow() {
+            var $text = $("#inputSearch").val().toLocaleLowerCase();
+            var $onlyTableName = $("#onlyTableName").prop("checked");
+            $('.ReturnContent > ul > li').css("display", "none");
+            $('.ReturnContent ul li ul').css("display", "none");
+            $('.ReturnContent ul li ul li').css("display", "");
+            $(".ReturnContent > ul > li").each(function (obj) {
+                var $this = $(this);
+                if ($(this).attr("data-commont").toLocaleLowerCase().indexOf($text) >= 0 || $(this).attr("data-tname").toLocaleLowerCase().indexOf($text) >= 0) {
+                    $(this).show();
+                } else if ($onlyTableName == false) {
+                    $(this).find("li").each(function () {
+                        if ($(this).attr("data-commont").toLocaleLowerCase().indexOf($text) >= 0 || $(this).attr("data-name").toLocaleLowerCase().indexOf($text) >= 0) {
+                            $this.show();
+                            $(this).parent().show();
+                            $(this).show();
+                        } else {
+                            $(this).hide();
+                        }
+                    })
+                }
+            })
+            setTimeout(function () { showSearch(); }, 1000);
+        }
+
 
         var showSearching = false;
         function showSearch() {
@@ -257,8 +268,8 @@
                     html = "【" + name.substr(0, start - 1) + "<span style='color:red;padding:0;'>" + name.substr(start, $text.length) + "</span>" + name.substr(start + $text.length) + "】";
                     $(this).find(".table i.commont").html(html)
                     find = true;
-                } else if ($(this).find("i.commont").html().indexOf('</span>') >= 0) {
-                    $(this).find("i.commont").html(name);
+                } else if ($(this).find(".table i.commont").html().indexOf('</span>') >= 0) {
+                    $(this).find(".table i.commont").html(name);
                 }
                 if (find == true) {
                     $(this).show();

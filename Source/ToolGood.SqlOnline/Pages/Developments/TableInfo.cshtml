@@ -18,7 +18,7 @@
 </head>
 <body>
     <div class="Filter" style="font-size:13px;overflow:hidden">
-        <form id="edit-form">
+        <form id="edit-form" class="notext">
             <input type="hidden" id="SqlConnId" name="SqlConnId" value="@Model.ConnId" />
             库：
             <select name="DatabaseName" id="DatabaseName" style="height: 20px;">
@@ -26,6 +26,7 @@
             </select>
             <button type="button" class="selectDb" onclick="loadTable()" title="">切换</button>
             | 筛选：<input id="inputSearch" type="text" class="inputSearch" style="width:60px;" title="请输入关键字">
+            <label><input type="checkbox" id="onlyTableName" style="vertical-align: middle;"> 只匹配表名 </label>
         </form>
     </div>
     <div class="main" style="padding: 5px;">
@@ -172,27 +173,10 @@
             $("#inputSearch").keypress(function (e) {
                 if (e.keyCode == 13) { e.preventDefault(); }
             }).keyup(function (e) {
-                var $text = $(this).val().toLocaleLowerCase();
-                $('.ReturnContent > ul > li').css("display", "none");
-                $('.ReturnContent ul li ul').css("display", "none");
-                $('.ReturnContent ul li ul li').css("display", "");
-                $(".ReturnContent > ul > li").each(function (obj) {
-                    var $this = $(this);
-                    if ($(this).attr("data-commont").toLocaleLowerCase().indexOf($text) >= 0 || $(this).attr("data-tname").toLocaleLowerCase().indexOf($text) >= 0) {
-                        $(this).show();
-                    } else {
-                        $(this).find("li").each(function () {
-                            if ($(this).attr("data-commont").toLocaleLowerCase().indexOf($text) >= 0 || $(this).attr("data-name").toLocaleLowerCase().indexOf($text) >= 0) {
-                                $this.show();
-                                $(this).parent().show();
-                                $(this).show();
-                            } else {
-                                $(this).hide();
-                            }
-                        })
-                    }
-                })
-                setTimeout(function () { showSearch(); }, 2000);
+                changeShow();
+            })
+            $("#onlyTableName").change(function () {
+                changeShow();
             })
 
 
@@ -212,6 +196,32 @@
                 return false;
             });
         });
+
+        function changeShow() {
+            var $text = $("#inputSearch").val().toLocaleLowerCase();
+            var $onlyTableName = $("#onlyTableName").prop("checked");
+            $('.ReturnContent > ul > li').css("display", "none");
+            $('.ReturnContent ul li ul').css("display", "none");
+            $('.ReturnContent ul li ul li').css("display", "");
+            $(".ReturnContent > ul > li").each(function (obj) {
+                var $this = $(this);
+                if ($(this).attr("data-commont").toLocaleLowerCase().indexOf($text) >= 0 || $(this).attr("data-tname").toLocaleLowerCase().indexOf($text) >= 0) {
+                    $(this).show();
+                } else if ($onlyTableName == false) {
+                    $(this).find("li").each(function () {
+                        if ($(this).attr("data-commont").toLocaleLowerCase().indexOf($text) >= 0 || $(this).attr("data-name").toLocaleLowerCase().indexOf($text) >= 0) {
+                            $this.show();
+                            $(this).parent().show();
+                            $(this).show();
+                        } else {
+                            $(this).hide();
+                        }
+                    })
+                }
+            })
+            setTimeout(function () { showSearch(); }, 1000);
+        }
+
 
         var showSearching = false;
         function showSearch() {
@@ -237,8 +247,8 @@
                     html = "【" + name.substr(0, start - 1) + "<span style='color:red;padding:0;'>" + name.substr(start, $text.length) + "</span>" + name.substr(start + $text.length) + "】";
                     $(this).find(".table i.commont").html(html)
                     find = true;
-                } else if ($(this).find("i.commont").html().indexOf('</span>') >= 0) {
-                    $(this).find("i.commont").html(name);
+                } else if ($(this).find(".table i.commont").html().indexOf('</span>') >= 0) {
+                    $(this).find(".table i.commont").html(name);
                 }
                 if (find == true) {
                     $(this).show();
