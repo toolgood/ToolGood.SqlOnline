@@ -2,9 +2,7 @@
 
 《SQL online》是一款免费的SQL在线编辑器，主打数据安全，跨平台支持windows、Linux。
 
-官网：https://www.sqlonline.net
 
-交流Q群：950217920，验证码：sqlonline
 
 ## SQL online 编译后程序下载
 
